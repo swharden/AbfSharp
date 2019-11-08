@@ -18,6 +18,15 @@ namespace ABFsharp
         public readonly double intervalSec;
         public readonly double intervalMin;
         public readonly double[] values;
+        public double[] valuesCopy
+        {
+            get
+            {
+                double[] cpy = new double[values.Length];
+                Array.Copy(values, 0, cpy, 0, values.Length);
+                return cpy;
+            }
+        }
 
         public Sweep(AbfInfo info)
         {

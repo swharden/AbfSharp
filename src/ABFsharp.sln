@@ -7,6 +7,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ABFsharp", "ABFsharp\ABFsha
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ABFsharpTests", "ABFsharpTests\ABFsharpTests.csproj", "{3C98CF8A-22AB-4B80-BE51-2D35436EF9D2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AbfToImage", "..\dev\demos\AbfToImage\AbfToImage.csproj", "{511BAD7D-C782-4A82-9ED6-C787A6991D43}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "demos", "demos", "{5DD85CCE-A796-4262-8BAF-F0880CA42D33}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,9 +25,16 @@ Global
 		{3C98CF8A-22AB-4B80-BE51-2D35436EF9D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3C98CF8A-22AB-4B80-BE51-2D35436EF9D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3C98CF8A-22AB-4B80-BE51-2D35436EF9D2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{511BAD7D-C782-4A82-9ED6-C787A6991D43}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{511BAD7D-C782-4A82-9ED6-C787A6991D43}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{511BAD7D-C782-4A82-9ED6-C787A6991D43}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{511BAD7D-C782-4A82-9ED6-C787A6991D43}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{511BAD7D-C782-4A82-9ED6-C787A6991D43} = {5DD85CCE-A796-4262-8BAF-F0880CA42D33}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B2B23A24-B4A7-401F-BAA4-F62194974503}
