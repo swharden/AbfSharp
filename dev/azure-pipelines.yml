@@ -26,6 +26,7 @@ steps:
     solution: '$(solution)'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
+    msbuildArgs: '/p:Platform=x86'
 
 - task: VSTest@2
   inputs:
