@@ -4,7 +4,7 @@
 
 ABFsharp is a .NET library that makes it easy to read electrophysiology data from Axon Binary Format (ABF) files.
 
-_WARNING: This project is very early in development and not ready to be publicly used. Those interested in learning more about reading data from ABF files are encouraged to visit the [pyABF](https://github.com/swharden/pyABF) project._
+_WARNING: This project is very early in development and not ready for public use. Those interested in learning more about reading data from ABF files are encouraged to visit the [pyABF](https://github.com/swharden/pyABF) project._
 
 ## Quickstart
 
