@@ -93,6 +93,19 @@ namespace ABFsharp
 
             for (int i = 0; i < info.sweepLengthPoints; i++)
                 sweep.values[i] = data[sweepNumber, i, channelNumber];
+
+            sweep.number = sweepNumber;
+        }
+
+        public double[] GetFullRecording(int channelNumber = 0)
+        {
+            double[] data = new double[info.sweepLengthPoints * info.sweepCount];
+            for (int sweepNumber = 0; sweepNumber < info.sweepCount; sweepNumber++)
+            {
+                SetSweep(sweepNumber, channelNumber);
+                Array.Copy(sweep.values, 0, data, sweepNumber * info.sweepLengthPoints, info.sweepLengthPoints);
+            }
+            return data;
         }
     }
 }
