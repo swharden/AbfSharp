@@ -1,49 +1,61 @@
 ﻿using System;
+using System.Diagnostics;
 
 namespace ABFsharp
 {
-    public class ABF : IDisposable
+    public enum Sweeps { All, First, None }
+
+    public class ABF
     {
-
-        private ABFFIO.Interface abffio;
         public AbfInfo info;
-        public Sweep sweep;
-        public double[,,] data; // sweep, position, channel
-        private bool[,] dataLoaded; // sweep, channel
+        public Sweep sweep; // TODO: needs more things
 
-        public ABF(string filePath, bool preLoadSweepData = true)
+        private readonly Sweep[,] sweeps;
+
+        public ABF(string filePath, Sweeps preload = Sweeps.All)
         {
-            abffio = new ABFFIO.Interface(filePath);
-            info = new AbfInfo(filePath, abffio.header);
-            sweep = new Sweep(info);
-            ReadTags();
-
-            if (preLoadSweepData)
+            using (var abffio = new ABFFIO.AbfInterface(filePath))
             {
-                LoadAllSweeps();
-                SetSweep(0, 0);
+                info = new AbfInfo(filePath, abffio.header);
+                sweeps = new Sweep[info.sweepCount, info.channelCount];
+
+                LoadTags(abffio);
+
+                if (preload == Sweeps.All)
+                    LoadAllSweeps(abffio);
+                else if (preload == Sweeps.First)
+                    LoadSweep(abffio, 0, 0);
             }
-
-        }
-
-        public void Dispose()
-        {
-            Close();
         }
 
         public override string ToString()
         {
-            return $"ABF ({info.fileName}) set to sweep X of {info.sweepCount}";
+            if (sweep is null)
+                return $"ABF [{info.fileName}] with {info.sweepCount} sweeps";
+            else
+                return $"ABF [{info.fileName}] set to sweep {sweep.number} of {info.sweepCount}";
         }
 
-        public void Close()
+        #region loading data from ABF using DLL
+
+        private void LoadSweep(ABFFIO.AbfInterface abffio, int sweepIndex = 0, int channelIndex = 0)
         {
-            abffio.Close();
+            abffio.ReadChannel(sweepIndex + 1, channelIndex);
+            var thisSweep = new Sweep(info, sweepIndex, channelIndex);
+            thisSweep.values = new double[abffio.buffer.Length];
+            Array.Copy(abffio.buffer, 0, thisSweep.values, 0, abffio.buffer.Length);
+            sweeps[sweepIndex, channelIndex] = thisSweep;
         }
 
-        private void ReadTags()
+        private void LoadAllSweeps(ABFFIO.AbfInterface abffio)
         {
-            // populates info.tags from data retrieved from abffio module
+            for (int sweepIndex = 0; sweepIndex < info.sweepCount; sweepIndex++)
+                for (int channelNumber = 0; channelNumber < info.channelCount; channelNumber++)
+                    LoadSweep(abffio, sweepIndex, channelNumber);
+        }
+
+        private void LoadTags(ABFFIO.AbfInterface abffio)
+        {
             ABFFIO.Structs.ABFTag[] abfTags = abffio.ReadTags();
             for (int i = 0; i < abfTags.Length; i++)
             {
@@ -56,54 +68,24 @@ namespace ABFsharp
             }
         }
 
-        private void EnsureDataArrayExists()
+        #endregion
+
+        public Sweep GetSweep(int index = 0, int channel = 0)
         {
-            if (data == null)
-            {
-                data = new double[info.sweepCount, info.sweepLengthPoints, info.channelCount];
-                dataLoaded = new bool[info.sweepCount, info.channelCount];
-            }
+            if (sweeps[index, channel] is null)
+                using (var abffio = new ABFFIO.AbfInterface(info.filePath))
+                    LoadSweep(abffio, index, channel);
+
+            return sweeps[index, channel];
         }
 
-        private void LoadSweep(int sweep, int channel = 0)
-        {
-            EnsureDataArrayExists();
-            if (!dataLoaded[sweep, channel])
-            {
-                abffio.ReadChannel(sweep + 1, channel);
-                for (int i = 0; i < info.sweepLengthPoints; i++)
-                    data[sweep, i, channel] = abffio.sweepBuffer[i];
-                dataLoaded[sweep, channel] = true;
-            }
-        }
-
-        public void LoadAllSweeps()
-        {
-            EnsureDataArrayExists();
-            for (int channel = 0; channel < info.channelCount; channel++)
-                for (int sweep = 0; sweep < info.sweepCount; sweep++)
-                    LoadSweep(sweep, channel);
-        }
-
-        public void SetSweep(int sweepNumber = 0, int channelNumber = 0)
-        {
-            EnsureDataArrayExists();
-            if (!dataLoaded[sweepNumber, channelNumber])
-                LoadSweep(sweepNumber, channelNumber);
-
-            for (int i = 0; i < info.sweepLengthPoints; i++)
-                sweep.values[i] = data[sweepNumber, i, channelNumber];
-
-            sweep.number = sweepNumber;
-        }
-
-        public double[] GetFullRecording(int channelNumber = 0)
+        public double[] GetFullRecording(int channel = 0)
         {
             double[] data = new double[info.sweepLengthPoints * info.sweepCount];
-            for (int sweepNumber = 0; sweepNumber < info.sweepCount; sweepNumber++)
+            for (int sweepIndex = 0; sweepIndex < info.sweepCount; sweepIndex++)
             {
-                SetSweep(sweepNumber, channelNumber);
-                Array.Copy(sweep.values, 0, data, sweepNumber * info.sweepLengthPoints, info.sweepLengthPoints);
+                var sweep = GetSweep(sweepIndex, channel);
+                Array.Copy(sweep.values, 0, data, sweepIndex * info.sweepLengthPoints, info.sweepLengthPoints);
             }
             return data;
         }

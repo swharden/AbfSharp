@@ -17,8 +17,8 @@ namespace AbfToImage
 
             for (int i = 0; i < abf.info.sweepCount; i += 4)
             {
-                abf.SetSweep(i);
-                plt.PlotSignal(abf.sweep.valuesCopy, abf.info.sampleRate, label: $"sweep {i + 1}");
+                var sweep = abf.GetSweep(i);
+                plt.PlotSignal(sweep.valuesCopy, abf.info.sampleRate, label: $"sweep {i + 1}");
             }
 
             plt.Title(abf.info.fileName);

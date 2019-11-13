@@ -6,18 +6,15 @@ namespace ABFsharp
 {
     public class Sweep
     {
-
-        private readonly AbfInfo info;
-
-        public int number;
-        public int channel;
+        public readonly int index;
+        public readonly int number;
+        public readonly int channel;
 
         public readonly int length;
         public readonly double lengthSec;
-        public readonly double lengthMin;
-        public readonly double intervalSec;
-        public readonly double intervalMin;
-        public readonly double[] values;
+
+        public double[] values;
+
         public double[] valuesCopy
         {
             get
@@ -28,15 +25,15 @@ namespace ABFsharp
             }
         }
 
-        public Sweep(AbfInfo info)
+        public Sweep(AbfInfo info, int sweepIndex, int channelNumber)
         {
-            this.info = info;
+            index = sweepIndex;
+            number = sweepIndex + 1;
+            channel = channelNumber;
+
             length = info.sweepLengthPoints;
             lengthSec = info.sweepLengthSec;
-            lengthMin = info.sweepLengthMin;
-            intervalSec = info.sweepIntervalSec;
-            intervalMin = info.sweepIntervalMin;
-            values = new double[info.sweepLengthPoints];
+            values = null;
         }
     }
 
