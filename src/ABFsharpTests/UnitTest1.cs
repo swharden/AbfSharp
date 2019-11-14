@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace ABFsharpTests
@@ -46,6 +47,21 @@ namespace ABFsharpTests
         {
             var abf = new ABFsharp.ABF(abfFilePath);
             Console.WriteLine(abf.info);
+        }
+
+        [TestMethod]
+        public void Test_ABF_Preload()
+        {
+            ABFsharp.ABF abf;
+
+            abf = new ABFsharp.ABF(abfFilePath, ABFsharp.ABF.Preload.AllSweeps);
+            Debug.WriteLine($"Preload.AllSweeps: Sweeps in memory = {abf.sweepsInMemory} of {abf.info.sweepCount * abf.info.channelCount}");
+
+            abf = new ABFsharp.ABF(abfFilePath, ABFsharp.ABF.Preload.FirstSweep);
+            Debug.WriteLine($"Preload.FirstSweep: Sweeps in memory = {abf.sweepsInMemory} of {abf.info.sweepCount * abf.info.channelCount}");
+
+            abf = new ABFsharp.ABF(abfFilePath, ABFsharp.ABF.Preload.HeaderOnly);
+            Debug.WriteLine($"Preload.HeaderOnly: Sweeps in memory = {abf.sweepsInMemory} of {abf.info.sweepCount * abf.info.channelCount}");
         }
     }
 }

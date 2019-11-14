@@ -3,8 +3,6 @@ using System.Diagnostics;
 
 namespace ABFsharp
 {
-    public enum Sweeps { All, First, None }
-
     public class ABF
     {
         public AbfInfo info;
@@ -12,7 +10,11 @@ namespace ABFsharp
 
         private readonly Sweep[,] sweeps;
 
-        public ABF(string filePath, Sweeps preload = Sweeps.All)
+        public int sweepsInMemory { get; private set; }
+
+        public enum Preload { AllSweeps, FirstSweep, HeaderOnly }
+
+        public ABF(string filePath, Preload preload = Preload.AllSweeps)
         {
             using (var abffio = new ABFFIO.AbfInterface(filePath))
             {
@@ -21,9 +23,9 @@ namespace ABFsharp
 
                 LoadTags(abffio);
 
-                if (preload == Sweeps.All)
+                if (preload == Preload.AllSweeps)
                     LoadAllSweeps(abffio);
-                else if (preload == Sweeps.First)
+                else if (preload == Preload.FirstSweep)
                     LoadSweep(abffio, 0, 0);
             }
         }
@@ -45,6 +47,7 @@ namespace ABFsharp
             thisSweep.values = new double[abffio.buffer.Length];
             Array.Copy(abffio.buffer, 0, thisSweep.values, 0, abffio.buffer.Length);
             sweeps[sweepIndex, channelIndex] = thisSweep;
+            sweepsInMemory += 1;
         }
 
         private void LoadAllSweeps(ABFFIO.AbfInterface abffio)
