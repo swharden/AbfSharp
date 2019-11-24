@@ -11,6 +11,7 @@ namespace ABFsharp.ABFFIO
         private UInt32 sweepPointCount;
         private readonly UInt32 sweepCount;
         private readonly string path;
+        private readonly bool debug;
 
         public readonly float[] buffer;
 
@@ -22,12 +23,13 @@ namespace ABFsharp.ABFFIO
         [DllImport("ABFFIO.dll", CharSet = CharSet.Ansi)]
         private static extern bool ABF_ReadOpen(String szFileName, ref Int32 phFile, UInt32 fFlags, ref Structs.ABFFileHeader pFH, ref UInt32 puMaxSamples, ref UInt32 pdwMaxEpi, ref Int32 pnError);
 
-        public AbfInterface(string abfFilePath)
+        public AbfInterface(string abfFilePath, bool hideDebugMessages = true)
         {
             if (!System.IO.File.Exists(abfFilePath))
                 throw new ArgumentException($"file does not exist: {abfFilePath}");
-            else
-                this.path = System.IO.Path.GetFullPath(abfFilePath);
+
+            path = System.IO.Path.GetFullPath(abfFilePath);
+            debug = !hideDebugMessages;
 
             // ensure this file is a valid ABF
             Int32 dataFormat = 0;
@@ -37,7 +39,7 @@ namespace ABFsharp.ABFFIO
                 throw new ArgumentException($"ABFFIO says not an ABF file: {abfFilePath}");
 
             // open the file and read its header
-            Debug.WriteLine($"OPENING: {abfFilePath}");
+            if (hideDebugMessages) Debug.WriteLine($"OPENING: {abfFilePath}");
             Int32 fileHandle = 0;
             uint loadFlags = 0;
             ABF_ReadOpen(abfFilePath, ref fileHandle, loadFlags, ref header, ref sweepPointCount, ref sweepCount, ref errorCode);
@@ -56,7 +58,7 @@ namespace ABFsharp.ABFFIO
             Int32 errorCode = 0;
             ABF_Close(fileHandle, ref errorCode);
             AbfError.AssertSuccess(errorCode);
-            Debug.WriteLine($"{System.IO.Path.GetFileName(path)} closed");
+            if (debug) Debug.WriteLine($"{System.IO.Path.GetFileName(path)} closed");
         }
 
         [DllImport("ABFFIO.dll", CharSet = CharSet.Ansi)]
@@ -80,7 +82,7 @@ namespace ABFsharp.ABFFIO
 
         public void ReadChannel(int sweepNumber, int channelNumber)
         {
-            Debug.WriteLine($"{System.IO.Path.GetFileName(path)} reading Ch{channelNumber} Sw{sweepNumber}");
+            if (debug) Debug.WriteLine($"{System.IO.Path.GetFileName(path)} reading Ch{channelNumber} Sw{sweepNumber}");
             Int32 errorCode = 0;
             Int32 fileHandle = 0;
             int physicalChannel = header.nADCSamplingSeq[channelNumber];

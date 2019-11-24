@@ -6,7 +6,6 @@ namespace ABFsharp
     public class ABF
     {
         public AbfInfo info;
-        public Sweep sweep; // TODO: needs more things
 
         private readonly Sweep[,] sweeps;
 
@@ -32,10 +31,7 @@ namespace ABFsharp
 
         public override string ToString()
         {
-            if (sweep is null)
-                return $"ABF [{info.fileName}] with {info.sweepCount} sweeps";
-            else
-                return $"ABF [{info.fileName}] set to sweep {sweep.number} of {info.sweepCount}";
+            return $"ABF [{info.fileName}] with {info.sweepCount} sweeps";
         }
 
         #region loading data from ABF using DLL

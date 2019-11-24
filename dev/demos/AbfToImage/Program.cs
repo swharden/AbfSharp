@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Drawing;
 
 namespace AbfToImage
@@ -6,6 +7,12 @@ namespace AbfToImage
     class Program
     {
         static void Main(string[] args)
+        {
+            //Quickstart();
+            Test();
+        }
+
+        static void Quickstart()
         {
             string pathAbfFolder = System.IO.Path.GetFullPath("../../../../../abfs");
             string abfFilePath = System.IO.Path.Combine(pathAbfFolder, "17n16018.abf");
@@ -27,6 +34,17 @@ namespace AbfToImage
             plt.Legend();
             plt.AxisAuto(0);
             plt.SaveFig("sweep.png");
+        }
+
+        public static void Test()
+        {
+            string pathAbfFolder = System.IO.Path.GetFullPath("../../../../../abfs");
+            string abfFilePath = System.IO.Path.Combine(pathAbfFolder, "17n16018.abf");
+
+            ABFsharp.ABF abf = new ABFsharp.ABF(abfFilePath);
+            Debug.WriteLine($"ABF: {abf}");
+            var sweep = abf.GetSweep();
+            Debug.WriteLine($"Sweep: {sweep}");
         }
     }
 }

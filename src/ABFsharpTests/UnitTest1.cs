@@ -63,5 +63,20 @@ namespace ABFsharpTests
             abf = new ABFsharp.ABF(abfFilePath, ABFsharp.ABF.Preload.HeaderOnly);
             Debug.WriteLine($"Preload.HeaderOnly: Sweeps in memory = {abf.sweepsInMemory} of {abf.info.sweepCount * abf.info.channelCount}");
         }
+
+        [TestMethod]
+        public void Test_ABF_ToString()
+        {
+            ABFsharp.ABF abf = new ABFsharp.ABF(abfFilePath);
+            Debug.WriteLine($"abf: {abf}");
+        }
+
+        [TestMethod]
+        public void Test_Sweep_ToString()
+        {
+            ABFsharp.ABF abf = new ABFsharp.ABF(abfFilePath);
+            var sweep = abf.GetSweep();
+            Debug.WriteLine($"Sweep: {sweep}");
+        }
     }
 }
