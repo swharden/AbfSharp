@@ -11,21 +11,22 @@ variables:
 
 steps:
 - task: NuGetToolInstaller@1
+  displayName: "Install NuGet"
 
 - task: NuGetCommand@2
-displayName: "Restore"
+  displayName: "Restore NuGet Packages"
   inputs:
     restoreSolution: '$(solution)'
 
 - task: VSBuild@1
-displayName: "Build"
+  displayName: "Build"
   inputs:
     solution: '$(solution)'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
     
 - task: DotNetCoreCLI@2
-displayName: "Run Tests"
-inputs:
-    command: test
-    projects: '$(solution)'
+  displayName: "Run Tests"
+  inputs:
+      command: test
+      projects: '$(solution)'
