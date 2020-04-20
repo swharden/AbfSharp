@@ -1,9 +1,13 @@
 trigger:
 - master
 
+strategy:
+  matrix:
+    Windows:
+      imageName: 'windows-latest'
+
 pool:
-  name: 'Build and Test on Windows'
-  vmImage: 'windows-latest'
+  vmImage: $(imageName)
 
 variables:
   solution: 'src/*.sln'
@@ -11,6 +15,7 @@ variables:
   buildConfiguration: 'Release'
 
 steps:
+
 - task: NuGetToolInstaller@1
   displayName: "Install NuGet"
 
