@@ -5,6 +5,13 @@ VisualStudioVersion = 16.0.29503.13
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ABFsharp", "ABFsharp\ABFsharp.csproj", "{13A5556E-D573-4501-82BE-937999DAF1D9}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dev", "dev", "{D6784CBA-B376-4ED0-945D-FC19593587A8}"
+	ProjectSection(SolutionItems) = preProject
+		..\dev\azure-pipelines.yml = ..\dev\azure-pipelines.yml
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ABFsharp.Tests", "ABFsharp.Tests\ABFsharp.Tests.csproj", "{0AB07EE5-565B-42FE-815B-8FB85539F7D3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +22,10 @@ Global
 		{13A5556E-D573-4501-82BE-937999DAF1D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{13A5556E-D573-4501-82BE-937999DAF1D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{13A5556E-D573-4501-82BE-937999DAF1D9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0AB07EE5-565B-42FE-815B-8FB85539F7D3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0AB07EE5-565B-42FE-815B-8FB85539F7D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0AB07EE5-565B-42FE-815B-8FB85539F7D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0AB07EE5-565B-42FE-815B-8FB85539F7D3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
