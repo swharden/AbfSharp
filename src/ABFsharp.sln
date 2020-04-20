@@ -7,10 +7,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ABFsharp", "ABFsharp\ABFsha
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dev", "dev", "{D6784CBA-B376-4ED0-945D-FC19593587A8}"
 	ProjectSection(SolutionItems) = preProject
+		ABFFIO.dll = ABFFIO.dll
 		..\dev\azure-pipelines.yml = ..\dev\azure-pipelines.yml
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ABFsharp.Tests", "ABFsharp.Tests\ABFsharp.Tests.csproj", "{0AB07EE5-565B-42FE-815B-8FB85539F7D3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ABFsharp.Tests", "ABFsharp.Tests\ABFsharp.Tests.csproj", "{0AB07EE5-565B-42FE-815B-8FB85539F7D3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
