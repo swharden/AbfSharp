@@ -1,13 +1,8 @@
 trigger:
 - master
 
-strategy:
-  matrix:
-    Windows:
-      imageName: 'windows-latest'
-
 pool:
-  vmImage: $(imageName)
+  vmImage: 'windows-latest'
 
 variables:
   solution: 'src/*.sln'
