@@ -3,6 +3,7 @@ trigger:
 
 pool:
   vmImage: 'windows-latest'
+  imageName: 'Build and Test on Windows'
 
 variables:
   solution: 'src/*.sln'
