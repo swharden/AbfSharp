@@ -2,8 +2,8 @@ trigger:
 - master
 
 pool:
+  name: 'Build and Test on Windows'
   vmImage: 'windows-latest'
-  imageName: 'Build and Test on Windows'
 
 variables:
   solution: 'src/*.sln'
