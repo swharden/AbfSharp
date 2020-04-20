@@ -16,8 +16,10 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
 
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="xcopy /y /d  &quot;$(ProjectDir)..\ABFFIO.dll&quot; &quot;$(ProjectDir)$(OutDir)&quot;" />
-  </Target>
+  <ItemGroup>
+    <None Update="ABFFIO.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 
 </Project>
