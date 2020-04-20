@@ -35,56 +35,63 @@ How much memory does ABFsharp require? A 1-hour 20kHz recording has 72 million p
 
 ## Quickstart Examples
 
-These examples demonstrate how to use ABFsharp in combination with [ScottPlot](http://swharden.com/scottplot/) to perform common ABF plotting tasks. 
+These examples demonstrate how to use ABFsharp in combination with [ScottPlot](http://swharden.com/scottplot/) to perform common ABF plotting tasks.
 
-All examples assume the following:
+All examples use code similar to the following:
 
 ```cs
 var abf = new ABFsharp.ABF("file.abf");
 var plt = new ScottPlot.Plot();
+
+/* ABF interaction and plotting code */
+
+plt.AxisAuto(0);
+plt.Title("Exciting Data");
+plt.YLabel("Vertical Axis Label");
+plt.XLabel("Horizontal Axis Label");
+plt.SaveFig("file.png");
 ```
 
-#### Plot Sweep
+### Plot Sweep
+
+_Gap-free recordings are treated as episodic recordings with a single sweep_
 
 ```cs
 var trace = abf.GetSweep(0);
 plt.PlotSignal(trace.values, trace.sampleRate);
 ```
 
-_Gap-free recordings are treated as episodic recordings with a single sweep_
+![](dev/graphics/Test_Plot_FirstSweep.png)
 
-#### Plot Full Recording
+### Plot Full Recording
 
 ```cs
 var trace = abf.GetAllSweeps();
 plt.PlotSignal(trace.values, trace.sampleRate);
 ```
 
-#### Overlay Sweeps
+![](dev/graphics/Test_Plot_FullRecording.png)
+
+### Overlay Sweeps
 ```cs
 for (int i=0; i<abf.sweepCount; i++) {
     var trace = abf.GetSweep(i);
-    plt.PlotSignal(trace.values, trace.sampleRate);
+    plt.PlotSignal(trace.values, trace.sampleRate, lineWidth: 2);
 }
+plt.Legend();
 ```
 
-#### Stacked Sweeps with Baseline Subtraction
+![](dev/graphics/Test_Plot_Overlay.png)
+
+### Stacked Sweeps
 ```cs
 for (int i=0; i<abf.sweepCount; i++) {
     var trace = abf.GetSweep(i);
-    trace.Baseline(1.0, 1.5);
-    plt.PlotSignal(trace.values, trace.sampleRate, yOffset: 100 * i);
+    plt.PlotSignal(trace.values, trace.sampleRate,
+        color: Color.Blue, yOffset: i * 120);
 }
+plt.Grid(false);
+plt.Ticks(displayTicksY: false);
 ```
 
-#### Area of an Evoked Current by Sweep
-```cs
-double[] areasBySweep = new double[abf.sweepCount];
-for (int i=0; i<abf.sweepCount; i++) {
-    var trace = abf.GetSweep(i);
-    trace.Baseline(1.0, 1.5);
-    var stats = trace.Measure(2.0, 2.5);
-    areasBySweep[i] = stats.area;
-}
-plt.PlotScatter(abf.startTimesMin, areasBySweep);
-```
+![](dev/graphics/Test_Plot_Stacked.png)

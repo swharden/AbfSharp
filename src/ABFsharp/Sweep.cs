@@ -4,6 +4,7 @@ using System.Text;
 
 namespace ABFsharp
 {
+    [Obsolete("dont use the sweep class", false)]
     public class Sweep
     {
         public readonly int Index;
@@ -20,7 +21,7 @@ namespace ABFsharp
 
         public double[] values;
 
-        private readonly AbfInfo info;
+        private readonly AbfHeader info;
 
         public double[] valuesCopy
         {
@@ -32,7 +33,7 @@ namespace ABFsharp
             }
         }
 
-        public Sweep(AbfInfo info, int sweepIndex, int channelNumber)
+        public Sweep(AbfHeader info, int sweepIndex, int channelNumber)
         {
             this.info = info;
 
