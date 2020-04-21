@@ -1,0 +1,21 @@
+﻿<Window x:Class="ABFsharp.Watcher.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ABFsharp.Watcher"
+        mc:Ignorable="d"
+        Background="WhiteSmoke"
+        WindowStartupLocation="CenterScreen"
+        Title="ABF Folder Watcher" Height="600" Width="400">
+    <DockPanel>
+        <DockPanel DockPanel.Dock="Top" x:Name="FolderControlPanel">
+            <Button Content="📁" ToolTip="Select Folder" Padding="5 3 5 3" Margin="5" DockPanel.Dock="Left" Click="SelectFolder"/>
+            <Button Content="⭯" ToolTip="Scan Folder" Padding="5 3 5 3" Margin="0 5 5 5" DockPanel.Dock="Left" Click="ScanFolder"/>
+            <Button x:Name="AnalyzeButton" Content="🔬" ToolTip="Analyze All" Padding="5 3 5 3" Margin="5" DockPanel.Dock="Right" Click="AnalyzeNow"/>
+            <TextBox x:Name="FolderPathTextbox" Margin="0 5 0 5" VerticalContentAlignment="Center"/>
+        </DockPanel>
+        <TextBox x:Name="LogTextBox" DockPanel.Dock="Bottom" Margin="5" Height="150" VerticalScrollBarVisibility="Visible"/>
+        <ListBox x:Name="AbfListBox" Margin="5 0 5 0" ScrollViewer.VerticalScrollBarVisibility="Auto" />
+    </DockPanel>
+</Window>

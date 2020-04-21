@@ -21,6 +21,14 @@ ABFsharp wraps ABFFIO.DLL which is a closed source, Windows-only, 32-bit x86 DLL
 
 Developers interested in learning more about reading data from ABF files directly in 64-bit and cross-platform environments may find useful resources in the [pyABF](https://github.com/swharden/pyABF) project.
 
+## Automated Analysis
+
+ABFsharp can be used to develop automated analysis pipelines. An example application is included which automatically analyzes folders of ABF files, using hints from their data, header, tag comments, and protocol to ideally analyze each ABF and save the output as an image. This program seeks to mimic functionality of [pyABFauto](https://github.com/swharden/pyABFauto), a similar auto-analysis pipeline for Python.
+
+ABF Folder Watcher | Auto-Analysis Output
+---|---
+![](dev/graphics/auto-analyzer.png)|![](dev/graphics/auto-output.png)
+
 ## ABFsharp API
 
 This section summarizes how ABFsharp reads and exposes ABF data, which is surprisingly different from the underlying ABFFIO library it wraps. Unlike ABFFIO's calling routines which rely on internal state and special sequences of internal method calls, the ABFsharp library favors immutability and statelessness.
