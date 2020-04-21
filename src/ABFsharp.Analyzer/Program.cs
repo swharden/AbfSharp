@@ -41,12 +41,11 @@ namespace ABFsharp.Analyzer
             }
 
             ABF abf = new ABF(abfFilePath);
-            AbfFigure fig = new AbfFigure(abf);
 
             string command = args[2].Trim();
             if (command == "trace")
             {
-                fig.Overlay();
+                // TODO: create Figure API and tests before resuming here
             }
             else
             {

@@ -22,6 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ABFsharp.Analyzer\ABFsharp.Analyzer.csproj" />
     <ProjectReference Include="..\ABFsharp\ABFsharp.csproj" />
   </ItemGroup>
 
