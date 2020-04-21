@@ -3,9 +3,13 @@
 
 **ABFsharp is a .NET library that makes it easy to read electrophysiology data from Axon Binary Format (ABF) files.** ABFsharp wraps ABFFIO.DLL (the official C library provided to interface ABF files) and handles the low-level calls so you can focus on writing ABF analysis software using expressive code and modern language paradigms.
 
+<dev align="center">
+
 ![](dev/graphics/Test_Plot_3D.png)
 
-_This plot of was created with a few lines of C# using ABFsharp and the [ScottPlot](http://swharden.com/scottplot/) package ([view source](https://github.com/swharden/ABFsharp/blob/28526f3551576ea2aec4882f1ffda8c7744656b0/src/ABFsharp.Tests/Plot.cs#L138-L150))_
+_This plot was created with a few lines of C# using ABFsharp and the [ScottPlot](http://swharden.com/scottplot/) package ([view source](https://github.com/swharden/ABFsharp/blob/28526f3551576ea2aec4882f1ffda8c7744656b0/src/ABFsharp.Tests/Plot.cs#L138-L150))_
+
+</dev>
 
 > **⚠️ WARNING:** This project is being actively developed (April 2020) and is not ready for use in production environments. Future breaking API changes are likely until this project stabilizes.
 
