@@ -10,10 +10,12 @@ namespace ABFsharp.Analyzer
         {
             //Command(args);
 
+            /*
             string testArgLine = "analyze.exe " +
                 "../../../../../dev/abfs/17n16012.abf " +
                 "trace -stacked -yOffset 100 -baselineSec 0 1";
             Command(testArgLine.Split(" "));
+            */
         }
 
         static void Help()
