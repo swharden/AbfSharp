@@ -8,6 +8,7 @@ variables:
   solution: 'src/*.sln'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
+  buildArchitecture: 'x86'
 
 steps:
 
@@ -25,6 +26,7 @@ steps:
     solution: '$(solution)'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
+    msbuildArchitecture: '$(buildArchitecture)'
     
 - task: DotNetCoreCLI@2
   displayName: "Run Tests"
