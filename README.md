@@ -1,13 +1,13 @@
 # ABFsharp
 [![](https://img.shields.io/azure-devops/build/swharden/swharden/5?label=Build&logo=azure%20pipelines)](https://dev.azure.com/swharden/swharden/_build/latest?definitionId=5&branchName=master)
 
-ABFsharp is a .NET library that makes it easy to read electrophysiology data from Axon Binary Format (ABF) files.
+**ABFsharp is a .NET library that makes it easy to read electrophysiology data from Axon Binary Format (ABF) files.** ABFsharp wraps ABFFIO.DLL (the official C library provided to interface ABF files) and handles the low-level calls so you can focus on writing ABF analysis software using expressive code and modern language paradigms.
 
-> **⚠️ WARNING:** This project is early in development and not ready for use in production environments. 
+![](dev/graphics/Test_Plot_3D.png)
 
-![](dev/quickstart.png)
+_This plot of was created with a few lines of C# using ABFsharp and the [ScottPlot](http://swharden.com/scottplot/) package ([view source](https://github.com/swharden/ABFsharp/blob/28526f3551576ea2aec4882f1ffda8c7744656b0/src/ABFsharp.Tests/Plot.cs#L138-L150))_
 
-ABFsharp wraps ABFFIO.DLL (the official C library provided to interface ABF files) and handles the low-level calls so you can focus on writing ABF analysis software using expressive code and modern language paradigms.
+> **⚠️ WARNING:** This project is being actively developed (April 2020) and is not ready for use in production environments. Future breaking API changes are likely until this project stabilizes.
 
 ## Supported Platforms
 
@@ -33,11 +33,9 @@ The ABFFIO library can only load one sweep into memory at a time. In contrast, A
 
 How much memory does ABFsharp require? A 1-hour 20kHz recording has 72 million points. Storing these as double (64-bit) values, that's 576 MB. Even if the memory requirement is doubled due to an architecture that favors immutability, any modern computer will handle this without concern.
 
-## Quickstart Examples
+## Quickstart
 
-These examples demonstrate how to use ABFsharp in combination with [ScottPlot](http://swharden.com/scottplot/) to perform common ABF plotting tasks.
-
-All examples use code similar to the following:
+These examples demonstrate how to use ABFsharp in combination with [ScottPlot](http://swharden.com/scottplot/) to perform common ABF plotting tasks. Examples code is wrapped in supportive statements like these:
 
 ```cs
 var abf = new ABFsharp.ABF("file.abf");
