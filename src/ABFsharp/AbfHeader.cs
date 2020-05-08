@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 
 namespace ABFsharp
@@ -85,6 +86,7 @@ namespace ABFsharp
                 protocolFilePath = "";
             protocol = System.IO.Path.GetFileNameWithoutExtension(protocolFilePath);
 
+            // read comment tags
             ABFFIO.Structs.ABFTag[] abfTags = abffio.ReadTags();
             for (int i = 0; i < abfTags.Length; i++)
             {
@@ -94,6 +96,14 @@ namespace ABFsharp
                 int timeSweep = (int)(timeSec / sweepIntervalSec);
                 Tag tag = new Tag(timeSec, timeSweep, comment, abfTag.nTagType);
                 tags[i] = tag;
+            }
+
+            // read epoch table
+            for (int i = 0; i < ABFFIO.Structs.ABF_EPOCHCOUNT; i++)
+            {
+                var duration = abffio.GetEpochDuration(0, 0, i);
+                var level = abffio.GetEpochLevel(0, 0, i);
+                Debug.WriteLine($"Epoch {i}: duration={duration}, level={level}");
             }
         }
 

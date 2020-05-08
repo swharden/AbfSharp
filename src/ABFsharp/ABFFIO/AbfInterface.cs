@@ -89,5 +89,19 @@ namespace ABFsharp.ABFFIO
             ABF_ReadChannel(fileHandle, ref header, physicalChannel, sweepNumber, ref buffer[0], ref sweepPointCount, ref errorCode);
             AbfError.AssertSuccess(errorCode);
         }
+
+        [DllImport("ABFFIO.dll", CharSet = CharSet.Ansi)]
+        private static extern int ABFH_GetEpochDuration(ref Structs.ABFFileHeader pFH, Int32 nChannel, Int32 dwEpisode, Int32 nEpoch);
+        public int GetEpochDuration(int channelNumber, int sweepNumber, int epochNumber)
+        {
+            return ABFH_GetEpochDuration(ref header, channelNumber, sweepNumber, epochNumber);
+        }
+
+        [DllImport("ABFFIO.dll", CharSet = CharSet.Ansi)]
+        private static extern float ABFH_GetEpochLevel(ref Structs.ABFFileHeader pFH, Int32 nChannel, Int32 dwEpisode, Int32 nEpoch);
+        public float GetEpochLevel(int channelNumber, int sweepNumber, int epochNumber)
+        {
+            return ABFH_GetEpochLevel(ref header, channelNumber, sweepNumber, epochNumber);
+        }
     }
 }
