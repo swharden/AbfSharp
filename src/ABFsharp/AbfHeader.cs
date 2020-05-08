@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ABFsharp.ABFFIO;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
@@ -86,8 +87,7 @@ namespace ABFsharp
                 protocolFilePath = "";
             protocol = System.IO.Path.GetFileNameWithoutExtension(protocolFilePath);
 
-            // read comment tags
-            ABFFIO.Structs.ABFTag[] abfTags = abffio.ReadTags();
+            Structs.ABFTag[] abfTags = abffio.ReadTags();
             for (int i = 0; i < abfTags.Length; i++)
             {
                 ABFFIO.Structs.ABFTag abfTag = abfTags[i];
@@ -97,17 +97,6 @@ namespace ABFsharp
                 Tag tag = new Tag(timeSec, timeSweep, comment, abfTag.nTagType);
                 tags[i] = tag;
             }
-
-            // read epoch table
-            for (int i = -1; i < ABFFIO.Structs.ABF_EPOCHCOUNT; i++)
-            {
-                var level = abffio.GetEpochLevel(0, 0, i);
-                var dur = abffio.GetEpochDuration(0, 0, i);
-                (var valid, var limit1, var limit2) = abffio.GetEpochLimits(0, 0, i);
-                if (valid || i<0)
-                    Debug.WriteLine($"Epoch {i}: level={level}, duration={dur}, from={limit1}, to={limit2}");
-            }
-            Debug.WriteLine($"pre-epoch holding: {abffio.GetHoldingLength()}");
         }
 
         public string GetDescription()

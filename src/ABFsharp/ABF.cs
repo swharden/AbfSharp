@@ -24,21 +24,27 @@ namespace ABFsharp
         public readonly string protocol;
         public readonly string protocolPath;
 
+        public readonly EpochTable epochTable;
+
         public ABF(string filePath, Preload preload = Preload.AllSweeps)
         {
             using (var abffio = new ABFFIO.AbfInterface(filePath))
             {
                 Stopwatch stopwatch = Stopwatch.StartNew();
+
+                // load the header
                 header = new AbfHeader(filePath, abffio);
+                epochTable = new EpochTable(abffio.header);
+
+                // put useful header variables at the ABF level
                 sweepCount = header.sweepCount;
                 channelCount = header.channelCount;
-
                 abfID = System.IO.Path.GetFileNameWithoutExtension(filePath);
                 protocol = header.protocol;
                 protocolPath = header.protocolFilePath;
 
+                // prepare data arrays and optionally pre-load data into memory
                 abfData = new AbfData(header.sweepCount, header.channelCount, header.sweepLengthPoints);
-
                 if (preload == Preload.FirstSweep)
                     LoadSweep(abffio, 0, 0);
                 else if (preload == Preload.AllSweeps)

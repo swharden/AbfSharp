@@ -124,6 +124,7 @@ namespace ABFsharp.ABFFIO
         }
 
         // Get the duration of the first/last holding period.
+        [Obsolete("read this using the epoch module")]
         public int GetHoldingLength()
         {
             int nSweepLength = header.lNumSamplesPerEpisode;

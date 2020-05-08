@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Windows.Forms;
 
 namespace ABFsharp.Analyzer
 {
@@ -33,7 +35,22 @@ namespace ABFsharp.Analyzer
 
         public static void AnalyzeMemtest(ABF abf)
         {
-            
+            var sweep = abf.GetSweep(0);
+            var plt = new ScottPlot.Plot();
+            plt.Grid(color: ColorTranslator.FromHtml("#efefef")); // TODO: fix this somehow
+
+            plt.PlotSignal(sweep.values);
+
+            foreach (var epoch in abf.epochTable.Epochs)
+                if (epoch.isValid)
+                    plt.PlotHSpan(epoch.indexFirst, epoch.indexLast, label: epoch.Name);
+            plt.Legend();
+
+            plt.YLabel("Clamp Current (pA)");
+            plt.XLabel("Array Index");
+            plt.AxisAuto(0);
+
+            new ScottPlot.FormsPlotViewer(plt).ShowDialog();
         }
     }
 }
