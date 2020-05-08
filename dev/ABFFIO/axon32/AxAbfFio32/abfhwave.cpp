@@ -18,7 +18,7 @@
 
 
 #include "abfutil.h"
-/*#include "./../Common/ArrayPtr.hpp"
+#include "./../Common/ArrayPtr.hpp"
 #include "UserList.hpp"
 #include "PopulateEpoch.hpp"
  
@@ -29,7 +29,7 @@ static BOOL ErrorReturn(int *pnError, int nErrorNum)
       *pnError = nErrorNum;
    return FALSE;
 }
-*/
+
 //===============================================================================================
 // FUNCTION: ABFH_GetChannelOffset
 // PURPOSE:  Get the offset in the sampling sequence for the given physical channel.
@@ -72,7 +72,7 @@ BOOL WINAPI ABFH_GetChannelOffset(const ABFFileHeader *pFH, int nChannel, UINT *
       *puChannelOffset = 0;  // return the offset to this channel
    return FALSE;
 }
-/*
+
 //===============================================================================================
 // FUNCTION: GetListEntry
 // PURPOSE:  Gets the entry in the list that corresponds to the given episode number.
@@ -1279,7 +1279,7 @@ BOOL WINAPI ABFH_GetDigitalWaveformVector(const ABFFileHeader *pFH, DWORD dwEpis
    ERRORMSG("This function has not been implemented as yet.");
    ERRORRETURN(pnError, ABFH_ENOWAVEFORM);
 }
-*/
+
 //===============================================================================================
 // FUNCTION: GetTimebase
 // PURPOSE:  Calculates the timebase array for the file.
@@ -1342,7 +1342,7 @@ void WINAPI ABFH_GetTimebaseEx(const ABFFileHeader *pFH, double dTimeOffset, dou
 {
    GetTimebase( pFH, dTimeOffset, pdBuffer, uBufferSize );
 }
-/*
+
 //==============================================================================================
 // FUNCTION: ABFH_GetNumberOfChangingSweeps
 // PURPOSE:  Count the number of changing sweeps.
@@ -1717,7 +1717,6 @@ UINT WINAPI ABFH_SetupSamplingList(UINT uNumChannels, float fMinPeriod, float fM
    return uEntries;
 }
 
-*/
 //==============================================================================================
 // FUNCTION: ABFH_GetClockChange
 // PURPOSE:  Gets the point at which the sampling interval changes if split clock.
@@ -1889,7 +1888,7 @@ void WINAPI ABFH_GetEpisodeStartToStart(const ABFFileHeader *pFH, double *pdEpis
    ABFH_GetMetaEpisodeDuration(pFH, &dMetaEpisodeDuration);
    *pdEpisodeStartToStart = fmax(dMetaEpisodeDuration, double(pFH->fEpisodeStartToStart)*1E6);
 }
-/*
+
 //===============================================================================================
 // METHOD:     CheckDACLevel
 // TYPE:       Public Function
@@ -2205,4 +2204,3 @@ BOOL WINAPI ABFH_CheckUserListEx(const ABFFileHeader *pFH, UINT uListNum, int *p
    // if we got here, everything's OK
    return TRUE;
 }
-*/

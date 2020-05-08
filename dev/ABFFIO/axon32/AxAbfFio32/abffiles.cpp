@@ -1,10 +1,10 @@
-//***********************************************************************************************
+/**********************************************************************************************
 //
 //    Copyright (c) 1993-2000 Axon Instruments.
 //    All rights reserved.
 //    Permission is granted to freely to use, modify and copy the code in this file.
 //
-//***********************************************************************************************
+/**********************************************************************************************/
 //
 // MODULE:  ABFFILES.CPP
 // PURPOSE: Contains the low level multi data file I/O package for ABF data files.
@@ -18,15 +18,15 @@
 #include "abffiles.h"
 
 #include "abfutil.h"                // Large memory allocation/free
-/*
+
 #include "StringResource.h"         // Access to string resources.
 #include "oldheadr.h"               // old header conversion prototypes
-*/
+
 #include "csynch.hpp"               // Virtual synch array object
 #include "filedesc.hpp"             // File descriptors for ABF files.
 #include "./../Common/ArrayPtr.hpp"   // Smart array pointer template class.
 #include "./../Common/FileReadCache.hpp"
-/*
+
 #include "./../AxoUtils32/AxoUtils32.h"     // for AXU_* functions
 #include "./../Common/crc.h"
 
@@ -38,7 +38,7 @@
 // Set the maximum number of files that can be open simultaneously.
 // This can be overridden from the compiler command line.
 //
-*/
+
 #ifndef ABF_MAXFILES
    #define ABF_MAXFILES 64
 #endif
@@ -50,12 +50,12 @@
 	#define min(a,b)   (((a) < (b)) ? (a) : (b))
 #endif
 
-/*
+
 // Set USE_DACFILE_FIX to 1 to use the fix (incomplete) for DAC File channels.
 #define USE_DACFILE_FIX 0
 
 //------------------------------------ Shared Variables -----------------------------------------
-*/
+
 static CFileDescriptor *g_FileData[ABF_MAXFILES];
 
 HINSTANCE g_hInstance = NULL;
@@ -176,7 +176,7 @@ static long GetDataOffset(const ABFFileHeader *pFH)
       
    return lDataOffset;
 }
-/*
+
 //==============================================================================================
 // FUNCTION: CalculateCRC
 // PURPOSE:  Return checksum Cyclic Redundancy Code CRC.
@@ -286,7 +286,7 @@ static BOOL ValidateFileCRC( CFileDescriptor *pFI, ABFFileHeader *pFH, int nSize
 #endif
    return TRUE;
 } 
-*/
+
 //===============================================================================================
 // FUNCTION:   ABF_Initialize()
 // PARAMETERS:
@@ -302,12 +302,12 @@ static BOOL ValidateFileCRC( CFileDescriptor *pFI, ABFFileHeader *pFH, int nSize
 BOOL ABF_Initialize()
 {
    // Protect against multiple calls.
-/*   if (g_hInstance != NULL)
+   if (g_hInstance != NULL)
       return TRUE;
 
    // Save the DLL instance handle.
    g_hInstance = hDLL;
-*/
+
    for (int i=0; i<ABF_MAXFILES; i++)
       g_FileData[i] = NULL;
       
@@ -316,7 +316,7 @@ BOOL ABF_Initialize()
 #endif
    return TRUE;
 }
-/*
+
 
 //===============================================================================================
 // FUNCTION: ABF_Cleanup
@@ -337,7 +337,7 @@ void ABF_Cleanup(void)
       }
    }
 }
-*/
+
 //===============================================================================================
 // FUNCTION: ABF_ReadOpen
 // PURPOSE:  This routine opens an existing data file for reading. It reads the acquisition 
@@ -489,7 +489,7 @@ RCloseAndAbort:
    phFile = ABF_INVALID_HANDLE;
    ERRORRETURN(pnError, nError);
 }
-/*
+
 //===============================================================================================
 // FUNCTION: ABF_IsABFFile
 // PURPOSE:  This routine opens a file and determines if it is an ABF file or not.
@@ -667,7 +667,7 @@ static BOOL WriteTags(CFileDescriptor *pFI, ABFFileHeader *pFH, int *pnError)
 
    return TRUE;
 }
-*/
+
 //===============================================================================================
 // FUNCTION: ABF_HasData
 // PURPOSE:  This routine returns TRUE if data has been written to the file since opening it.
@@ -697,7 +697,7 @@ BOOL WINAPI ABF_HasData(int nFile, const ABFFileHeader *pFH)
 
    return (pFI->GetFileSize() > NewFH.lDataSectionPtr * ABF_BLOCKSIZE);
 }
-/*   
+ 
 //===============================================================================================
 // FUNCTION: ABF_UpdateHeader
 // PURPOSE:  This routine should always be called before closing a file opened with
@@ -903,7 +903,7 @@ BOOL WINAPI ABF_UpdateHeader(int nFile, ABFFileHeader *pFH, int *pnError)
 
    return TRUE;
 }
-*/
+
 //===============================================================================================
 // FUNCTION: ABF_Close
 // PURPOSE:  This routine closes the current data file and cleans up any work buffers that
@@ -1536,7 +1536,7 @@ BOOL WINAPI ABF_MultiplexRead(int nFile, const ABFFileHeader *pFH, DWORD dwEpiso
 
    return TRUE;
 }
-/*
+
 //===============================================================================================
 // FUNCTION: SynchCountToSamples
 // PURPOSE:  Rounds a synch count to the nearest sample count.
@@ -1715,7 +1715,7 @@ BOOL WINAPI ABF_WriteRawData(int nFile, const void *pvBuffer, DWORD dwSizeInByte
       ERRORRETURN(pnError, ABF_EDISKFULL);
    return TRUE;
 }
-*/
+
 //===============================================================================================
 // FUNCTION: PackSamples
 // PURPOSE:  Packs the samples from the source array into the destination array,
@@ -1956,7 +1956,7 @@ BOOL WINAPI ABF_ReadChannel(int nFile, const ABFFileHeader *pFH, int nChannel, D
       *puNumSamples = uEpisodeSize / pFH->nADCNumChannels;
    return TRUE;
 }
-/*
+
 //===============================================================================================
 // FUNCTION: ABF_ReadRawChannel
 // PURPOSE:  This function reads a complete multiplexed episode from the data file and
@@ -2666,7 +2666,7 @@ BOOL WINAPI ABF_EpisodeFromSynchCount(int nFile, const ABFFileHeader *pFH, DWORD
    *pdwSynchCount = uCounter;
    return TRUE;
 }
-*/
+
 //===============================================================================================
 // FUNCTION: ABF_SynchCountFromEpisode
 // PURPOSE:  This routine returns the synch count for the start of the given
@@ -2709,7 +2709,7 @@ BOOL WINAPI ABF_SynchCountFromEpisode(int nFile, const ABFFileHeader *pFH, DWORD
    }
    return TRUE;
 }
-/*
+
 //===============================================================================================
 // FUNCTION: ABF_GetEpisodeFileOffset
 // PURPOSE:  This routine returns the sample point offset in the ABF file for the start of the given
@@ -2814,7 +2814,7 @@ BOOL WINAPI ABF_HasOverlappedData(int nFile, BOOL *pbHasOverlapped, int *pnError
    *pbHasOverlapped = pFI->GetOverlappedFlag();
    return TRUE;
 }
-*/
+
 //===============================================================================================
 // FUNCTION: ABF_GetNumSamples
 // PURPOSE:  This routine returns the number of samples per channel in a given episode.
@@ -2849,7 +2849,7 @@ BOOL WINAPI ABF_GetNumSamples(int nFile, const ABFFileHeader *pFH, DWORD dwEpiso
    *puNumSamples = uRealSize / pFH->nADCNumChannels;
    return TRUE;
 }
-/*
+
 //===============================================================================================
 // FUNCTION: ABF_GetEpisodeDuration
 // PURPOSE:  Get the duration of a given episode in ms.
@@ -2908,7 +2908,7 @@ BOOL WINAPI ABF_GetTrialDuration(int nFile, const ABFFileHeader *pFH, double *pd
    
    return TRUE;   
 }
-*/
+
 //===============================================================================================
 // FUNCTION: ABF_GetStartTime
 // PURPOSE:  Get the start time for the first sample of the given episode in ms.
@@ -2941,7 +2941,7 @@ BOOL WINAPI ABF_GetStartTime(int nFile, const ABFFileHeader *pFH, int nChannel, 
    *pdStartTime += uChannelOffset * ABFH_GetFirstSampleInterval(pFH) / 1E3;
    return TRUE;
 }
-/*
+
 //###############################################################################################
 //###
 //###   Functions to read and write scope configuration data.
@@ -3275,7 +3275,7 @@ BOOL WINAPI ABF_GetVoiceTag( int nFile, const ABFFileHeader *pFH, UINT uTag, LPC
       
    return TRUE;
 }                                    
-*/                              
+                              
 //===============================================================================================
 // FUNCTION: ABF_BuildErrorText
 // PURPOSE:  This routine returns the last error as a text string.
@@ -3315,7 +3315,7 @@ BOOL WINAPI ABF_BuildErrorText(int nErrorNum, const char *szFileName, char *sTxt
 #endif	
    return rval;
 }
-/*
+
 //===============================================================================================
 // FUNCTION: ABF_SetErrorCallback
 // PURPOSE:  This routine sets a callback function to be called in the event of an error occuring.
@@ -3895,5 +3895,5 @@ BOOL WINAPI ABF_AppendOpen(LPCSTR szFileName, int *phFile, ABFFileHeader *pFH,
 }
 
 #endif
-*/
+
 

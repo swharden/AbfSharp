@@ -1,10 +1,10 @@
-//***********************************************************************************************
+/**********************************************************************************************
 //
 //    Copyright (c) 1993-2000 Axon Instruments.
 //    All rights reserved.
 //    Permission is granted to freely to use, modify and copy the code in this file.
 //
-//***********************************************************************************************
+/**********************************************************************************************
 // This is ABFHEADR.CPP; the routines that cope with reading the data file
 // parameters block for all AXON pCLAMP binary file formats.
 //
@@ -17,7 +17,7 @@
 #include "abfheadr.h"                  // header definition & constants
 #include "oldheadr.h"                  // old header conversion prototypes
 #include "abfutil.h"                   // Large memory allocation/free
-/*
+
 #include "StringResource.h"            // Access to string resources.
 */
 #define A_VERY_SMALL_NUMBER      1E-10
@@ -246,7 +246,7 @@ void WINAPI ABFH_Initialize( ABFFileHeader *pFH )
 
    ABFH_DemoteHeader( pFH, &NewFH );
 }
-/*
+
 //===============================================================================================
 // FUNCTION: _GetDefaultScopeMode
 // PURPOSE:  Gets the Scope mode appropriate to the acquisition mode.
@@ -616,7 +616,7 @@ void WINAPI ABFH_GetADCtoUUFactors( const ABFFileHeader *pFH, int nChannel,
    *pfADCToUUFactor = fInputRange / pFH->lADCResolution;
    *pfADCToUUShift  = -fInputOffset;
 }
-/*
+
 //==============================================================================================
 // FUNCTION:   ABFH_GetADCDisplayRange
 // PURPOSE:    Calculates the upper and lower limits of the display given the display
@@ -812,7 +812,7 @@ void WINAPI ABFH_GetDACtoUUFactors( const ABFFileHeader *pFH, int nChannel,
       *pfDACToUUShift  = fDACToUUShift + fDACToUUFactor * fCalibrationOffset;
    }
 }
-/*
+
 //==============================================================================================
 // FUNCTION:   ABFH_ClipDACUUValue
 // PURPOSE:    Limiting the UU value to the range of the D/A converter.
@@ -925,7 +925,7 @@ BOOL WINAPI ABFH_GetMathValue(const ABFFileHeader *pFH, float fA, float fB, floa
       *pfRval = (float)dResult;
    return bRval;
 }
-/*
+
 
 //===============================================================================================
 // FUNCTION: ABFH_GetMathChannelName
@@ -1074,7 +1074,7 @@ BOOL WINAPI ABFH_ParamReader(FILEHANDLE hFile, ABFFileHeader *pFH, int *pnError)
 
    return TRUE;
 }
-/*
+
 //===============================================================================================
 // FUNCTION: ABFH_ParamWriter
 // PURPOSE:  Write file header parameters to an ABF file.
@@ -1519,7 +1519,7 @@ double WINAPI ABFH_GetSecondSampleInterval( const ABFFileHeader *pFH )
 {
    return GetSampleInterval( pFH, 2 );
 }
-/*
+
 
 
 // **********************************************************************************************

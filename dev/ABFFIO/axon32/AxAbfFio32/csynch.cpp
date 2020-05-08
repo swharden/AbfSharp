@@ -352,7 +352,6 @@ BOOL CSynch::_Flush()
    return bRval;
 }
 
-/*
 //===============================================================================================
 // PROCEDURE: _PackBuffer
 // PURPOSE:   Pack the entries in the buffer down, removing the dwFileOffset member.
@@ -377,7 +376,6 @@ BOOL CSynch::_PackBuffer(UINT uAcquiredSamples, UINT &uEntries, UINT uSampleSize
    }
    return TRUE;
 }
-
 
 //===============================================================================================
 // PROCEDURE: Write
@@ -474,7 +472,7 @@ BOOL CSynch::Put( UINT uStart, UINT uLength, UINT uOffset )
    m_uSynchCount++;
    return TRUE;
 }
-/*
+
 //===============================================================================================
 // PROCEDURE: Update
 // PURPOSE:   Updates an entry in the SynchArray.

@@ -1,10 +1,10 @@
-//***********************************************************************************************
+/*********************************************************************************************
 //
 //    Copyright (c) 1993-1999 Axon Instruments.
 //    All rights reserved.
 //    Permission is granted to freely to use, modify and copy the code in this file.
 //
-//***********************************************************************************************
+*********************************************************************************************/
 // FILE: ABFUTIL.CPP   A utilities module for the ABF file routines.
 //
 #include "../Common/wincpp.hpp"
@@ -22,7 +22,7 @@
 	#define max(a,b)   (((a) > (b)) ? (a) : (b))
 	#define min(a,b)   (((a) < (b)) ? (a) : (b))
 #endif
-/*
+
 //==============================================================================================
 // FUNCTION: ABFU_GetTempFileName
 // PURPOSE:  Gets a temporary file name in the directory pointed to by the %TEMP% environment
@@ -57,7 +57,7 @@ BOOL WINAPI ABFU_ReadFile(FILEHANDLE hFile, LPVOID lpBuf, DWORD dwBytesToRead)
    BOOL bOK = c_ReadFile(hFile, lpBuf, dwBytesToRead, &dwBytesRead, NULL);
    return (bOK && (dwBytesRead==dwBytesToRead));
 }
-/*
+
 //===============================================================================================
 // FUNCTION: ABFU_FormatDouble
 // PURPOSE:  Formats the digits of dNum into pszString, suppressing trailing zeros.
@@ -168,7 +168,7 @@ long WINAPI ABFU_FixFileStartDate( long lDate )
    return long(lStartYear*10000 + lStartMonth*100 + lStartDay);
 
 }   
-/*
+
 //===============================================================================================
 // FUNCTION: ABFU_IsValidSignalName
 // PURPOSE:  Checks if the signal name is valid.

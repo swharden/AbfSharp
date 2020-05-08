@@ -1,10 +1,10 @@
-//***********************************************************************************************
+/**********************************************************************************************
 //
 //    Copyright (c) 1993-1997 Axon Instruments.
 //    All rights reserved.
 //    Permission is granted to freely to use, modify and copy the code in this file.
 //
-//***********************************************************************************************
+/**********************************************************************************************/
 //
 // MODULE:  FILEDESC.HPP
 // PURPOSE: Contains the class definition for the CFileDescriptor class.
@@ -12,13 +12,13 @@
 
 #ifndef INC_FILEDESC_HPP
 #define INC_FILEDESC_HPP
-/*
+
 #include "./../Common/BufferedArray.hpp"  // Virtual item array objects
 */
 #include "abffiles.h"               // ABF file I/O API and error codes.
 #include "./../Common/FileIO.hpp"     // Low-level file I/O services
 #include "csynch.hpp"               // Virtual synch array object
-/*
+
 //#include "DACFile.hpp"              // Virtual DACFile array object
 //#include "voicetag.hpp"             // Array of voice tag descriptors.
 #include "notify.hpp"               // CABFNotify class -- wraps ABFCallback function.
@@ -68,22 +68,22 @@ public:
    
    BOOL  IsOK();
    BOOL  Open(const char *szFileName, BOOL bReadOnly);
-/*   BOOL  Reopen(BOOL bReadOnly);
+   BOOL  Reopen(BOOL bReadOnly);
    
    BOOL  FillToNextBlock( long *plBlockNum );
    BOOL  Write(const void *pvBuffer, UINT uSizeInBytes);
 */   BOOL  Read(void *pvBuffer, UINT uSizeInBytes);
    BOOL  Seek(LONGLONG llOffset, UINT uFlag, LONGLONG *pllOffset=NULL);
-/*   BOOL  SetEndOfFile();
+   BOOL  SetEndOfFile();
 
 */   LONGLONG GetFileSize();
-/*   LPCSTR GetFileName() const;
+   LPCSTR GetFileName() const;
 
 */   BOOL  CheckEpisodeNumber(UINT uEpisode);
    void  SetAcquiredEpisodes(UINT uEpisodes);
    UINT  GetAcquiredEpisodes() const; 
    void  SetAcquiredSamples(UINT uSamples);  
-/*   UINT  GetAcquiredSamples() const;  
+   UINT  GetAcquiredSamples() const;  
 
 */   BOOL  AllocReadBuffer(UINT uBytes);
    void  FreeReadBuffer();
@@ -98,18 +98,18 @@ public:
    
    // Synch array functions.   
    BOOL  PutSynchEntry( UINT uStart, UINT uLength, UINT uOffset=0 );
-/*   void  IncreaseEventLength( UINT dwIncrease );
+   void  IncreaseEventLength( UINT dwIncrease );
 */   BOOL  GetSynchEntry( UINT uEpisode, Synch *pSynch );
    UINT  EpisodeStart( UINT uEpisode);
-  /*   void  SetEpisodeStart(UINT uEpisode, UINT uSynchTime);
+     void  SetEpisodeStart(UINT uEpisode, UINT uSynchTime);
 */   UINT  EpisodeLength( UINT uEpisode);
-/*   UINT  FileOffset( UINT uEpisode);
+   UINT  FileOffset( UINT uEpisode);
    BOOL  WriteSynchArray( long *plBlockNum, long *plCount, UINT uSampleSize );
 */   UINT  GetSynchCount() const;
    void  SetSynchMode(CSynch::eMODE eMode);
-/*   CSynch *GetSynchObject();
+   CSynch *GetSynchObject();
 */   void  ChangeSynchArray(CSynch *pNewSynch);
-/*   
+   
    // Tag array functions.
    BOOL  PutTag( const ABFTag *pTag );
    UINT  GetTagCount() const;
@@ -145,7 +145,7 @@ public:
    UINT  GetMaxAnnotationSize() const;
 */
    FILEHANDLE GetFileHandle();   
-/*   BOOL  SetErrorCallback(ABFCallback fnCallback, void *pvThisPointer);
+   BOOL  SetErrorCallback(ABFCallback fnCallback, void *pvThisPointer);
 
 */   void  SetOverlappedFlag(BOOL bOverlapped);
    BOOL  GetOverlappedFlag() const;
@@ -218,7 +218,7 @@ inline BOOL CFileDescriptor::PutSynchEntry( UINT uStart, UINT uLength, UINT uOff
 //   MEMBERASSERT();
    return m_VSynch.Put( uStart, uLength, uOffset );
 }
-/*
+
 //===============================================================================================
 // FUNCTION: IncreaseEventLength
 // PURPOSE:  Increases the length of the last entry in the synch array.

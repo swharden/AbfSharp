@@ -1,10 +1,10 @@
-//***********************************************************************************************
+/**********************************************************************************************
 //
 //    Copyright (c) 1993-1997 Axon Instruments.
 //    All rights reserved.
 //    Permission is granted to freely to use, modify and copy the code in this file.
 //
-//***********************************************************************************************
+/**********************************************************************************************/
 //
 // MODULE:  FILEDESC.CPP
 // PURPOSE: Contains the member functions for the CFileDescriptor class.
@@ -84,7 +84,7 @@ BOOL CFileDescriptor::Open(const char *szFileName, BOOL bReadOnly)
    if (!m_VSynch.OpenFile())
       return SetLastError(ABF_BADTEMPFILE);
 
-/*   if (!bReadOnly)
+   if (!bReadOnly)
    {
       if (!m_Tags.Initialize(sizeof(ABFTag), CACHE_SIZE))
          return SetLastError(ABF_BADTEMPFILE);
@@ -97,7 +97,7 @@ BOOL CFileDescriptor::Open(const char *szFileName, BOOL bReadOnly)
 */
    return TRUE;
 }
-/*
+
 //===============================================================================================
 // FUNCTION: Reopen
 // PURPOSE:  Reopen an existing file for read or write access.
@@ -199,7 +199,7 @@ UINT CFileDescriptor::EpisodeStart(UINT uEpisode)
    m_VSynch.Get(uEpisode-1, &SynchEntry, 1);
    return SynchEntry.dwStart;
 }
-/*
+
 //===============================================================================================
 // FUNCTION: SetEpisodeStart
 // PURPOSE:  Sets the episode start time for a particular episode.
@@ -266,7 +266,7 @@ void CFileDescriptor::SetAcquiredSamples(UINT uSamples)
    //MEMBERASSERT();
    m_uAcquiredSamples = uSamples;
 }
-/*
+
 //===============================================================================================
 // FUNCTION: GetAcquiredSamples
 // PURPOSE:  Gets the count of acquired samples.
@@ -354,7 +354,7 @@ UINT CFileDescriptor::GetLastEpiSize() const
    //MEMBERASSERT();
    return m_uLastEpiSize;
 }
-/*
+
 //===============================================================================================
 // FUNCTION: FileOffset
 // PURPOSE:  Gets the file offset for a particular episode.
@@ -417,7 +417,7 @@ void CFileDescriptor::SetSynchMode(CSynch::eMODE eMode)
    m_VSynch.SetMode(eMode);
 }
 
-/*
+
 //===============================================================================================
 // FUNCTION: GetSynchObject
 // PURPOSE:  Gets a pointer to the synch object (violating encapsulation!). 
@@ -437,7 +437,7 @@ void CFileDescriptor::ChangeSynchArray(CSynch *pNewSynch)
    //MEMBERASSERT();
    m_VSynch.Clone(pNewSynch);
 }
-/*
+
 //===============================================================================================
 // FUNCTION: PutTag
 // PURPOSE:  Puts a tag entry into the virtual tag array.
@@ -764,7 +764,7 @@ int CFileDescriptor::GetLastError() const
 }
 
 
-/*
+
 //===============================================================================================
 // FUNCTION: PutAnnotation
 // PURPOSE:  Adds a new annotation to the cache.
