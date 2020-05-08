@@ -20,6 +20,10 @@ namespace ABFsharp
         public readonly int sweepCount;
         public readonly int channelCount;
 
+        public readonly string abfID;
+        public readonly string protocol;
+        public readonly string protocolPath;
+
         public ABF(string filePath, Preload preload = Preload.AllSweeps)
         {
             using (var abffio = new ABFFIO.AbfInterface(filePath))
@@ -28,6 +32,10 @@ namespace ABFsharp
                 header = new AbfHeader(filePath, abffio);
                 sweepCount = header.sweepCount;
                 channelCount = header.channelCount;
+
+                abfID = System.IO.Path.GetFileNameWithoutExtension(filePath);
+                protocol = header.protocol;
+                protocolPath = header.protocolFilePath;
 
                 abfData = new AbfData(header.sweepCount, header.channelCount, header.sweepLengthPoints);
 
