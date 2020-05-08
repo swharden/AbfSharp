@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 
 namespace ABFsharp.Analyzer
@@ -8,52 +9,31 @@ namespace ABFsharp.Analyzer
     {
         static void Main(string[] args)
         {
-            //Command(args);
+            string testFolder = @"D:\Data\abfs-2019\project2\abfs";
+            foreach (var abfFilePath in Directory.GetFiles(testFolder, "*.abf"))
+            {
+                var abf = new ABF(abfFilePath, ABF.Preload.HeaderOnly);
 
-            /*
-            string testArgLine = "analyze.exe " +
-                "../../../../../dev/abfs/17n16012.abf " +
-                "trace -stacked -yOffset 100 -baselineSec 0 1";
-            Command(testArgLine.Split(" "));
-            */
+
+                if (abf.protocol == "0201 memtest")
+                {
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    Console.WriteLine($"{abf.abfID} {abf.protocol}");
+                    Console.ForegroundColor = ConsoleColor.Gray;
+                    AnalyzeMemtest(abf);
+                    //continue;
+                    break;
+                }
+
+                Console.ForegroundColor = ConsoleColor.DarkGray;
+                Console.WriteLine($"{abf.abfID} {abf.protocol} (unknown analysis)");
+                Console.ForegroundColor = ConsoleColor.Gray;
+            }
         }
 
-        static void Help()
+        public static void AnalyzeMemtest(ABF abf)
         {
-            Console.WriteLine("");
-            Console.WriteLine("ABF Analyzer Arguments:");
-            Console.WriteLine(" help text not yet written");
-            Console.WriteLine("");
-        }
-
-        static void Command(string[] args)
-        {
-            if (args.Length < 3)
-            {
-                Console.WriteLine($"ERROR: at least 3 arguments are required.");
-                Help();
-                return;
-            }
-
-            string abfFilePath = System.IO.Path.GetFullPath(args[1]);
-            if (!System.IO.File.Exists(abfFilePath))
-            {
-                Console.WriteLine($"ERROR: file does not exist:\n{abfFilePath}");
-                return;
-            }
-
-            ABF abf = new ABF(abfFilePath);
-
-            string command = args[2].Trim();
-            if (command == "trace")
-            {
-                // TODO: create Figure API and tests before resuming here
-            }
-            else
-            {
-                Console.WriteLine($"ERROR: '{command}' is not a valid analysis");
-                return;
-            }
+            
         }
     }
 }

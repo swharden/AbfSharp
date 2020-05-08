@@ -9,8 +9,10 @@ namespace ABFsharp.Analyzer
     {
         const string defaultOutputFolderName = "_autoanalysis";
 
-        public static void AbfFile(string abfFilePath, string outputFolder = null)
+        public static void AbfFile(string abfFilePath, string outputFolder)
         {
+            //var a = new Analyses.Analysis(abfFilePath, outputFolder);
+
             // validate ABF file
             if (!System.IO.File.Exists(abfFilePath))
                 throw new ArgumentException($"abf file does not exist: {abfFilePath}");

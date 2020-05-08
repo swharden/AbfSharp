@@ -13,6 +13,8 @@
             <Button Content="📁" ToolTip="Select Folder" Padding="5 3 5 3" Margin="5" DockPanel.Dock="Left" Click="SelectFolder"/>
             <Button Content="⭯" ToolTip="Scan Folder" Padding="5 3 5 3" Margin="0 5 5 5" DockPanel.Dock="Left" Click="ScanFolder"/>
             <Button x:Name="AnalyzeButton" Content="🔬" ToolTip="Analyze All" Padding="5 3 5 3" Margin="5" DockPanel.Dock="Right" Click="AnalyzeNow"/>
+            <Button x:Name="LaunchButton" Content="🚀" ToolTip="Analyze All" Padding="5 3 5 3" Margin="5 5 0 5" DockPanel.Dock="Right" Click="LaunchFolder"/>
+            
             <TextBox x:Name="FolderPathTextbox" Margin="0 5 0 5" VerticalContentAlignment="Center"/>
         </DockPanel>
         <TextBox x:Name="LogTextBox" DockPanel.Dock="Bottom" Margin="5" Height="150" VerticalScrollBarVisibility="Visible"/>

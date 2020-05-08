@@ -124,5 +124,10 @@ namespace ABFsharp.Watcher
             if (diag.ShowDialog() == WinForms.DialogResult.OK)
                 FolderPathTextbox.Text = diag.SelectedPath;
         }
+
+        private void LaunchFolder(object sender, RoutedEventArgs e)
+        {
+            System.Diagnostics.Process.Start("explorer.exe", FolderPathTextbox.Text);
+        }
     }
 }
