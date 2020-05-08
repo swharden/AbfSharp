@@ -123,12 +123,17 @@ namespace ABFsharp.ABFFIO
             return (valid, (int)puEpochStart, (int)puEpochEnd);
         }
 
-        // Get the duration of the first holding period.
-        [DllImport("ABFFIO.dll", CharSet = CharSet.Ansi)]
-        private static extern UInt32 ABFH_GetHoldingDuration(ref Structs.ABFFileHeader pFH);
-        public int GetHoldingDuration()
+        // Get the duration of the first/last holding period.
+        public int GetHoldingLength()
         {
-            return (int)ABFH_GetHoldingDuration(ref header);
+            int nSweepLength = header.lNumSamplesPerEpisode;
+            int nNumChannels = header.nADCNumChannels;
+
+            int nHoldingCount = nSweepLength / Structs.ABFH_HOLDINGFRACTION;
+            nHoldingCount -= nHoldingCount % nNumChannels;
+            if (nHoldingCount < nNumChannels)
+                nHoldingCount = nNumChannels;
+            return nHoldingCount;
         }
     }
 }

@@ -22,6 +22,7 @@ namespace ABFsharp.ABFFIO
         public const int ABF_ARITHMETICUNITSLEN = 8; // length of arithmetic units string
         public const int ABF_STATS_REGIONS = 24; // The number of independent statistics regions. // ST-91
         public const int ABF_TAGCOMMENTLEN = 56; // length of tag comment string
+        public const int ABFH_HOLDINGFRACTION = 64; // helps calculate the pre-epoch duration
 
         // These constants are ready to go, but not currently needed for anything
         //public const int ABF_ADCNAMELEN_USER = 8; // length of user-entered ADC channel name strings

@@ -99,14 +99,15 @@ namespace ABFsharp
             }
 
             // read epoch table
-            for (int i = 0; i < ABFFIO.Structs.ABF_EPOCHCOUNT; i++)
+            for (int i = -1; i < ABFFIO.Structs.ABF_EPOCHCOUNT; i++)
             {
                 var level = abffio.GetEpochLevel(0, 0, i);
+                var dur = abffio.GetEpochDuration(0, 0, i);
                 (var valid, var limit1, var limit2) = abffio.GetEpochLimits(0, 0, i);
-                if (valid)
-                    Debug.WriteLine($"Epoch {i}: level={level}, from={limit1}, to={limit2}");
+                if (valid || i<0)
+                    Debug.WriteLine($"Epoch {i}: level={level}, duration={dur}, from={limit1}, to={limit2}");
             }
-            Debug.WriteLine($"Holding Duration: {abffio.GetHoldingDuration()}");
+            Debug.WriteLine($"pre-epoch holding: {abffio.GetHoldingLength()}");
         }
 
         public string GetDescription()
