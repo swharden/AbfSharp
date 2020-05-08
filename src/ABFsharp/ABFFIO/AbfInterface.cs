@@ -1,11 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
-using System.Text;
 
 namespace ABFsharp.ABFFIO
 {
+    /// <summary>
+    /// ABFFIO.DLL wrapper for .NET
+    /// </summary>
     public class AbfInterface : IDisposable
     {
         private UInt32 sweepPointCount;
@@ -102,6 +103,32 @@ namespace ABFsharp.ABFFIO
         public float GetEpochLevel(int channelNumber, int sweepNumber, int epochNumber)
         {
             return ABFH_GetEpochLevel(ref header, channelNumber, sweepNumber, epochNumber);
+        }
+
+        // Return the bounds of a given epoch in a given episode. 
+        // Values returned are ZERO relative (not relative to start of sweep)
+        [DllImport("ABFFIO.dll", CharSet = CharSet.Ansi)]
+        private static extern bool ABFH_GetEpochLimits(ref Structs.ABFFileHeader pFH,
+            Int32 nADCChannel, Int32 uDACChannel, Int32 dwEpisode, Int32 nEpoch,
+            ref UInt32 puEpochStart, ref UInt32 puEpochEnd, ref Int32 pnError);
+        public (bool valid, int start, int end) GetEpochLimits(int channelNumber, int sweepNumber, int epochNumber)
+        {
+            UInt32 puEpochStart = 0;
+            UInt32 puEpochEnd = 0;
+            Int32 pnError = 0;
+            bool valid = ABFH_GetEpochLimits(ref header,
+                channelNumber, channelNumber, sweepNumber, epochNumber,
+                ref puEpochStart, ref puEpochEnd, ref pnError);
+
+            return (valid, (int)puEpochStart, (int)puEpochEnd);
+        }
+
+        // Get the duration of the first holding period.
+        [DllImport("ABFFIO.dll", CharSet = CharSet.Ansi)]
+        private static extern UInt32 ABFH_GetHoldingDuration(ref Structs.ABFFileHeader pFH);
+        public int GetHoldingDuration()
+        {
+            return (int)ABFH_GetHoldingDuration(ref header);
         }
     }
 }

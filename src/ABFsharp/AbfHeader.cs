@@ -101,10 +101,12 @@ namespace ABFsharp
             // read epoch table
             for (int i = 0; i < ABFFIO.Structs.ABF_EPOCHCOUNT; i++)
             {
-                var duration = abffio.GetEpochDuration(0, 0, i);
                 var level = abffio.GetEpochLevel(0, 0, i);
-                Debug.WriteLine($"Epoch {i}: duration={duration}, level={level}");
+                (var valid, var limit1, var limit2) = abffio.GetEpochLimits(0, 0, i);
+                if (valid)
+                    Debug.WriteLine($"Epoch {i}: level={level}, from={limit1}, to={limit2}");
             }
+            Debug.WriteLine($"Holding Duration: {abffio.GetHoldingDuration()}");
         }
 
         public string GetDescription()
