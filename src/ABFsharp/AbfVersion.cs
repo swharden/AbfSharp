@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ABFsharp
+namespace AbfSharp
 {
     public class AbfVersion
     {

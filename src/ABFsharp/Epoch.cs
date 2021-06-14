@@ -1,11 +1,11 @@
-﻿using ABFsharp.ABFFIO;
+﻿using AbfSharp.ABFFIO;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
 
-namespace ABFsharp
+namespace AbfSharp
 {
     public enum EpochType
     {

@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 
-namespace ABFsharp.ABFFIO
+namespace AbfSharp.ABFFIO
 {
     /// <summary>
     /// ABFFIO.DLL wrapper for .NET

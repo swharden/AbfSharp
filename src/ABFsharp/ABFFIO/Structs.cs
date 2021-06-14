@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace ABFsharp.ABFFIO
+namespace AbfSharp.ABFFIO
 {
     public class Structs
     {

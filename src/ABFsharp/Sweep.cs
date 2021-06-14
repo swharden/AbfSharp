@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ABFsharp
+namespace AbfSharp
 {
     [Obsolete("dont use the sweep class", false)]
     public class Sweep
