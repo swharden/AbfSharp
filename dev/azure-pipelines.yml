@@ -5,19 +5,19 @@ pool:
   vmImage: "windows-latest"
 
 variables:
-  solution: "src/azure/*.sln"
+  solution: "src/*.sln"
 
 steps:
   - task: NuGetToolInstaller@1
     displayName: "Install NuGet"
 
   - task: NuGetCommand@2
-    displayName: "Restore"
+    displayName: "Restore Packages"
     inputs:
       restoreSolution: "$(solution)"
 
   - task: DotNetCoreCLI@2
-    displayName: "Build"
+    displayName: "Build (Release)"
     inputs:
       command: "build"
       projects: "$(solution)"
