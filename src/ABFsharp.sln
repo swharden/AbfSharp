@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29503.13
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ABFsharp", "ABFsharp\ABFsharp.csproj", "{13A5556E-D573-4501-82BE-937999DAF1D9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AbfSharp", "AbfSharp\AbfSharp.csproj", "{13A5556E-D573-4501-82BE-937999DAF1D9}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AbfSharpTests", "AbfSharpTests\AbfSharpTests.csproj", "{D15C12A4-F4E1-45D0-BC35-DFE213CBD925}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{13A5556E-D573-4501-82BE-937999DAF1D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{13A5556E-D573-4501-82BE-937999DAF1D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{13A5556E-D573-4501-82BE-937999DAF1D9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D15C12A4-F4E1-45D0-BC35-DFE213CBD925}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D15C12A4-F4E1-45D0-BC35-DFE213CBD925}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D15C12A4-F4E1-45D0-BC35-DFE213CBD925}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D15C12A4-F4E1-45D0-BC35-DFE213CBD925}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

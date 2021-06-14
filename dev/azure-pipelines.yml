@@ -1,35 +1,30 @@
 trigger:
-- master
+  - master
 
 pool:
-  vmImage: 'windows-latest'
+  vmImage: "windows-latest"
 
 variables:
-  solution: 'src/*.sln'
-  buildPlatform: 'Any CPU'
-  buildConfiguration: 'Release'
-  buildArchitecture: 'x86'
+  solution: "src/azure/*.sln"
 
 steps:
+  - task: NuGetToolInstaller@1
+    displayName: "Install NuGet"
 
-- task: NuGetToolInstaller@1
-  displayName: "Install NuGet"
+  - task: NuGetCommand@2
+    displayName: "Restore"
+    inputs:
+      restoreSolution: "$(solution)"
 
-- task: NuGetCommand@2
-  displayName: "Restore NuGet Packages"
-  inputs:
-    restoreSolution: '$(solution)'
+  - task: DotNetCoreCLI@2
+    displayName: "Build"
+    inputs:
+      command: "build"
+      projects: "$(solution)"
+      arguments: "--configuration release"
 
-- task: VSBuild@1
-  displayName: "Build"
-  inputs:
-    solution: '$(solution)'
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
-    msbuildArchitecture: '$(buildArchitecture)'
-    
-- task: DotNetCoreCLI@2
-  displayName: "Run Tests"
-  inputs:
+  - task: DotNetCoreCLI@2
+    displayName: "Run Tests"
+    inputs:
       command: test
-      projects: '$(solution)'
+      projects: "$(solution)"
