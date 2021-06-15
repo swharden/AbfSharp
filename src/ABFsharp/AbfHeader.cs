@@ -41,7 +41,7 @@ namespace AbfSharp
         public readonly double sweepIntervalMin;
 
         // details from the header
-        //public readonly DateTime dateTime;
+        public readonly DateTime StartDateTime;
         //public readonly AbfVersion version;
         //public readonly string comment;
         //public readonly string creator;
@@ -49,6 +49,7 @@ namespace AbfSharp
         public readonly string protocolFilePath;
         public readonly string protocol;
 
+        // TODO: make this private or encapsulate it in a method that thows a warning?
         public readonly Structs.ABFFileHeader HeaderStruct;
 
         public AbfHeader(string abfFilePath, ABFFIO.AbfInterface abffio)
@@ -99,6 +100,26 @@ namespace AbfSharp
                 Tag tag = new(timeSec, timeSweep, comment, abfTag.nTagType);
                 tags[i] = tag;
             }
+
+            StartDateTime = ReadCreatedDateTime(HeaderStruct);
+        }
+
+        private DateTime ReadCreatedDateTime(Structs.ABFFileHeader header)
+        {
+            int datecode = (int)header.uFileStartDate;
+
+            int day = datecode % 100;
+            datecode /= 100;
+
+            int month = datecode % 100;
+            datecode /= 100;
+
+            int year = datecode;
+
+            if (year < 1980 || year >= 2080)
+                throw new InvalidOperationException("unexpected creation date year in header");
+
+            return new DateTime(year, month, day).AddMilliseconds(header.uFileStartTimeMS);
         }
 
         public string GetDescription()
