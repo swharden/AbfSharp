@@ -49,9 +49,11 @@ namespace AbfSharp
         public readonly string protocolFilePath;
         public readonly string protocol;
 
+        public readonly Structs.ABFFileHeader HeaderStruct;
+
         public AbfHeader(string abfFilePath, ABFFIO.AbfInterface abffio)
         {
-            var header = abffio.header;
+            HeaderStruct = abffio.header;
 
             filePath = System.IO.Path.GetFullPath(abfFilePath);
             fileName = System.IO.Path.GetFileName(abfFilePath);
@@ -59,18 +61,18 @@ namespace AbfSharp
             fileSize = new System.IO.FileInfo(abfFilePath).Length;
             fileSizeMb = (double)fileSize / 1e6;
 
-            if (header.fADCSequenceInterval == 0)
+            if (HeaderStruct.fADCSequenceInterval == 0)
                 throw new Exception("abf header hasn't been properly initialized");
 
-            sampleRate = (int)(1e6 / header.fADCSequenceInterval);
+            sampleRate = (int)(1e6 / HeaderStruct.fADCSequenceInterval);
             pointsPerMs = (double)sampleRate / 1000;
-            channelCount = header.nADCNumChannels;
+            channelCount = HeaderStruct.nADCNumChannels;
 
-            sweepCount = header.lActualEpisodes;
-            sweepLengthPoints = header.lNumSamplesPerEpisode / channelCount;
+            sweepCount = HeaderStruct.lActualEpisodes;
+            sweepLengthPoints = HeaderStruct.lNumSamplesPerEpisode / channelCount;
             sweepLengthSec = (double)sweepLengthPoints / sampleRate;
             sweepLengthMin = sweepLengthSec / 60;
-            sweepIntervalSec = header.fEpisodeStartToStart;
+            sweepIntervalSec = HeaderStruct.fEpisodeStartToStart;
             if (sweepIntervalSec == 0)
                 sweepIntervalSec = sweepLengthSec;
             sweepIntervalMin = sweepIntervalSec / 60;
@@ -79,10 +81,10 @@ namespace AbfSharp
             totalLengthMin = totalLengthSec / 60;
             totalLengthPoints = sweepLengthPoints * sweepCount;
 
-            tagCount = header.lNumTagEntries;
+            tagCount = HeaderStruct.lNumTagEntries;
             tags = new Tag[tagCount];
 
-            protocolFilePath = header.sProtocolPath.Trim();
+            protocolFilePath = HeaderStruct.sProtocolPath.Trim();
             if (protocolFilePath == "(untitled)")
                 protocolFilePath = "";
             protocol = System.IO.Path.GetFileNameWithoutExtension(protocolFilePath);
