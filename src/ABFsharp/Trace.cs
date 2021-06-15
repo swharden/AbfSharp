@@ -6,15 +6,26 @@ namespace AbfSharp
 {
     public class Trace
     {
-        public double[] values;
-        public double sampleRate;
+        public double[] Values;
+        public double SampleRate;
+
+        public double[] Times
+        {
+            get
+            {
+                double[] t = new double[Values.Length];
+                for (int i = 0; i < t.Length; i++)
+                    t[i] = i / SampleRate;
+                return t;
+            }
+        }
 
         public override string ToString()
         {
-            if (values is null)
+            if (Values is null)
                 return "ABF Trace (uninitialized)";
             else
-                return $"ABF Trace holding {values.Length} values";
+                return $"ABF Trace holding {Values.Length} values";
         }
     }
 }

@@ -100,8 +100,8 @@ namespace AbfSharp
 
             return new Trace()
             {
-                values = abfData.GetValues(sweepIndex, channelIndex),
-                sampleRate = header.sampleRate
+                Values = abfData.GetValues(sweepIndex, channelIndex),
+                SampleRate = header.sampleRate
             };
         }
 
@@ -114,8 +114,8 @@ namespace AbfSharp
 
             return new Trace()
             {
-                values = abfData.GetAllValues(channelIndex),
-                sampleRate = header.sampleRate
+                Values = abfData.GetAllValues(channelIndex),
+                SampleRate = header.sampleRate
             };
         }
 

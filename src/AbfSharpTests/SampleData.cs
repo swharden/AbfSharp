@@ -6,7 +6,8 @@ namespace AbfSharpTests
 {
     public static class SampleData
     {
-        private static string DATA_FOLDER = Path.Combine(TestContext.CurrentContext.TestDirectory, "../../../../../dev/abfs/");
+        public static readonly string DATA_FOLDER = Path.Combine(TestContext.CurrentContext.TestDirectory, "../../../../../dev/abfs/");
+        public static readonly string GRAPHICS_FOLDER = Path.Combine(TestContext.CurrentContext.TestDirectory, "../../../../../dev/graphics/");
 
         public static string GetAbfPath(string filename)
         {

@@ -22,7 +22,7 @@ namespace AbfSharpTests
             var firstSweep = abf.GetSweep(0);
 
             for (int i = 0; i < expectedFirstValues.Length; i++)
-                Assert.AreEqual(expectedFirstValues[i], firstSweep.values[i], 1e-5);
+                Assert.AreEqual(expectedFirstValues[i], firstSweep.Values[i], 1e-5);
         }
     }
 }
