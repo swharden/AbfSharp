@@ -96,7 +96,7 @@ namespace AbfSharp
                 double timeSec = abfTag.lTagTime * abffio.header.fSynchTimeUnit / 1e6;
                 string comment = new string(abfTag.sComment).Trim();
                 int timeSweep = (int)(timeSec / sweepIntervalSec);
-                Tag tag = new Tag(timeSec, timeSweep, comment, abfTag.nTagType);
+                Tag tag = new(timeSec, timeSweep, comment, abfTag.nTagType);
                 tags[i] = tag;
             }
         }

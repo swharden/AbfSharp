@@ -30,6 +30,17 @@ namespace AbfSharp
         public int ChannelCount => Header.channelCount;
 
         /// <summary>
+        /// Array of ABF tags (e.g., comment tags).
+        /// Empty if this ABF has no tags.
+        /// </summary>
+        public Tag[] Tags => Header.tags;
+
+        /// <summary>
+        /// True if the ABF has at least 1 tag
+        /// </summary>
+        public bool HasTags => Tags.Length > 0;
+
+        /// <summary>
         /// Full path to this ABF file.
         /// </summary>
         public readonly string Path;
