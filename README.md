@@ -47,6 +47,9 @@ int[] sweepIndexes = new int[] { 0, 4, 8, 12 };
 foreach (int sweepIndex in sweepIndexes)
 {
     var sweep = abf.GetSweep(sweepIndex);
+    double[] times = sweep.GetSweepTimes();
+    double[] voltages = sweep.Values;
+    plot.AddScatterLines(times, voltages, label: $"sweep {sweepIndex + 1}");
     plot.AddScatterLines(
         xs: sweep.Times, 
         ys: sweep.Values, 

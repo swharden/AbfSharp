@@ -8,120 +8,115 @@ namespace AbfSharp
 {
     public class ABF
     {
-        public enum Preload { AllSweeps, FirstSweep, HeaderOnly }
+        /// <summary>
+        /// Additional information about this ABF
+        /// </summary>
+        public readonly AbfHeader Header;
 
-        private AbfHeader header;
-        private AbfData abfData;
+        /// <summary>
+        /// Sweep data managed in memory
+        /// </summary>
+        private readonly AbfData Data;
 
-        public int sweepsInMemory { get { return abfData.sweepsInMemory; } }
-        public readonly double loadTimeMilliseconds;
+        /// <summary>
+        /// Number of sweeps in the ABF.
+        /// Gap-free files are considered to have one long sweep.
+        /// </summary>
+        public int SweepCount => Header.sweepCount;
 
-        // bring in a few useful header values
-        public readonly int sweepCount;
-        public readonly int channelCount;
+        /// <summary>
+        /// Number of channels in the ABF.
+        /// </summary>
+        public int ChannelCount => Header.channelCount;
 
-        public readonly string abfID;
-        public readonly string protocol;
-        public readonly string protocolPath;
+        /// <summary>
+        /// Full path to this ABF file.
+        /// </summary>
+        public readonly string Path;
 
-        public readonly EpochTable epochTable;
+        /// <summary>
+        /// The original filename without the .abf extension.
+        /// This identifier is useful for plots titles and base names of analysis files.
+        /// </summary>
+        public string AbfID => System.IO.Path.GetFileNameWithoutExtension(Path);
 
+        /// <summary>
+        /// The epoch table stores information about the DAC (command).
+        /// </summary>
+        public readonly EpochTable EpochTable;
+
+        /// <summary>
+        /// The ABF class reads and ABF file and exposes its data values and header information.
+        /// </summary>
+        /// <param name="filePath">path to the ABF file</param>
+        /// <param name="preload">which sweeps to load upon instantiation</param>
         public ABF(string filePath, Preload preload = Preload.AllSweeps)
         {
-            using (var abffio = new ABFFIO.AbfInterface(filePath))
-            {
-                Stopwatch stopwatch = Stopwatch.StartNew();
+            Path = filePath;
 
-                // load the header
-                header = new AbfHeader(filePath, abffio);
-                epochTable = new EpochTable(abffio.header);
+            using ABFFIO.AbfInterface abffio = new(filePath);
+            Header = new AbfHeader(filePath, abffio);
+            EpochTable = new EpochTable(abffio.header);
+            Data = new AbfData(Header.sweepCount, Header.channelCount, Header.sweepLengthPoints);
 
-                // put useful header variables at the ABF level
-                sweepCount = header.sweepCount;
-                channelCount = header.channelCount;
-                abfID = System.IO.Path.GetFileNameWithoutExtension(filePath);
-                protocol = header.protocol;
-                protocolPath = header.protocolFilePath;
-
-                // prepare data arrays and optionally pre-load data into memory
-                abfData = new AbfData(header.sweepCount, header.channelCount, header.sweepLengthPoints);
-                if (preload == Preload.FirstSweep)
-                    LoadSweep(abffio, 0, 0);
-                else if (preload == Preload.AllSweeps)
-                    LoadAllSweeps(abffio);
-
-                stopwatch.Stop();
-                loadTimeMilliseconds = (double)stopwatch.ElapsedTicks / Stopwatch.Frequency * 1000;
-            }
+            if (preload == Preload.FirstSweep)
+                LoadSweep(abffio, 0, 0);
+            else if (preload == Preload.AllSweeps)
+                LoadAllSweeps(abffio);
         }
 
-        public override string ToString()
-        {
-            StringBuilder sb = new StringBuilder();
-            sb.Append($"ABF [{header.fileName}] with {header.sweepCount} sweeps");
-
-            int pointsInMemory = sweepsInMemory * header.sweepLengthPoints;
-            double memoryUsedMB = pointsInMemory * 8 / 1e6f;
-
-            if (sweepsInMemory == 0)
-                sb.Append(" (none in memory)");
-            else if (sweepsInMemory == header.sweepCount)
-                sb.Append($" (all in memory, ~{memoryUsedMB:N} MB)");
-            else
-                sb.Append($" ({sweepsInMemory} in memory, ~{memoryUsedMB:N0} MB)");
-
-            sb.Append($" loaded in {loadTimeMilliseconds:N} ms");
-            return sb.ToString();
-        }
+        public override string ToString() => $"ABF {Header.fileName} ({Header.sweepCount} sweeps)";
 
         private void LoadSweep(ABFFIO.AbfInterface abffio, int sweepIndex, int channelIndex)
         {
             abffio.ReadChannel(sweepIndex + 1, channelIndex);
             var values = new double[abffio.buffer.Length];
             Array.Copy(abffio.buffer, 0, values, 0, abffio.buffer.Length);
-            abfData.SetValues(sweepIndex, channelIndex, values);
+            Data.SetValues(sweepIndex, channelIndex, values);
         }
 
         private void LoadAllSweeps(ABFFIO.AbfInterface abffio)
         {
-            for (int sweepIndex = 0; sweepIndex < header.sweepCount; sweepIndex++)
-                for (int channelNumber = 0; channelNumber < header.channelCount; channelNumber++)
+            for (int sweepIndex = 0; sweepIndex < Header.sweepCount; sweepIndex++)
+                for (int channelNumber = 0; channelNumber < Header.channelCount; channelNumber++)
                     LoadSweep(abffio, sweepIndex, channelNumber);
         }
 
-        public Trace GetSweep(int sweepIndex, int channelIndex = 0)
+        /// <summary>
+        /// Return a single sweep
+        /// </summary>
+        /// <param name="sweepIndex">sweep (starting at 0)</param>
+        /// <param name="channelIndex">channel (starting at 0)</param>
+        /// <returns>Sweep class (with ADC data in Values)</returns>
+        public Sweep GetSweep(int sweepIndex, int channelIndex = 0)
         {
             if (sweepIndex < 0)
-                sweepIndex = header.sweepCount + sweepIndex;
+                sweepIndex = Header.sweepCount + sweepIndex;
 
-            if (abfData.HasValues(sweepIndex, channelIndex) == false)
-                using (var abffio = new ABFFIO.AbfInterface(header.filePath))
+            if (Data.HasValues(sweepIndex, channelIndex) == false)
+                using (var abffio = new ABFFIO.AbfInterface(Header.filePath))
                     LoadSweep(abffio, sweepIndex, channelIndex);
 
-            return new Trace()
-            {
-                Values = abfData.GetValues(sweepIndex, channelIndex),
-                SampleRate = header.sampleRate
-            };
+            double[] values = Data.GetValues(sweepIndex, channelIndex);
+
+            // TODO: support variable length sweeps https://swharden.com/pyabf/abf2-file-format/#synch-array
+            double sweepLengthSeconds = Header.sampleRate * Header.sweepCount;
+            return new Sweep(values, Header.sampleRate, sweepIndex * sweepLengthSeconds);
         }
 
-        public Trace GetFullRecording(int channelIndex = 0)
+        /// <summary>
+        /// Return a single large sweep containing all data from the ABF
+        /// </summary>
+        /// <param name="channelIndex">channel (starting at 0)</param>
+        /// <returns>Sweep class (with ADC data in Values)</returns>
+        public Sweep GetFullRecording(int channelIndex = 0)
         {
-            for (int sweepIndex = 0; sweepIndex < header.sweepCount; sweepIndex++)
-                if (abfData.HasValues(sweepIndex, channelIndex) == false)
-                    using (var abffio = new ABFFIO.AbfInterface(header.filePath))
+            for (int sweepIndex = 0; sweepIndex < Header.sweepCount; sweepIndex++)
+                if (Data.HasValues(sweepIndex, channelIndex) == false)
+                    using (var abffio = new ABFFIO.AbfInterface(Header.filePath))
                         LoadSweep(abffio, sweepIndex, channelIndex);
 
-            return new Trace()
-            {
-                Values = abfData.GetAllValues(channelIndex),
-                SampleRate = header.sampleRate
-            };
-        }
-
-        public string GetHeaderDescription()
-        {
-            return header.GetDescription();
+            return new Sweep(Data.GetAllValues(channelIndex), Header.sampleRate, 0);
         }
     }
 }

@@ -38,7 +38,9 @@ namespace AbfSharpTests
             foreach (int sweepIndex in new int[] { 0, 4, 8, 12 })
             {
                 var sweep = abf.GetSweep(sweepIndex);
-                plot.AddScatterLines(sweep.Times, sweep.Values, label: $"sweep {sweepIndex + 1}");
+                double[] times = sweep.GetSweepTimes();
+                double[] voltages = sweep.Values;
+                plot.AddScatterLines(times, voltages, label: $"sweep {sweepIndex + 1}");
             }
 
             plot.AxisAuto(horizontalMargin: 0);

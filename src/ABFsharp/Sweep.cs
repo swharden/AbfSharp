@@ -4,59 +4,101 @@ using System.Text;
 
 namespace AbfSharp
 {
-    [Obsolete("dont use the sweep class", false)]
     public class Sweep
     {
-        public readonly int Index;
-        public readonly int Number;
-        public readonly int Channel;
+        /// <summary>
+        /// ADC values (typically voltage or current)
+        /// </summary>
+        public readonly double[] Values;
 
-        public readonly int LengthPoints;
-        public readonly double LengthSec;
+        [Obsolete("use GetSweepTimes() or similar", true)]
+        public readonly double[] Times;
 
-        public readonly string AdcUnits;
-        public readonly string AdcLabel;
-        public readonly string DacUnits;
-        public readonly string DacLabel;
+        /// <summary>
+        /// Number of data points in this sweep
+        /// </summary>
+        public int Length => Values.Length;
 
-        public double[] values;
+        /// <summary>
+        /// Total length of this sweep (seconds)
+        /// </summary>
+        public double LengthSeconds => SampleRate / Values.Length;
 
-        private readonly AbfHeader info;
+        /// <summary>
+        /// Time between the the start of the ABF and the start of this sweep (seconds)
+        /// </summary>
+        public readonly double TimeOffset;
 
-        public double[] valuesCopy
+        /// <summary>
+        /// Absolute date and time of the start of this sweep
+        /// </summary>
+        public DateTime DateTime => throw new NotImplementedException();
+
+        /// <summary>
+        /// Values per second (Hz)
+        /// </summary>
+        public readonly double SampleRate;
+
+        /// <summary>
+        /// Time between each value (seconds)
+        /// </summary>
+        public double SamplePeriod => 1.0 / SampleRate;
+
+        /// <summary>
+        /// Time between each value (milliseconds)
+        /// </summary>
+        public double SamplePeriodMilliseconds => 1000.0 / SampleRate;
+
+        /// <summary>
+        /// Name of the ADC (measurement) channel
+        /// </summary>
+        public string AdcLabel => throw new NotImplementedException();
+
+        /// <summary>
+        /// Units of the ADC (measurement) channel
+        /// </summary>
+        public string AdcUnits => throw new NotImplementedException();
+
+        /// <summary>
+        /// Name of the DAC (measurement) channel
+        /// </summary>
+        public string DacLabel => throw new NotImplementedException();
+
+        /// <summary>
+        /// Units of the DAC (measurement) channel
+        /// </summary>
+        public string DacUnits => throw new NotImplementedException();
+
+        public Sweep(double[] values, double sampleRate, double offset)
         {
-            get
-            {
-                double[] cpy = new double[values.Length];
-                Array.Copy(values, 0, cpy, 0, values.Length);
-                return cpy;
-            }
+            Values = values;
+            SampleRate = sampleRate;
+            TimeOffset = offset;
         }
 
-        public Sweep(AbfHeader info, int sweepIndex, int channelNumber)
+        /// <summary>
+        /// Return array of times (same length as Values) starting at zero
+        /// </summary>
+        public double[] GetSweepTimes()
         {
-            this.info = info;
-
-            Index = sweepIndex;
-            Number = sweepIndex + 1;
-            Channel = channelNumber;
-
-            AdcUnits = "y";
-            AdcLabel = $"ADC ({AdcUnits})";
-            DacUnits = "x";
-            DacLabel = $"DAC ({AdcUnits})";
-
-            LengthPoints = info.sweepLengthPoints;
-            LengthSec = info.sweepLengthSec;
-            values = null;
+            double[] times = new double[Values.Length];
+            for (int i = 0; i < Values.Length; i++)
+                times[i] = i / SampleRate;
+            return times;
         }
 
-        public override string ToString()
+        /// <summary>
+        /// Return array of times (same length as Values) relative to the start of the ABF
+        /// </summary>
+        public double[] GetAbfTimes()
         {
-            StringBuilder s = new StringBuilder();
-            s.Append($"{info.fileName} sweep {Number} of {info.sweepCount} ({LengthPoints} samples over {LengthSec} sec)");
-            return s.ToString();
+            double[] times = new double[Values.Length];
+            for (int i = 0; i < Values.Length; i++)
+                times[i] = i / SampleRate + TimeOffset;
+            return times;
         }
+
+        public override string ToString() =>
+            $"ABF Sweep holding {Values.Length:N0} values at {SampleRate:N0} Hz ({LengthSeconds} seconds)";
     }
-
 }
