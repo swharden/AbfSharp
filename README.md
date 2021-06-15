@@ -5,7 +5,7 @@
 
 <div align="center">
 
-![](dev/graphics/Test_Plot_3D.png)
+<img src="dev/graphics/Test_Plot_3D.png" width="70%" />
 
 </div>
 
