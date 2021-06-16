@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -21,6 +22,25 @@ namespace AbfSharpTests.Header
 
             DateTime expectedDateTime = DateTime.Parse(expectedDateTimeString);
             Assert.AreEqual(expectedDateTime, abf.Header.StartDateTime);
+        }
+
+        [TestCase("16921011-vc-memtest-tags.abf")]
+        [TestCase("17n16012-vc-steps.abf")]
+        [TestCase("17n16016-ic-ramp.abf")]
+        [TestCase("17n16016-ic-steps.abf")]
+        [TestCase("18808025-memtest.abf")]
+        public void Test_AbfFileHeader_Markdown(string abfFilename)
+        {
+            string abfFilePath = SampleData.GetAbfPath(abfFilename);
+            var abf = new AbfSharp.ABF(abfFilePath);
+            string md = abf.Header.GetHeaderMarkdown();
+            Console.WriteLine(md);
+
+            string abfFolder = System.IO.Path.GetDirectoryName(abfFilePath);
+            string abfID = System.IO.Path.GetFileNameWithoutExtension(abfFilePath);
+            string mdPath = System.IO.Path.Combine(abfFolder, $"{abfID}.md");
+            System.IO.File.WriteAllText(mdPath, md);
+            Console.WriteLine("Wrote: {mdPath}");
         }
     }
 }
