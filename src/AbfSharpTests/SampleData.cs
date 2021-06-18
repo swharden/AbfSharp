@@ -17,5 +17,7 @@ namespace AbfSharpTests
                 throw new ArgumentException($"file not found: {fullpath}");
             return fullpath;
         }
+
+        public static string[] GetAllAbfPaths() => Directory.GetFiles(DATA_FOLDER, "*.abf");
     }
 }
