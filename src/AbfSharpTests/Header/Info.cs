@@ -10,6 +10,49 @@ namespace AbfSharpTests.Header
 {
     class Info
     {
+        /// <summary>
+        /// Markdown-formatted table of all header struct values
+        /// </summary>
+        /// <returns></returns>
+        private static string GetHeaderMarkdown(AbfSharp.ABFFIO.Structs.ABFFileHeader HeaderStruct)
+        {
+            StringBuilder sb = new();
+            sb.AppendLine("Name | Type | Value");
+            sb.AppendLine("---|---|---");
+
+            FieldInfo[] fields = HeaderStruct.GetType().GetFields();
+            foreach (FieldInfo fi in fields)
+            {
+                object structElementValue = HeaderStruct.GetType().GetField(fi.Name).GetValue(HeaderStruct);
+                if (structElementValue.GetType().IsArray)
+                {
+                    List<string> vals = new();
+                    int length = ((Array)structElementValue).Length;
+                    foreach (object arrayValue in (Array)structElementValue)
+                        vals.Add(arrayValue.ToString());
+                    if (vals.Count > 20)
+                    {
+                        vals = vals.Take(20).ToList();
+                        vals.Add("...");
+                    }
+                    string typeName = structElementValue.GetType().ToString().Replace("[]", $"[{length}]").Replace("System.", "");
+                    sb.AppendLine($"{fi.Name} | {typeName} | {string.Join(", ", vals)}");
+                }
+                else if (structElementValue.GetType() == typeof(string))
+                {
+                    string s = (string)structElementValue;
+                    sb.AppendLine($"{fi.Name} | string ({s.Length}) | \"{s}\"");
+                }
+                else
+                {
+                    string typeName = structElementValue.GetType().ToString().Replace("System.", "");
+                    sb.AppendLine($"{fi.Name} | {typeName} | {structElementValue}");
+                }
+            }
+
+            return sb.ToString();
+        }
+
         [TestCase("16921011-vc-memtest-tags.abf", "2016-09-21 14:43:46.434000")]
         [TestCase("17n16012-vc-steps.abf", "2017-11-16 14:05:01.627000")]
         [TestCase("17n16016-ic-ramp.abf", "2017-11-16 14:07:11.016000")]
@@ -33,7 +76,7 @@ namespace AbfSharpTests.Header
         {
             string abfFilePath = SampleData.GetAbfPath(abfFilename);
             var abf = new AbfSharp.ABF(abfFilePath);
-            string md = abf.Header.GetHeaderMarkdown();
+            string md = GetHeaderMarkdown(abf.Header.HeaderStruct);
             Console.WriteLine(md);
 
             string abfFolder = System.IO.Path.GetDirectoryName(abfFilePath);

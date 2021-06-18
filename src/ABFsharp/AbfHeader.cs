@@ -1,10 +1,5 @@
 ﻿using AbfSharp.ABFFIO;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Reflection;
-using System.Text;
 
 namespace AbfSharp
 {
@@ -122,90 +117,6 @@ namespace AbfSharp
                 throw new InvalidOperationException("unexpected creation date year in header");
 
             return new DateTime(year, month, day).AddMilliseconds(header.uFileStartTimeMS);
-        }
-
-        /// <summary>
-        /// Markdown-formatted table of all header struct values
-        /// </summary>
-        /// <returns></returns>
-        public string GetHeaderMarkdown()
-        {
-            StringBuilder sb = new();
-            sb.AppendLine("Name | Type | Value");
-            sb.AppendLine("---|---|---");
-
-            FieldInfo[] fields = HeaderStruct.GetType().GetFields();
-            foreach (FieldInfo fi in fields)
-            {
-                object structElementValue = HeaderStruct.GetType().GetField(fi.Name).GetValue(HeaderStruct);
-                if (structElementValue.GetType().IsArray)
-                {
-                    List<string> vals = new();
-                    int length = ((Array)structElementValue).Length;
-                    foreach (object arrayValue in (Array)structElementValue)
-                        vals.Add(arrayValue.ToString());
-                    if (vals.Count > 20)
-                    {
-                        vals = vals.Take(20).ToList();
-                        vals.Add("...");
-                    }
-                    string typeName = structElementValue.GetType().ToString().Replace("[]", $"[{length}]").Replace("System.", "");
-                    sb.AppendLine($"{fi.Name} | {typeName} | {string.Join(", ", vals)}");
-                }
-                else if (structElementValue.GetType() == typeof(string))
-                {
-                    string s = (string)structElementValue;
-                    sb.AppendLine($"{fi.Name} | string ({s.Length}) | \"{s}\"");
-                }
-                else
-                {
-                    string typeName = structElementValue.GetType().ToString().Replace("System.", "");
-                    sb.AppendLine($"{fi.Name} | {typeName} | {structElementValue}");
-                }
-            }
-
-            return sb.ToString();
-        }
-
-        [Obsolete("soon to be deleted")]
-        public string GetDescription()
-        {
-            string info = "";
-
-            // use reflection to iterate through all public variables of this class
-            var fields = this.GetType().GetFields();
-            foreach (var field in fields)
-            {
-                // get the basic information for each item
-                string type = field.FieldType.ToString();
-                string name = field.Name;
-                string value = field.GetValue(this).ToString();
-
-                // customize string value of specific types
-                if (field.FieldType == typeof(double))
-                    value = string.Format("{0:0.0000}", (double)field.GetValue(this));
-                else if (
-                        field.FieldType == typeof(int) ||
-                        field.FieldType == typeof(Int16) ||
-                        field.FieldType == typeof(long)
-                        )
-                    value = string.Format("{0}", field.GetValue(this));
-                else if (field.FieldType == typeof(string))
-                    value = $"\"{field.GetValue(this)}\"";
-                else if (field.FieldType == typeof(Tag[]))
-                    foreach (Tag tag in (Tag[])field.GetValue(this))
-                        value += "\n" + tag.ToString();
-                else
-                    name = $"({type}) {name}";
-
-                if (value == "vsABF.Tag[]")
-                    continue;
-
-                info += $"{name}: {value}\n";
-            }
-
-            info = info.Trim();
-            return info;
         }
     }
 }
