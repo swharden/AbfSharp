@@ -16,7 +16,7 @@ namespace AbfSharp
     {
         public string Path { get; private set; }
 
-        public float FileVersion { get; private set; }
+        public float FileVersionNumber { get; private set; }
         public OperationMode OperationMode { get; private set; }
 
         public RawABF(string abfFilePath)
@@ -47,7 +47,7 @@ namespace AbfSharp
 
             // look things up in an ABF-type-dependent way
             OperationMode = abfReader.GetOperationMode();
-            FileVersion = abfReader.GetFileVersion();
+            FileVersionNumber = abfReader.GetFileVersion();
 
             // close the file
             reader.Close();

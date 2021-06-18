@@ -113,10 +113,18 @@ namespace AbfSharp
 
             int year = datecode;
 
-            if (year < 1980 || year >= 2080)
-                throw new InvalidOperationException("unexpected creation date year in header");
+            // TODO: hard crashes if invalid
+            try
+            {
+                if (year < 1980 || year >= 2080)
+                    throw new InvalidOperationException("unexpected creation date year in header");
 
-            return new DateTime(year, month, day).AddMilliseconds(header.uFileStartTimeMS);
+                return new DateTime(year, month, day).AddMilliseconds(header.uFileStartTimeMS);
+            }
+            catch
+            {
+                return new DateTime(0);
+            }
         }
     }
 }
