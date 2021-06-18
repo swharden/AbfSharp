@@ -23,5 +23,16 @@ namespace AbfSharpTests
                     Assert.AreEqual(2, raw.AbfVersion.Major);
             }
         }
+
+        [Test]
+        public void Test_MatchesOfficial_OperationMode()
+        {
+            foreach (string abfFilePath in SampleData.GetAllAbfPaths())
+            {
+                var official = new AbfSharp.ABF(abfFilePath);
+                var raw = new AbfSharp.RawABF(abfFilePath);
+                Assert.AreEqual(official.Header.HeaderStruct.nOperationMode, (int)raw.OperationMode);
+            }
+        }
     }
 }
