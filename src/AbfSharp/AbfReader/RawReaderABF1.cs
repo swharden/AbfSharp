@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace AbfSharp
+namespace AbfSharp.AbfReader
 {
     /// <summary>
     /// Methods to extract information from the ABF1 header
@@ -16,17 +16,18 @@ namespace AbfSharp
         {
         }
 
-        public override Version GetFileVersion()
+        public override float GetFileVersion()
         {
-            return new Version(1, 0);
+            Seek(4);
+            return Reader.ReadSingle();
         }
 
         public override OperationMode GetOperationMode()
         {
             // Operation mode is gap free, episodic, etc.
             // Integer at byte 8 in the file.
-            Reader.BaseStream.Seek(8, SeekOrigin.Begin);
-            UInt16 nOperationMode = Reader.ReadUInt16();
+            Seek(8);
+            int nOperationMode = ReadUInt16();
             return (OperationMode)nOperationMode;
         }
     }

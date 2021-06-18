@@ -1,4 +1,5 @@
-﻿using AbfSharp.Enums;
+﻿using AbfSharp.AbfReader;
+using AbfSharp.Enums;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -15,7 +16,7 @@ namespace AbfSharp
     {
         public string Path { get; private set; }
 
-        public Version FileVersion { get; private set; }
+        public float FileVersion { get; private set; }
         public OperationMode OperationMode { get; private set; }
 
         public RawABF(string abfFilePath)

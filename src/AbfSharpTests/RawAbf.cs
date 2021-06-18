@@ -10,17 +10,14 @@ namespace AbfSharpTests
     class RawAbf
     {
         [Test]
-        public void Test_MatchesOfficial_FileMajorVersion()
+        public void Test_MatchesOfficial_FileVersion()
         {
             foreach (string abfFilePath in SampleData.GetAllAbfPaths())
             {
                 var official = new AbfSharp.ABF(abfFilePath);
                 var raw = new AbfSharp.RawABF(abfFilePath);
 
-                if (official.Header.HeaderStruct.fFileVersionNumber < 2)
-                    Assert.AreEqual(1, raw.FileVersion.Major);
-                else
-                    Assert.AreEqual(2, raw.FileVersion.Major);
+                Assert.AreEqual((int)official.Header.HeaderStruct.fFileVersionNumber, (int)raw.FileVersion);
             }
         }
 
