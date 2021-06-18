@@ -18,9 +18,9 @@ namespace AbfSharpTests
                 var raw = new AbfSharp.RawABF(abfFilePath);
 
                 if (official.Header.HeaderStruct.fFileVersionNumber < 2)
-                    Assert.AreEqual(1, raw.AbfVersion.Major);
+                    Assert.AreEqual(1, raw.FileVersion.Major);
                 else
-                    Assert.AreEqual(2, raw.AbfVersion.Major);
+                    Assert.AreEqual(2, raw.FileVersion.Major);
             }
         }
 
