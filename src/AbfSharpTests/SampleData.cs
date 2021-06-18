@@ -7,6 +7,7 @@ namespace AbfSharpTests
     public static class SampleData
     {
         public static readonly string DATA_FOLDER = Path.Combine(TestContext.CurrentContext.TestDirectory, "../../../../../dev/abfs/");
+        public static readonly string DATA_FOLDER_PYABF = Path.Combine(TestContext.CurrentContext.TestDirectory, "../../../../../../pyABF/data/abfs/");
         public static readonly string GRAPHICS_FOLDER = Path.Combine(TestContext.CurrentContext.TestDirectory, "../../../../../dev/graphics/");
 
         public static string GetAbfPath(string filename)
@@ -18,6 +19,9 @@ namespace AbfSharpTests
             return fullpath;
         }
 
-        public static string[] GetAllAbfPaths() => Directory.GetFiles(DATA_FOLDER, "*.abf");
-    }
+        public static string[] GetAllAbfPaths() =>
+            Directory.Exists(DATA_FOLDER_PYABF)
+            ? Directory.GetFiles(DATA_FOLDER_PYABF, "*.abf")
+            : Directory.GetFiles(DATA_FOLDER, "*.abf");
+    };
 }
