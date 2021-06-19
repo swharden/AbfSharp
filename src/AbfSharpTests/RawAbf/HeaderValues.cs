@@ -150,14 +150,11 @@ namespace AbfSharpTests.RawAbf
                     Assert.AreEqual(officialHeader.nDataFormat, thisChannelInfo.nDataFormat);
                     Assert.AreEqual(officialHeader.fInstrumentOffset[channelIndex], thisChannelInfo.fInstrumentOffset);
                     Assert.AreEqual(officialHeader.fSignalOffset[channelIndex], thisChannelInfo.fSignalOffset);
-
-                    //int adcChanelIndex = raw.Header.AdcChannelIndexes[channelIndex];
-                    //Console.WriteLine(adcChanelIndex);
-                    //Assert.AreEqual(officialHeader.fInstrumentScaleFactor[channelIndex], thisChannelInfo.fInstrumentScaleFactor);
-                    //Assert.AreEqual(officialHeader.fSignalGain[adcChanelIndex], thisChannelInfo.fSignalGain);
-                    //Assert.AreEqual(officialHeader.fADCProgrammableGain[adcChanelIndex], thisChannelInfo.fADCProgrammableGain);
-                    //Assert.AreEqual(officialHeader.lADCResolution, thisChannelInfo.lADCResolution);
-                    //Assert.AreEqual(officialHeader.fADCRange, thisChannelInfo.fADCRange);
+                    Assert.AreEqual(officialHeader.fInstrumentScaleFactor[channelIndex], thisChannelInfo.fInstrumentScaleFactor);
+                    Assert.AreEqual(officialHeader.fSignalGain[channelIndex], thisChannelInfo.fSignalGain);
+                    Assert.AreEqual(officialHeader.fADCProgrammableGain[channelIndex], thisChannelInfo.fADCProgrammableGain);
+                    Assert.AreEqual(officialHeader.lADCResolution, thisChannelInfo.lADCResolution);
+                    Assert.AreEqual(officialHeader.fADCRange, thisChannelInfo.fADCRange);
                 }
             }
         }
