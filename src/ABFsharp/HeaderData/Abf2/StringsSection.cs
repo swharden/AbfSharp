@@ -25,7 +25,7 @@ namespace AbfSharp.HeaderData.Abf2
             reader.BaseStream.Seek(-1, SeekOrigin.Current);
 
             StringBuilder sb = new();
-            sb.Append("first\n");
+            sb.Append(" \n");
             char last = '\0';
             for (int i = 0; i < size; i++)
             {

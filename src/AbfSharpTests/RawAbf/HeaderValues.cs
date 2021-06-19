@@ -176,5 +176,28 @@ namespace AbfSharpTests.RawAbf
                 Assert.AreEqual(officialCreatorVersion, raw.Header.CreatorVersion);
             }
         }
+
+        [Test]
+        public void Test_MatchesOfficial_Modifier()
+        {
+            foreach (AbfSharp.ABF official in OfficialABFs)
+            {
+                var raw = new AbfSharp.RawABF(official.Path);
+                Console.WriteLine($"{System.IO.Path.GetFileName(official.Path)} {raw.Header.FileVersionNumber}");
+
+                if (string.IsNullOrWhiteSpace(official.Header.HeaderStruct.sModifierInfo) == false)
+                    Assert.AreEqual(official.Header.HeaderStruct.sModifierInfo.Trim(), raw.Header.Modifier);
+
+                string officialVersion = string.Join(".", new Int16[]
+                {
+                    official.Header.HeaderStruct.nModifierMajorVersion,
+                    official.Header.HeaderStruct.nModifierMinorVersion,
+                    official.Header.HeaderStruct.nModifierBugfixVersion,
+                    official.Header.HeaderStruct.nModifierBuildVersion
+                });
+
+                Assert.AreEqual(officialVersion, raw.Header.ModifierVersion);
+            }
+        }
     }
 }

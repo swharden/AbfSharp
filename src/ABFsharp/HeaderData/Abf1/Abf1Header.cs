@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
+using System.Linq;
 
 namespace AbfSharp.HeaderData.Abf1
 {
@@ -45,18 +44,17 @@ namespace AbfSharp.HeaderData.Abf1
         public readonly Int32 lADCResolution;
         public readonly Int32 lDACResolution;
 
-        // Group 6 - Environmental Information (118 bytes)
+        // Group 6
         public readonly Int16 nExperimentType;
         public readonly string sCreatorInfo;
         public readonly string sFileCommentOld;
         public readonly Int16 nFileStartMillisecs;
 
-        // Group 6 Extended - Environmental Information  (898 bytes)
-        public readonly Int16 nCreatorMajorVersion;
-        public readonly Int16 nCreatorMinorVersion;
-        public readonly Int16 nCreatorBugfixVersion;
-        public readonly Int16 nCreatorBuildVersion;
-        public readonly string CreatorVersion;
+        // Group 6 Extended
+        public readonly byte[] FileGuid;
+        public readonly float[] fInstrumentHoldingLevel;
+        public readonly Int32 ulFileCRC;
+        public readonly string sModifierInfo;
 
         // Group 7
         public readonly Int16[] nADCPtoLChannelMap = new Int16[16];
@@ -71,21 +69,21 @@ namespace AbfSharp.HeaderData.Abf1
         public readonly string[] sDACChannelName = new string[4]; // 10 chars
         public readonly string[] sDACChannelUnit = new string[4]; // 8 chars
 
-        // Group 18
-        public readonly byte[] uFileGUID;
+        // Group 18 - Application Version Data
+        public readonly Int16 nMajorVersion;
+        public readonly Int16 nMinorVersion;
+        public readonly Int16 nBugfixVersion;
+        public readonly Int16 nBuildVersion;
+        public readonly Int16 nModifierMajorVersion;
+        public readonly Int16 nModifierMinorVersion;
+        public readonly Int16 nModifierBugfixVersion;
+        public readonly Int16 nModifierBuildVersion;
+        public readonly string CreatorVersion;
+        public readonly string ModifierVersion;
+
 
         public Abf1Header(BinaryReader reader)
         {
-            // https://docs.python.org/3/library/struct.html#format-characters
-            // https://github.com/swharden/pyABF/blob/master/src/pyabf/abfHeader.py
-            // "h" = 2-byte int
-            // "H" = 2-byte uint
-            // "i" = 4-byte int
-            // "I" = 4-byte uint
-            // "l" = 4-byte int
-            // "L" = 4-byte uint
-            // "f" = 4-byte float
-
             reader.BaseStream.Seek(0, SeekOrigin.Begin);
             lFileSignature = reader.ReadInt32();
             fFileVersionNumber = reader.ReadSingle();
@@ -140,28 +138,25 @@ namespace AbfSharp.HeaderData.Abf1
             sFileCommentOld = new string(reader.ReadChars(56)).Trim();
             nFileStartMillisecs = reader.ReadInt16();
 
-            reader.BaseStream.Seek(5798, SeekOrigin.Begin);
-            nCreatorMajorVersion = reader.ReadInt16();
-            nCreatorMinorVersion = reader.ReadInt16();
-            nCreatorBugfixVersion = reader.ReadInt16();
-            nCreatorBuildVersion = reader.ReadInt16();
+            // Extended Group 6 - Extended Environmental Information (898 bytes)
+            // https://swharden.com/pyabf/abf1-file-format/#extended-environmental-information-extended-group-6-898-bytes
+            reader.BaseStream.Seek(5282, SeekOrigin.Begin);
+            FileGuid = reader.ReadBytes(16);
+            fInstrumentHoldingLevel = ReadArraySingle(reader, ABF_ADCCOUNT); // 5298
 
-            // error checking
-            int[] creatorVersionParts = { nCreatorMajorVersion, nCreatorMinorVersion, nCreatorBugfixVersion, nCreatorBuildVersion };
-            for (int i = 0; i < creatorVersionParts.Length; i++)
-            {
-                if (creatorVersionParts[i] < 0)
-                    creatorVersionParts[i] = 0;
-                if (creatorVersionParts[i] > 999)
-                    creatorVersionParts[i] = 0;
-            }
-            CreatorVersion = string.Join(".", creatorVersionParts);
+            reader.BaseStream.Seek(5314, SeekOrigin.Begin);
+            ulFileCRC = reader.ReadInt32();
+            sModifierInfo = new string(reader.ReadChars(16).Where(x => x >= 'A' && x < 'z').ToArray()).Trim();
 
             // GROUP 7 - Multi-channel information (1044 bytes)
             reader.BaseStream.Seek(378, SeekOrigin.Begin);
             nADCPtoLChannelMap = ReadArrayInt16(reader, ABF_ADCCOUNT);
             nADCSamplingSeq = ReadArrayInt16(reader, ABF_ADCCOUNT);
+
+            reader.BaseStream.Seek(442, SeekOrigin.Begin);
             sADCChannelName = ReadArrayStrings(reader, ABF_ADCCOUNT, 10);
+            
+            reader.BaseStream.Seek(602, SeekOrigin.Begin);
             sADCUnits = ReadArrayStrings(reader, ABF_ADCCOUNT, 8);
             fADCProgrammableGain = ReadArraySingle(reader, ABF_ADCCOUNT);
 
@@ -173,9 +168,33 @@ namespace AbfSharp.HeaderData.Abf1
             sDACChannelName = ReadArrayStrings(reader, 4, 10);
             sDACChannelUnit = ReadArrayStrings(reader, 4, 8);
 
-            // GROUP 18 - Application version data (16 bytes)
-            reader.BaseStream.Seek(5282, SeekOrigin.Begin);
-            uFileGUID = reader.ReadBytes(16);
+            // GROUP 18 - (16 bytes)
+            // https://swharden.com/pyabf/abf1-file-format/#application-version-data-group-18-16-bytes
+            reader.BaseStream.Seek(5798, SeekOrigin.Begin);
+            nMajorVersion = reader.ReadInt16();
+            nMinorVersion = reader.ReadInt16();
+            nBugfixVersion = reader.ReadInt16();
+            nBuildVersion = reader.ReadInt16();
+            nModifierMajorVersion = reader.ReadInt16();
+            nModifierMinorVersion = reader.ReadInt16();
+            nModifierBugfixVersion = reader.ReadInt16();
+            nModifierBuildVersion = reader.ReadInt16();
+            CreatorVersion = VersionString(nMajorVersion, nMinorVersion, nBugfixVersion, nBuildVersion);
+            ModifierVersion = VersionString(nModifierMajorVersion, nModifierMinorVersion, nModifierBugfixVersion, nModifierBuildVersion);
+
+        }
+
+        private string VersionString(int a, int b, int c, int d)
+        {
+            int[] p = { a, b, c, d };
+            for (int i = 0; i < p.Length; i++)
+            {
+                if (p[i] < 0)
+                    p[i] = 0;
+                if (p[i] > 999)
+                    p[i] = 0;
+            }
+            return $"{p[0]}.{p[1]}.{p[2]}.{p[3]}";
         }
 
         private static Int16[] ReadArrayInt16(BinaryReader reader, int size)
