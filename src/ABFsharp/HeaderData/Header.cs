@@ -62,7 +62,6 @@ namespace AbfSharp.HeaderData
         public readonly AdcDataInfo[] AdcDataInfo;
 
         public readonly Int16[] nADCPtoLChannelMap;
-        public readonly Int16[] nADCSamplingSeq;
 
         /// <summary>
         /// Populate the AbfSharp header using an ABFFIO struct
@@ -94,7 +93,6 @@ namespace AbfSharp.HeaderData
             GUID = IsAbf1 ? MakeGuid(Abf1Header.uFileGUID) : MakeGuid(Abf2Header.HeaderSection.FileGUID);
             ChannelCount = IsAbf1 ? (uint)Abf1Header.nADCNumChannels : Abf2Header.AdcSection.Count;
             nADCPtoLChannelMap = IsAbf1 ? Abf1Header.nADCPtoLChannelMap : Abf2Header.AdcSection.nADCPtoLChannelMap;
-            nADCSamplingSeq = IsAbf1 ? Abf1Header.nADCSamplingSeq : Abf2Header.AdcSection.nADCSamplingSeq;
 
             // scaling information required to convert ADC bytes to final values
             AdcDataInfo = new AdcDataInfo[ChannelCount];
