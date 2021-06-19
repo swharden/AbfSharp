@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace AbfSharp.AbfReader
+namespace AbfSharp.HeaderData.Abf2
 {
     public class HeaderSection
     {

@@ -1,6 +1,4 @@
-﻿using AbfSharp.AbfReader;
-using AbfSharp.Enums;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -16,8 +14,7 @@ namespace AbfSharp
     {
         public string Path { get; private set; }
 
-        public float FileVersionNumber { get; private set; }
-        public OperationMode OperationMode { get; private set; }
+        public readonly HeaderData.Header Header;
 
         public RawABF(string abfFilePath)
         {
@@ -29,25 +26,11 @@ namespace AbfSharp
             // open the file and locally maintain the reader
             BinaryReader reader = new(File.Open(Path, FileMode.Open));
 
-            // read the first few bytes of the file to confirm it's an ABF
-            byte[] signatureBytes = reader.ReadBytes(4);
-            string signature = Encoding.ASCII.GetString(signatureBytes);
-            if (!signature.StartsWith("ABF"))
-                throw new FileLoadException($"file does not have expected ABF signature: {Path}");
+            // read the header into memory
+            Header = new(reader);
 
-            // character 4 indicaites if its an ABF1 or ABF2 format.
-            // In ABF1 files I've seen byte 4 as 20 and also 50, but always should be a space.
-            RawReader abfReader;
-            if (signature == "ABF ")
-                abfReader = new RawReaderABF1(reader);
-            else if (signature == "ABF2")
-                abfReader = new RawReaderABF2(reader);
-            else
-                throw new FileLoadException($"unsupported ABF version (signature: {BitConverter.ToString(signatureBytes)}");
-
-            // look things up in an ABF-type-dependent way
-            OperationMode = abfReader.GetOperationMode();
-            FileVersionNumber = abfReader.GetFileVersion();
+            // read the sweeps into memory
+            // TODO: read sweeps
 
             // close the file
             reader.Close();

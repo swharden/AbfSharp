@@ -17,7 +17,7 @@ namespace AbfSharpTests
                 var official = new AbfSharp.ABF(abfFilePath);
                 var raw = new AbfSharp.RawABF(abfFilePath);
                 Console.WriteLine(System.IO.Path.GetFileName(abfFilePath));
-                Assert.AreEqual(official.Header.HeaderStruct.fFileVersionNumber, raw.FileVersionNumber);
+                Assert.AreEqual(official.Header.HeaderStruct.fFileVersionNumber, raw.Header.FileVersionNumber);
             }
         }
 
@@ -29,7 +29,7 @@ namespace AbfSharpTests
                 var official = new AbfSharp.ABF(abfFilePath);
                 var raw = new AbfSharp.RawABF(abfFilePath);
                 Console.WriteLine(System.IO.Path.GetFileName(abfFilePath));
-                Assert.AreEqual(official.Header.HeaderStruct.nOperationMode, (int)raw.OperationMode);
+                Assert.AreEqual(official.Header.HeaderStruct.nOperationMode, (int)raw.Header.OperationMode);
             }
         }
     }

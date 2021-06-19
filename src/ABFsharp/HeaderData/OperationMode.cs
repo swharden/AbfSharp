@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace AbfSharp.Enums
+namespace AbfSharp.HeaderData
 {
     public enum OperationMode
     {

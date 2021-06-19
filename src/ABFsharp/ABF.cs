@@ -13,6 +13,8 @@ namespace AbfSharp
         /// </summary>
         public readonly AbfHeader Header;
 
+        public readonly HeaderData.Header HeaderNew;
+
         /// <summary>
         /// Sweep data managed in memory
         /// </summary>
@@ -62,6 +64,7 @@ namespace AbfSharp
 
             using ABFFIO.AbfInterface abffio = new(filePath);
             Header = new AbfHeader(filePath, abffio);
+            HeaderNew = new(abffio.header);
             //EpochTable = new Epoch.EpochTable(abffio.header);
             Data = new AbfData(Header.sweepCount, Header.channelCount, Header.sweepLengthPoints);
 

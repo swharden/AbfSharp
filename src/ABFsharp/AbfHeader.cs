@@ -3,6 +3,7 @@ using System;
 
 namespace AbfSharp
 {
+    [Obsolete("move toward the new header class")]
     public class AbfHeader
     {
         // info that does not change as sweeps/channels change
