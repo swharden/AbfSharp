@@ -81,6 +81,22 @@ namespace AbfSharp.HeaderData
         /// </summary>
         public readonly AdcDataInfo[] AdcDataInfo;
 
+        /// <summary>
+        /// Day the ABF recording was started (Format YYMMDD)
+        /// </summary>
+        public readonly UInt32 uFileStartDate;
+
+        /// <summary>
+        /// Time (milliseconds after midnight) the ABF recording was started.
+        /// </summary>
+        public readonly UInt32 uFileStartTimeMS;
+
+        /// <summary>
+        /// When the ABF recording was started.
+        /// </summary>
+        public DateTime FileStart;
+
+        // TODO: document this
         public readonly Int16[] nADCPtoLChannelMap;
 
         /// <summary>
@@ -115,9 +131,18 @@ namespace AbfSharp.HeaderData
             nADCPtoLChannelMap = IsAbf1 ? Abf1Header.nADCPtoLChannelMap : Abf2Header.AdcSection.nADCPtoLChannelMap;
             Creator = IsAbf1 ? Abf1Header.sCreatorInfo : Abf2Header.StringsSection.Strings[Abf2Header.HeaderSection.uCreatorNameIndex];
             CreatorVersion = IsAbf1 ? Abf1Header.CreatorVersion : Abf2Header.HeaderSection.CreatorVersion;
-
             Modifier = IsAbf1 ? Abf1Header.sModifierInfo : Abf2Header.StringsSection.Strings[Abf2Header.HeaderSection.uModifierNameIndex];
             ModifierVersion = IsAbf1 ? Abf1Header.ModifierVersion : Abf2Header.HeaderSection.ModifierVersion;
+
+            uFileStartDate = IsAbf1
+                ? Abf1Header.uFileStartDate
+                : Abf2Header.HeaderSection.uFileStartDate;
+
+            uFileStartTimeMS = IsAbf1
+                ? ((uint)Abf1Header.lFileStartTime) * 1000 + (uint)Abf1Header.nFileStartMillisecs
+                : Abf2Header.HeaderSection.uFileStartTimeMS;
+
+            FileStart = AbfDateTime(uFileStartDate, uFileStartTimeMS);
 
             // scaling information required to convert ADC bytes to final values
             AdcDataInfo = new AdcDataInfo[ChannelCount];
@@ -136,6 +161,29 @@ namespace AbfSharp.HeaderData
             }
         }
 
+        /// <summary>
+        /// Convert a MMMMDDYY date and time of day (milliseconds past midnight) to a .NET DateTime
+        /// </summary>
+        private static DateTime AbfDateTime(uint dateCode, uint dayTimeMS)
+        {
+            uint day = dateCode % 100;
+            dateCode /= 100;
+            uint month = dateCode % 100;
+            dateCode /= 100;
+            uint year = dateCode;
+            try
+            {
+                return new DateTime((int)year, (int)month, (int)day) + TimeSpan.FromMilliseconds(dayTimeMS);
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                return new DateTime();
+            }
+        }
+
+        /// <summary>
+        /// Use the ABF convention to rearrange bytes and return them as a .NET GUID
+        /// </summary>
         private static Guid MakeGuid(byte[] bytes)
         {
             if (bytes is null || bytes.Length != 16)

@@ -16,6 +16,7 @@ namespace AbfSharp.HeaderData.Abf1
         public readonly int nNumPointsIgnored;
         public readonly int lActualEpisodes;
         public readonly int lFileStartDate;
+        public readonly uint uFileStartDate;
         public readonly int lFileStartTime;
         public readonly int lStopwatchTime;
         public readonly float fHeaderVersionNumber;
@@ -91,7 +92,22 @@ namespace AbfSharp.HeaderData.Abf1
             lActualAcqLength = reader.ReadInt16();
             nNumPointsIgnored = reader.ReadInt16();
             lActualEpisodes = reader.ReadInt32();
+
+            // fix the Y2K bug and store YYYYMMDD in uFileStartDate
+            reader.BaseStream.Seek(20, SeekOrigin.Begin);
             lFileStartDate = reader.ReadInt32();
+            int datecode = lFileStartDate;
+            int day = datecode % 100;
+            datecode /= 100;
+            int month = datecode % 100;
+            datecode /= 100;
+            int year = datecode;
+            if (year < 80)
+                year += 2000;
+            if (year < 100)
+                year += 1900;
+            uFileStartDate = (uint)(year) * 10000 + (uint)month * 100 + (uint)day;
+
             lFileStartTime = reader.ReadInt32();
             lStopwatchTime = reader.ReadInt16();
             fHeaderVersionNumber = reader.ReadSingle();
@@ -155,7 +171,7 @@ namespace AbfSharp.HeaderData.Abf1
 
             reader.BaseStream.Seek(442, SeekOrigin.Begin);
             sADCChannelName = ReadArrayStrings(reader, ABF_ADCCOUNT, 10);
-            
+
             reader.BaseStream.Seek(602, SeekOrigin.Begin);
             sADCUnits = ReadArrayStrings(reader, ABF_ADCCOUNT, 8);
             fADCProgrammableGain = ReadArraySingle(reader, ABF_ADCCOUNT);
