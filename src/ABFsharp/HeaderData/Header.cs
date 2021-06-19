@@ -45,6 +45,12 @@ namespace AbfSharp.HeaderData
         public OperationMode OperationMode { get; private set; }
 
         /// <summary>
+        /// A NON-unique ABF file identifier.
+        /// Sequential recordings using the same protocol have the same GUID...
+        /// </summary>
+        public Guid GUID { get; private set; }
+
+        /// <summary>
         /// Populate the AbfSharp header using an ABFFIO struct
         /// </summary>
         public Header(ABFFIO.Structs.ABFFileHeader header)
@@ -70,6 +76,20 @@ namespace AbfSharp.HeaderData
 
             FileVersionNumber = IsAbf1 ? Abf1Header.fFileVersionNumber : Abf2Header.HeaderSection.fFileVersionNumber;
             OperationMode = IsAbf1 ? (OperationMode)Abf1Header.nOperationMode : (OperationMode)Abf2Header.ProtocolSection.nOperationMode;
+            GUID = IsAbf1 ? MakeGuid(Abf1Header.uFileGUID) : MakeGuid(Abf2Header.HeaderSection.FileGUID);
+        }
+
+        private static Guid MakeGuid(byte[] bytes)
+        {
+            if (bytes is null || bytes.Length != 16)
+                throw new ArgumentException("bytes must be length 16");
+
+            byte[] bytes2 = new byte[16];
+            int[] indexes = { 3, 2, 1, 0, 5, 4, 7, 6, 8, 9, 10, 11, 12, 13, 14, 15 };
+            for (int i = 0; i < 16; i++)
+                bytes2[i] = bytes[indexes[i]];
+
+            return new Guid(bytes);
         }
     }
 }

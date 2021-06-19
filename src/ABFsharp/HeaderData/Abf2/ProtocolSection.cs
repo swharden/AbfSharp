@@ -9,7 +9,7 @@ namespace AbfSharp.HeaderData.Abf2
     {
         private const int BLOCKSIZE = 512;
 
-        public int nOperationMode { get; private set; }
+        public readonly int nOperationMode;
 
         public ProtocolSection(BinaryReader reader)
         {

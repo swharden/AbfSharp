@@ -19,7 +19,7 @@ namespace AbfSharp.HeaderData.Abf2
         public readonly UInt16 nSimultaneousScan;
         public readonly UInt16 nCRCEnable;
         public readonly UInt32 uFileCRC;
-        public readonly UInt32 FileGUID;
+        public readonly byte[] FileGUID;
         public readonly UInt32 unknown1;
         public readonly UInt32 unknown2;
         public readonly UInt32 unknown3;
@@ -48,10 +48,7 @@ namespace AbfSharp.HeaderData.Abf2
             nSimultaneousScan = reader.ReadUInt16();
             nCRCEnable = reader.ReadUInt16();
             uFileCRC = reader.ReadUInt32();
-            FileGUID = reader.ReadUInt32();
-            unknown1 = reader.ReadUInt32();
-            unknown2 = reader.ReadUInt32();
-            unknown3 = reader.ReadUInt32();
+            FileGUID = reader.ReadBytes(16);
             uCreatorVersion = reader.ReadUInt32();
             uCreatorNameIndex = reader.ReadUInt32();
             uModifierVersion = reader.ReadUInt32();

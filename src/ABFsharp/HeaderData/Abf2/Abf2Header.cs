@@ -7,8 +7,8 @@ namespace AbfSharp.HeaderData.Abf2
 {
     public class Abf2Header
     {
-        public HeaderSection HeaderSection { get; private set; }
-        public ProtocolSection ProtocolSection { get; private set; }
+        public readonly HeaderSection HeaderSection;
+        public readonly ProtocolSection ProtocolSection;
         public Abf2Header(BinaryReader reader)
         {
             HeaderSection = new(reader);
