@@ -9,16 +9,16 @@ namespace AbfSharp.HeaderData
     /// </summary>
     public class AdcDataInfo
     {
-        public readonly Int16 nDataFormat;
+        public readonly uint nDataFormat;
         public readonly float fInstrumentOffset;
         public readonly float fSignalOffset;
         public readonly float fInstrumentScaleFactor;
         public readonly float fSignalGain;
         public readonly float fADCProgrammableGain;
-        public readonly Int32 lADCResolution;
+        public readonly uint lADCResolution;
         public readonly float fADCRange;
 
-        public AdcDataInfo(Int16 nDataFormat, float fInstrumentOffset, float fSignalOffset, float fInstrumentScaleFactor, float fSignalGain, float fADCProgrammableGain, Int32 lADCResolution, float fADCRange)
+        public AdcDataInfo(uint nDataFormat, float fInstrumentOffset, float fSignalOffset, float fInstrumentScaleFactor, float fSignalGain, float fADCProgrammableGain, uint lADCResolution, float fADCRange)
         {
             this.nDataFormat = nDataFormat;
             this.fInstrumentOffset = fInstrumentOffset;

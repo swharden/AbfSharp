@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace AbfSharp.HeaderData
@@ -60,6 +61,9 @@ namespace AbfSharp.HeaderData
         /// </summary>
         public readonly AdcDataInfo[] AdcDataInfo;
 
+        public readonly Int16[] nADCPtoLChannelMap;
+        public readonly Int16[] nADCSamplingSeq;
+
         /// <summary>
         /// Populate the AbfSharp header using an ABFFIO struct
         /// </summary>
@@ -84,10 +88,29 @@ namespace AbfSharp.HeaderData
             else
                 throw new FileLoadException($"invalid ABF signature: {BitConverter.ToString(signatureBytes)}");
 
+            // basic information about the ABF
             FileVersionNumber = IsAbf1 ? Abf1Header.fFileVersionNumber : Abf2Header.HeaderSection.fFileVersionNumber;
             OperationMode = IsAbf1 ? (OperationMode)Abf1Header.nOperationMode : (OperationMode)Abf2Header.ProtocolSection.nOperationMode;
             GUID = IsAbf1 ? MakeGuid(Abf1Header.uFileGUID) : MakeGuid(Abf2Header.HeaderSection.FileGUID);
             ChannelCount = IsAbf1 ? (uint)Abf1Header.nADCNumChannels : Abf2Header.AdcSection.Count;
+            nADCPtoLChannelMap = IsAbf1 ? Abf1Header.nADCPtoLChannelMap : Abf2Header.AdcSection.nADCPtoLChannelMap;
+            nADCSamplingSeq = IsAbf1 ? Abf1Header.nADCSamplingSeq : Abf2Header.AdcSection.nADCSamplingSeq;
+
+            // scaling information required to convert ADC bytes to final values
+            AdcDataInfo = new AdcDataInfo[ChannelCount];
+            for (int i = 0; i < ChannelCount; i++)
+            {
+                AdcDataInfo[i] = new(
+                    nDataFormat: IsAbf1 ? (uint)Abf1Header.nDataFormat : Abf2Header.HeaderSection.nDataFormat,
+                    fInstrumentOffset: IsAbf1 ? Abf1Header.fInstrumentOffset[i] : Abf2Header.AdcSection.fInstrumentOffset[i],
+                    fSignalOffset: IsAbf1 ? Abf1Header.fSignalOffset[i] : Abf2Header.AdcSection.fSignalOffset[i],
+                    fInstrumentScaleFactor: IsAbf1 ? Abf1Header.fInstrumentScaleFactor[i] : Abf2Header.AdcSection.fInstrumentScaleFactor[i],
+                    fSignalGain: IsAbf1 ? Abf1Header.fSignalGain[i] : Abf2Header.AdcSection.fSignalGain[i],
+                    fADCProgrammableGain: IsAbf1 ? Abf1Header.fADCProgrammableGain[i] : Abf2Header.AdcSection.fADCProgrammableGain[i],
+                    lADCResolution: IsAbf1 ? (uint)Abf1Header.lADCResolution : Abf2Header.ProtocolSection.lADCResolution,
+                    fADCRange: IsAbf1 ? Abf1Header.fADCRange : Abf2Header.ProtocolSection.fADCRange
+                    );
+            }
         }
 
         private static Guid MakeGuid(byte[] bytes)

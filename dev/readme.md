@@ -1,0 +1,11 @@
+## Resources
+* [pyABF: sample data](https://github.com/swharden/pyABF/tree/master/data)
+* [pyABF: abf.py](https://github.com/swharden/pyABF/blob/master/src/pyabf/abf.py)
+* [pyABF: abfHeader.py](https://github.com/swharden/pyABF/blob/master/src/pyabf/abfHeader.py)
+* [pyABF: ABF1 notes](https://swharden.com/pyabf/abf1-file-format/)
+* [pyABF: ABF2 notes](https://swharden.com/pyabf/abf2-file-format/)
+* [abfheadr.cpp](https://github.com/swharden/ABFsharp/blob/5b79204068aec7258be6f3c02bd2ca6c125bab5c/dev/ABFFIO/axon32/AxAbfFio32/abfheadr.cpp)
+* [abfload.m](https://github.com/fcollman/abfload/blob/master/abfload.m)
+* [StimFit: axon2](https://git.ist.ac.at/alois.schloegl/stimfit/-/tree/c46763795835b9c1d0b0ac7913e44a59249d6420/src/libstfio/abf/axon2)
+* [readABF.R](https://rdrr.io/github/Zabolekar/abfReader/src/R/readABF.R)
+* [data scaling algorithm](https://support.moleculardevices.com/s/article/Convert-data-file-from-another-program-to-an-ABF-file-so-that-it-can-be-read-by-pCLAMP)
