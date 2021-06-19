@@ -45,7 +45,14 @@ namespace AbfSharp.HeaderData.Abf1
         public readonly Int32 lADCResolution;
         public readonly Int32 lDACResolution;
 
+        // Group 6 - Environmental Information (118 bytes)
+        public readonly Int16 nExperimentType;
+        public readonly string sCreatorInfo;
+        public readonly string sFileCommentOld;
+        public readonly Int16 nFileStartMillisecs;
+
         // Group 6 Extended - Environmental Information  (898 bytes)
+        /*
         public readonly Int16[] nTelegraphEnable;
         public readonly Int16[] nTelegraphInstrument;
         public readonly Single[] fTelegraphAdditGain;
@@ -53,6 +60,7 @@ namespace AbfSharp.HeaderData.Abf1
         public readonly Single[] fTelegraphMembraneCap;
         public readonly Int16[] nTelegraphMode;
         public readonly Int16[] nTelegraphDACScaleFactorEnable;
+        */
 
         // Group 7
         public readonly Int16[] nADCPtoLChannelMap = new Int16[16];
@@ -129,6 +137,13 @@ namespace AbfSharp.HeaderData.Abf1
             lADCResolution = reader.ReadInt32();
             lDACResolution = reader.ReadInt32();
 
+            // GROUP 6 - Environmental Information (118 bytes)
+            reader.BaseStream.Seek(294, SeekOrigin.Begin);
+            sCreatorInfo = new string(reader.ReadChars(15)).Replace("\0", "").Trim();
+            reader.ReadChars(1);
+            sFileCommentOld = new string(reader.ReadChars(56)).Trim();
+            nFileStartMillisecs = reader.ReadInt16();
+
             // GROUP 7 - Multi-channel information (1044 bytes)
 
             reader.BaseStream.Seek(378, SeekOrigin.Begin);
@@ -174,7 +189,7 @@ namespace AbfSharp.HeaderData.Abf1
             reader.BaseStream.Seek(5282, SeekOrigin.Begin);
             uFileGUID = reader.ReadBytes(16);
         }
-        
+
         private static Int16[] ReadArrayInt16(BinaryReader reader, int size)
         {
             Int16[] arr = new Int16[size];

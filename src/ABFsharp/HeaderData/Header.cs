@@ -46,6 +46,16 @@ namespace AbfSharp.HeaderData
         public OperationMode OperationMode { get; private set; }
 
         /// <summary>
+        /// Name of the program that created this ABF file
+        /// </summary>
+        public readonly string Creator;
+
+        /// <summary>
+        /// Version of the program that created this ABF file
+        /// </summary>
+        public readonly Version CreatorVersion;
+
+        /// <summary>
         /// A NON-unique ABF file identifier.
         /// Sequential recordings using the same protocol have the same GUID...
         /// </summary>
@@ -93,6 +103,7 @@ namespace AbfSharp.HeaderData
             GUID = IsAbf1 ? MakeGuid(Abf1Header.uFileGUID) : MakeGuid(Abf2Header.HeaderSection.FileGUID);
             ChannelCount = IsAbf1 ? (uint)Abf1Header.nADCNumChannels : Abf2Header.AdcSection.Count;
             nADCPtoLChannelMap = IsAbf1 ? Abf1Header.nADCPtoLChannelMap : Abf2Header.AdcSection.nADCPtoLChannelMap;
+            Creator = IsAbf1 ? Abf1Header.sCreatorInfo : Abf2Header.StringsSection.Strings[Abf2Header.HeaderSection.uCreatorNameIndex];
 
             // scaling information required to convert ADC bytes to final values
             AdcDataInfo = new AdcDataInfo[ChannelCount];

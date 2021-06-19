@@ -70,9 +70,6 @@ namespace AbfSharpTests.RawAbf
         {
             foreach (AbfSharp.ABF official in OfficialABFs)
             {
-                if (!official.Path.Contains("130618-1-12"))
-                    continue;
-
                 var officialHeader = official.Header.HeaderStruct;
                 var raw = new AbfSharp.RawABF(official.Path);
                 Console.WriteLine($"ABF: {System.IO.Path.GetFileName(official.Path)} Ver={raw.Header.FileVersionNumber}");
@@ -156,6 +153,18 @@ namespace AbfSharpTests.RawAbf
                     Assert.AreEqual(officialHeader.lADCResolution, thisChannelInfo.lADCResolution);
                     Assert.AreEqual(officialHeader.fADCRange, thisChannelInfo.fADCRange);
                 }
+            }
+        }
+
+        [Test]
+        public void Test_MatchesOfficial_Creator()
+        {
+            foreach (AbfSharp.ABF official in OfficialABFs)
+            {
+                var raw = new AbfSharp.RawABF(official.Path);
+
+                Console.WriteLine($"{System.IO.Path.GetFileName(official.Path)} {raw.Header.FileVersionNumber}");
+                Assert.AreEqual(official.Header.HeaderStruct.sCreatorInfo.Trim(), raw.Header.Creator);
             }
         }
     }
