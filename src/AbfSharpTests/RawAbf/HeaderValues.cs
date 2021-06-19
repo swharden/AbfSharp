@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AbfSharpTests
+namespace AbfSharpTests.RawAbf
 {
-    class RawAbf
+    class HeaderValues
     {
         [Test]
         public void Test_MatchesOfficial_FileVersion()
