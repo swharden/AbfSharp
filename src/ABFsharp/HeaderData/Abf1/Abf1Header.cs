@@ -20,6 +20,9 @@ namespace AbfSharp.HeaderData.Abf1
         public readonly int nFileType;
         public readonly int nMSBinFormat;
 
+        // GROUP 3
+        public readonly Int16 nADCNumChannels;
+
         // GROUP 18
         public readonly byte[] uFileGUID;
 
@@ -62,9 +65,13 @@ namespace AbfSharp.HeaderData.Abf1
             self.nDataFormat = readStruct(fb, "h", 100)
 
             # missing entries
+            */
 
-            # GROUP 3 - Trial hierarchy information (82 bytes)
-            self.nADCNumChannels = readStruct(fb, "h", 120)
+            // GROUP 3 - Trial hierarchy information (82 bytes)
+            reader.BaseStream.Seek(120, SeekOrigin.Begin);
+            nADCNumChannels = reader.ReadInt16();
+
+            /*
             self.fADCSampleInterval = readStruct(fb, "f", 122)
             # missing entries
             self.fSynchTimeUnit = readStruct(fb, "f", 130)
@@ -73,7 +80,9 @@ namespace AbfSharp.HeaderData.Abf1
             self.lPreTriggerSamples = readStruct(fb, "i", 142)
             self.lEpisodesPerRun = readStruct(fb, "i", 146)
             # missing entries
+            */
 
+            /*
             # GROUP 4 - Display Parameters (44 bytes)
             # missing entries
 

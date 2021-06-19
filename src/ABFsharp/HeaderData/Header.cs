@@ -51,6 +51,16 @@ namespace AbfSharp.HeaderData
         public Guid GUID { get; private set; }
 
         /// <summary>
+        /// Number of ADC channels
+        /// </summary>
+        public readonly uint ChannelCount;
+
+        /// <summary>
+        /// Stores data scaling information for each ADC channel.
+        /// </summary>
+        public readonly AdcDataInfo[] AdcDataInfo;
+
+        /// <summary>
         /// Populate the AbfSharp header using an ABFFIO struct
         /// </summary>
         public Header(ABFFIO.Structs.ABFFileHeader header)
@@ -77,6 +87,7 @@ namespace AbfSharp.HeaderData
             FileVersionNumber = IsAbf1 ? Abf1Header.fFileVersionNumber : Abf2Header.HeaderSection.fFileVersionNumber;
             OperationMode = IsAbf1 ? (OperationMode)Abf1Header.nOperationMode : (OperationMode)Abf2Header.ProtocolSection.nOperationMode;
             GUID = IsAbf1 ? MakeGuid(Abf1Header.uFileGUID) : MakeGuid(Abf2Header.HeaderSection.FileGUID);
+            ChannelCount = IsAbf1 ? (uint)Abf1Header.nADCNumChannels : Abf2Header.AdcSection.Count;
         }
 
         private static Guid MakeGuid(byte[] bytes)
