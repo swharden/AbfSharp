@@ -53,7 +53,7 @@ namespace AbfSharp.HeaderData
         /// <summary>
         /// Version of the program that created this ABF file
         /// </summary>
-        public readonly Version CreatorVersion;
+        public readonly string CreatorVersion;
 
         /// <summary>
         /// A NON-unique ABF file identifier.
@@ -104,6 +104,7 @@ namespace AbfSharp.HeaderData
             ChannelCount = IsAbf1 ? (uint)Abf1Header.nADCNumChannels : Abf2Header.AdcSection.Count;
             nADCPtoLChannelMap = IsAbf1 ? Abf1Header.nADCPtoLChannelMap : Abf2Header.AdcSection.nADCPtoLChannelMap;
             Creator = IsAbf1 ? Abf1Header.sCreatorInfo : Abf2Header.StringsSection.Strings[Abf2Header.HeaderSection.uCreatorNameIndex];
+            CreatorVersion = IsAbf1 ? Abf1Header.CreatorVersion : Abf2Header.HeaderSection.CreatorVersion;
 
             // scaling information required to convert ADC bytes to final values
             AdcDataInfo = new AdcDataInfo[ChannelCount];

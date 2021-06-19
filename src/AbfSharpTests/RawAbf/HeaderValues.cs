@@ -163,8 +163,17 @@ namespace AbfSharpTests.RawAbf
             {
                 var raw = new AbfSharp.RawABF(official.Path);
 
-                Console.WriteLine($"{System.IO.Path.GetFileName(official.Path)} {raw.Header.FileVersionNumber}");
                 Assert.AreEqual(official.Header.HeaderStruct.sCreatorInfo.Trim(), raw.Header.Creator);
+
+                string officialCreatorVersion = string.Join(".", new Int16[]
+                {
+                    official.Header.HeaderStruct.nCreatorMajorVersion,
+                    official.Header.HeaderStruct.nCreatorMinorVersion,
+                    official.Header.HeaderStruct.nCreatorBugfixVersion,
+                    official.Header.HeaderStruct.nCreatorBuildVersion
+                });
+
+                Assert.AreEqual(officialCreatorVersion, raw.Header.CreatorVersion);
             }
         }
     }

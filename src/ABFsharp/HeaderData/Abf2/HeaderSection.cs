@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace AbfSharp.HeaderData.Abf2
@@ -28,6 +29,7 @@ namespace AbfSharp.HeaderData.Abf2
         public readonly UInt32 uModifierVersion;
         public readonly UInt32 uModifierNameIndex;
         public readonly UInt32 uProtocolPathIndex;
+        public readonly string CreatorVersion;
 
         public HeaderSection(BinaryReader reader)
         {
@@ -54,6 +56,10 @@ namespace AbfSharp.HeaderData.Abf2
             uModifierVersion = reader.ReadUInt32();
             uModifierNameIndex = reader.ReadUInt32();
             uProtocolPathIndex = reader.ReadUInt32();
+
+            byte[] creatorVersionBytes = BitConverter.GetBytes(uCreatorVersion);
+
+            CreatorVersion = string.Join(".", creatorVersionBytes.Reverse());
         }
     }
 }

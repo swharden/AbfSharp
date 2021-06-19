@@ -52,15 +52,11 @@ namespace AbfSharp.HeaderData.Abf1
         public readonly Int16 nFileStartMillisecs;
 
         // Group 6 Extended - Environmental Information  (898 bytes)
-        /*
-        public readonly Int16[] nTelegraphEnable;
-        public readonly Int16[] nTelegraphInstrument;
-        public readonly Single[] fTelegraphAdditGain;
-        public readonly Single[] fTelegraphFilter;
-        public readonly Single[] fTelegraphMembraneCap;
-        public readonly Int16[] nTelegraphMode;
-        public readonly Int16[] nTelegraphDACScaleFactorEnable;
-        */
+        public readonly Int16 nCreatorMajorVersion;
+        public readonly Int16 nCreatorMinorVersion;
+        public readonly Int16 nCreatorBugfixVersion;
+        public readonly Int16 nCreatorBuildVersion;
+        public readonly string CreatorVersion;
 
         // Group 7
         public readonly Int16[] nADCPtoLChannelMap = new Int16[16];
@@ -144,46 +140,38 @@ namespace AbfSharp.HeaderData.Abf1
             sFileCommentOld = new string(reader.ReadChars(56)).Trim();
             nFileStartMillisecs = reader.ReadInt16();
 
+            reader.BaseStream.Seek(5798, SeekOrigin.Begin);
+            nCreatorMajorVersion = reader.ReadInt16();
+            nCreatorMinorVersion = reader.ReadInt16();
+            nCreatorBugfixVersion = reader.ReadInt16();
+            nCreatorBuildVersion = reader.ReadInt16();
+
+            // error checking
+            int[] creatorVersionParts = { nCreatorMajorVersion, nCreatorMinorVersion, nCreatorBugfixVersion, nCreatorBuildVersion };
+            for (int i = 0; i < creatorVersionParts.Length; i++)
+            {
+                if (creatorVersionParts[i] < 0)
+                    creatorVersionParts[i] = 0;
+                if (creatorVersionParts[i] > 999)
+                    creatorVersionParts[i] = 0;
+            }
+            CreatorVersion = string.Join(".", creatorVersionParts);
+
             // GROUP 7 - Multi-channel information (1044 bytes)
-
             reader.BaseStream.Seek(378, SeekOrigin.Begin);
-
-            for (int i = 0; i < 16; i++)
-                nADCPtoLChannelMap[i] = reader.ReadInt16();
-
-            for (int i = 0; i < 16; i++)
-                nADCSamplingSeq[i] = reader.ReadInt16();
-
-            for (int i = 0; i < 16; i++)
-                sADCChannelName[i] = string.Join("", reader.ReadChars(10));
-
-            for (int i = 0; i < 16; i++)
-                sADCUnits[i] = string.Join("", reader.ReadChars(8));
-
-            for (int i = 0; i < 16; i++)
-                fADCProgrammableGain[i] = reader.ReadSingle();
-
-            // missing
+            nADCPtoLChannelMap = ReadArrayInt16(reader, ABF_ADCCOUNT);
+            nADCSamplingSeq = ReadArrayInt16(reader, ABF_ADCCOUNT);
+            sADCChannelName = ReadArrayStrings(reader, ABF_ADCCOUNT, 10);
+            sADCUnits = ReadArrayStrings(reader, ABF_ADCCOUNT, 8);
+            fADCProgrammableGain = ReadArraySingle(reader, ABF_ADCCOUNT);
 
             reader.BaseStream.Seek(922, SeekOrigin.Begin);
-
-            for (int i = 0; i < 16; i++)
-                fInstrumentScaleFactor[i] = reader.ReadSingle();
-
-            for (int i = 0; i < 16; i++)
-                fInstrumentOffset[i] = reader.ReadSingle();
-
-            for (int i = 0; i < 16; i++)
-                fSignalGain[i] = reader.ReadSingle();
-
-            for (int i = 0; i < 16; i++)
-                fSignalOffset[i] = reader.ReadSingle();
-
-            for (int i = 0; i < 4; i++)
-                sDACChannelName[i] = string.Join("", reader.ReadChars(10));
-
-            for (int i = 0; i < 4; i++)
-                sDACChannelUnit[i] = string.Join("", reader.ReadChars(8));
+            fInstrumentScaleFactor = ReadArraySingle(reader, ABF_ADCCOUNT);
+            fInstrumentOffset = ReadArraySingle(reader, ABF_ADCCOUNT);
+            fSignalGain = ReadArraySingle(reader, ABF_ADCCOUNT);
+            fSignalOffset = ReadArraySingle(reader, ABF_ADCCOUNT);
+            sDACChannelName = ReadArrayStrings(reader, 4, 10);
+            sDACChannelUnit = ReadArrayStrings(reader, 4, 8);
 
             // GROUP 18 - Application version data (16 bytes)
             reader.BaseStream.Seek(5282, SeekOrigin.Begin);
@@ -204,6 +192,14 @@ namespace AbfSharp.HeaderData.Abf1
             for (int i = 0; i < size; i++)
                 arr[i] = reader.ReadSingle();
             return arr;
+        }
+
+        private static string[] ReadArrayStrings(BinaryReader reader, int stringCount, int stringSize)
+        {
+            string[] strings = new string[stringCount];
+            for (int i = 0; i < stringCount; i++)
+                strings[i] = new string(reader.ReadChars(stringSize));
+            return strings;
         }
     }
 }
