@@ -52,6 +52,17 @@ namespace AbfSharp.HeaderData.Abf1
         public readonly Int16 nFileStartMillisecs;
 
         // Group 6 Extended
+        public readonly Int16[] nTelegraphEnable;
+        public readonly Int16[] nTelegraphInstrument;
+        public readonly Single[] fTelegraphAdditGain;
+        public readonly Single[] fTelegraphFilter;
+        public readonly Single[] fTelegraphMembraneCap;
+        public readonly Int16[] nTelegraphMode;
+        public readonly Int16[] nTelegraphDACScaleFactorEnable;
+        public readonly short nAutoAnalyseEnable;
+        public readonly string sAutoAnalysisMacroName;
+        public readonly string sProtocolPath;
+        public readonly string sFileComment;
         public readonly byte[] FileGuid;
         public readonly float[] fInstrumentHoldingLevel;
         public readonly Int32 ulFileCRC;
@@ -161,11 +172,21 @@ namespace AbfSharp.HeaderData.Abf1
 
             // Extended Group 6 - Extended Environmental Information (898 bytes)
             // https://swharden.com/pyabf/abf1-file-format/#extended-environmental-information-extended-group-6-898-bytes
-            reader.BaseStream.Seek(5282, SeekOrigin.Begin);
-            FileGuid = reader.ReadBytes(16);
-            fInstrumentHoldingLevel = ReadArraySingle(reader, ABF_ADCCOUNT); // 5298
 
-            reader.BaseStream.Seek(5314, SeekOrigin.Begin);
+            reader.BaseStream.Seek(4512, SeekOrigin.Begin);
+            nTelegraphEnable = ReadArrayInt16(reader, 16);
+            nTelegraphInstrument = ReadArrayInt16(reader, 16);
+            fTelegraphAdditGain = ReadArraySingle(reader, 16);
+            fTelegraphFilter = ReadArraySingle(reader, 16);
+            fTelegraphMembraneCap = ReadArraySingle(reader, 16);
+            nTelegraphMode = ReadArrayInt16(reader, 16);
+            nTelegraphDACScaleFactorEnable = ReadArrayInt16(reader, 16);
+            nAutoAnalyseEnable = reader.ReadInt16();
+            sAutoAnalysisMacroName = ReadString(reader, 64);
+            sProtocolPath = ReadString(reader, 256);
+            sFileComment = ReadString(reader, 128);
+            FileGuid = reader.ReadBytes(16);
+            fInstrumentHoldingLevel = ReadArraySingle(reader, 4);
             ulFileCRC = reader.ReadInt32();
             sModifierInfo = new string(reader.ReadChars(16).Where(x => x >= 'A' && x < 'z').ToArray()).Trim();
 
@@ -248,6 +269,13 @@ namespace AbfSharp.HeaderData.Abf1
             for (int i = 0; i < stringCount; i++)
                 strings[i] = new string(reader.ReadChars(stringSize));
             return strings;
+        }
+
+        private static string ReadString(BinaryReader reader, int length)
+        {
+            byte[] bytes = reader.ReadBytes(length);
+            string path = System.Text.Encoding.ASCII.GetString(bytes).Trim();
+            return path.StartsWith("?") ? "" : path;
         }
     }
 }
