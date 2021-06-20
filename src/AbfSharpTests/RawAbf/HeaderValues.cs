@@ -235,5 +235,16 @@ namespace AbfSharpTests.RawAbf
                 Assert.AreEqual(official.Header.HeaderStruct.sProtocolPath.Trim(), raw.Header.sProtocolPath);
             }
         }
+
+        [Test]
+        public void Test_MatchesOfficial_sFileComment()
+        {
+            foreach (AbfSharp.ABF official in OfficialABFs)
+            {
+                var raw = new AbfSharp.RawABF(official.Path);
+                Console.WriteLine($"{System.IO.Path.GetFileName(official.Path)} {raw.Header.FileVersionNumber} {raw.Header.uFileStartDate} {raw.Header.FileStart}");
+                Assert.AreEqual(official.Header.HeaderStruct.sFileComment.Trim(), raw.Header.sFileComment);
+            }
+        }
     }
 }

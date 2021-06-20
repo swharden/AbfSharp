@@ -112,6 +112,11 @@ namespace AbfSharp.HeaderData
         public readonly string sProtocolPath;
 
         /// <summary>
+        /// A text comment placed in the waveform editor window.
+        /// </summary>
+        public readonly string sFileComment;
+
+        /// <summary>
         /// Populate the AbfSharp header using an ABFFIO struct
         /// </summary>
         public Header(ABFFIO.Structs.ABFFileHeader header)
@@ -150,6 +155,7 @@ namespace AbfSharp.HeaderData
             FileStart = AbfDateTime(uFileStartDate, uFileStartTimeMS);
             fDACHoldingLevel = IsAbf1 ? Abf1Header.fDACHoldingLevel : Abf2Header.DacSection.fDACHoldingLevel;
             sProtocolPath = IsAbf1 ? Abf1Header.sProtocolPath : Abf2Header.StringsSection.Strings[Abf2Header.HeaderSection.uProtocolPathIndex];
+            sFileComment = IsAbf1 ? Abf1Header.sFileComment : Abf2Header.StringsSection.Strings[Abf2Header.ProtocolSection.lFileCommentIndex];
 
             // scaling information required to convert ADC bytes to final values
             AdcDataInfo = new AdcDataInfo[ChannelCount];
