@@ -74,7 +74,12 @@ namespace AbfSharp.HeaderData
         /// <summary>
         /// Number of ADC channels
         /// </summary>
-        public readonly uint ChannelCount;
+        public readonly int ChannelCount;
+
+        /// <summary>
+        /// Number of sweeps (gap-free ABFs have 1 sweep)
+        /// </summary>
+        public readonly int SweepCount;
 
         /// <summary>
         /// Stores data scaling information for each ADC channel.
@@ -149,7 +154,8 @@ namespace AbfSharp.HeaderData
             FileVersionNumber = IsAbf1 ? Abf1Header.fFileVersionNumber : Abf2Header.HeaderSection.fFileVersionNumber;
             OperationMode = IsAbf1 ? (OperationMode)Abf1Header.nOperationMode : (OperationMode)Abf2Header.ProtocolSection.nOperationMode;
             GUID = IsAbf1 ? MakeGuid(Abf1Header.FileGuid) : MakeGuid(Abf2Header.HeaderSection.FileGUID);
-            ChannelCount = IsAbf1 ? (uint)Abf1Header.nADCNumChannels : Abf2Header.AdcSection.Count;
+            ChannelCount = IsAbf1 ? Abf1Header.nADCNumChannels : (int)Abf2Header.AdcSection.Count;
+            SweepCount = IsAbf1 ? Abf1Header.lActualEpisodes : (int)Abf2Header.HeaderSection.lActualEpisodes;
             nADCPtoLChannelMap = IsAbf1 ? Abf1Header.nADCPtoLChannelMap : Abf2Header.AdcSection.nADCPtoLChannelMap;
             Creator = IsAbf1 ? Abf1Header.sCreatorInfo : Abf2Header.StringsSection.Strings[Abf2Header.HeaderSection.uCreatorNameIndex];
             CreatorVersion = IsAbf1 ? Abf1Header.CreatorVersion : Abf2Header.HeaderSection.CreatorVersion;
@@ -161,10 +167,9 @@ namespace AbfSharp.HeaderData
             fDACHoldingLevel = IsAbf1 ? Abf1Header.fDACHoldingLevel : Abf2Header.DacSection.fDACHoldingLevel;
             sProtocolPath = IsAbf1 ? Abf1Header.sProtocolPath : Abf2Header.StringsSection.Strings[Abf2Header.HeaderSection.uProtocolPathIndex];
             sFileComment = IsAbf1 ? Abf1Header.sFileComment : Abf2Header.StringsSection.Strings[Abf2Header.ProtocolSection.lFileCommentIndex];
-            
-            // custom fields
             SampleRate = IsAbf1 ? Abf1Header.SampleRate : Abf2Header.SampleRate;
 
+            // TODO: refactor this
             // scaling information required to convert ADC bytes to final values
             AdcDataInfo = new AdcDataInfo[ChannelCount];
             for (int i = 0; i < ChannelCount; i++)

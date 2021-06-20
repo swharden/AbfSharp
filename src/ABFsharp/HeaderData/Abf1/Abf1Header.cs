@@ -108,7 +108,7 @@ namespace AbfSharp.HeaderData.Abf1
             lFileSignature = reader.ReadInt32();
             fFileVersionNumber = reader.ReadSingle();
             nOperationMode = reader.ReadInt16();
-            lActualAcqLength = reader.ReadInt16();
+            lActualAcqLength = reader.ReadInt32();
             nNumPointsIgnored = reader.ReadInt16();
             lActualEpisodes = reader.ReadInt32();
 

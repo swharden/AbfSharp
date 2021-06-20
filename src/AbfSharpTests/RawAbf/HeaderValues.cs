@@ -63,6 +63,22 @@ namespace AbfSharpTests.RawAbf
             }
         }
 
+        [Test]
+        public void Test_MatchesOfficial_SweepCount()
+        {
+            foreach (AbfSharp.ABF official in OfficialABFs)
+            {
+                var raw = new AbfSharp.RawABF(official.Path);
+
+                // TODO: support other operation modes
+                if (raw.Header.OperationMode != AbfSharp.HeaderData.OperationMode.EpisodicStimulation)
+                    continue;
+
+                Console.WriteLine($"{System.IO.Path.GetFileName(official.Path)} {raw.Header.FileVersionNumber} {raw.Header.uFileStartDate} {raw.Header.FileStart}");
+                Assert.AreEqual(official.Header.HeaderStruct.lActualEpisodes, raw.Header.SweepCount);
+            }
+        }
+
         private string ArrayString<T>(T[] arr) => "[" + string.Join(", ", arr.Select(x => x.ToString())) + "]";
 
         [Test]
