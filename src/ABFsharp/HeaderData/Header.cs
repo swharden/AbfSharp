@@ -117,6 +117,11 @@ namespace AbfSharp.HeaderData
         public readonly string sFileComment;
 
         /// <summary>
+        /// Number of points per second (Hz)
+        /// </summary>
+        public int SampleRate;
+
+        /// <summary>
         /// Populate the AbfSharp header using an ABFFIO struct
         /// </summary>
         public Header(ABFFIO.Structs.ABFFileHeader header)
@@ -156,6 +161,9 @@ namespace AbfSharp.HeaderData
             fDACHoldingLevel = IsAbf1 ? Abf1Header.fDACHoldingLevel : Abf2Header.DacSection.fDACHoldingLevel;
             sProtocolPath = IsAbf1 ? Abf1Header.sProtocolPath : Abf2Header.StringsSection.Strings[Abf2Header.HeaderSection.uProtocolPathIndex];
             sFileComment = IsAbf1 ? Abf1Header.sFileComment : Abf2Header.StringsSection.Strings[Abf2Header.ProtocolSection.lFileCommentIndex];
+            
+            // custom fields
+            SampleRate = IsAbf1 ? Abf1Header.SampleRate : Abf2Header.SampleRate;
 
             // scaling information required to convert ADC bytes to final values
             AdcDataInfo = new AdcDataInfo[ChannelCount];

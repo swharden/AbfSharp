@@ -246,5 +246,16 @@ namespace AbfSharpTests.RawAbf
                 Assert.AreEqual(official.Header.HeaderStruct.sFileComment.Trim(), raw.Header.sFileComment);
             }
         }
+
+        [Test]
+        public void Test_MatchesOfficial_SampleRate()
+        {
+            foreach (AbfSharp.ABF official in OfficialABFs)
+            {
+                var raw = new AbfSharp.RawABF(official.Path);
+                Console.WriteLine($"{System.IO.Path.GetFileName(official.Path)} {raw.Header.FileVersionNumber} {raw.Header.uFileStartDate} {raw.Header.FileStart}");
+                Assert.AreEqual((int)(1e6 / official.Header.HeaderStruct.fADCSequenceInterval), raw.Header.SampleRate);
+            }
+        }
     }
 }

@@ -98,6 +98,9 @@ namespace AbfSharp.HeaderData.Abf1
         public readonly string CreatorVersion;
         public readonly string ModifierVersion;
 
+        // CUSTOM
+        public readonly int SampleRate;
+
 
         public Abf1Header(BinaryReader reader)
         {
@@ -219,7 +222,6 @@ namespace AbfSharp.HeaderData.Abf1
             fEpochInitLevel = ReadArraySingle(reader, 20);
 
             // GROUP 18 - (16 bytes)
-            // https://swharden.com/pyabf/abf1-file-format/#application-version-data-group-18-16-bytes
             reader.BaseStream.Seek(5798, SeekOrigin.Begin);
             nMajorVersion = reader.ReadInt16();
             nMinorVersion = reader.ReadInt16();
@@ -232,6 +234,8 @@ namespace AbfSharp.HeaderData.Abf1
             CreatorVersion = VersionString(nMajorVersion, nMinorVersion, nBugfixVersion, nBuildVersion);
             ModifierVersion = VersionString(nModifierMajorVersion, nModifierMinorVersion, nModifierBugfixVersion, nModifierBuildVersion);
 
+            // CUSTOM
+            SampleRate = (int)(1e6 / fADCSampleInterval / nADCNumChannels);
         }
 
         private string VersionString(int a, int b, int c, int d)
