@@ -100,6 +100,12 @@ namespace AbfSharp.HeaderData
         public readonly Int16[] nADCPtoLChannelMap;
 
         /// <summary>
+        /// Holding level for the command signal. 
+        /// This level is used when epochs are not changing the command waveform.
+        /// </summary>
+        public readonly float[] fDACHoldingLevel;
+
+        /// <summary>
         /// Populate the AbfSharp header using an ABFFIO struct
         /// </summary>
         public Header(ABFFIO.Structs.ABFFileHeader header)
@@ -133,16 +139,10 @@ namespace AbfSharp.HeaderData
             CreatorVersion = IsAbf1 ? Abf1Header.CreatorVersion : Abf2Header.HeaderSection.CreatorVersion;
             Modifier = IsAbf1 ? Abf1Header.sModifierInfo : Abf2Header.StringsSection.Strings[Abf2Header.HeaderSection.uModifierNameIndex];
             ModifierVersion = IsAbf1 ? Abf1Header.ModifierVersion : Abf2Header.HeaderSection.ModifierVersion;
-
-            uFileStartDate = IsAbf1
-                ? Abf1Header.uFileStartDate
-                : Abf2Header.HeaderSection.uFileStartDate;
-
-            uFileStartTimeMS = IsAbf1
-                ? ((uint)Abf1Header.lFileStartTime) * 1000 + (uint)Abf1Header.nFileStartMillisecs
-                : Abf2Header.HeaderSection.uFileStartTimeMS;
-
+            uFileStartDate = IsAbf1 ? Abf1Header.uFileStartDate : Abf2Header.HeaderSection.uFileStartDate;
+            uFileStartTimeMS = IsAbf1 ? ((uint)Abf1Header.lFileStartTime) * 1000 + (uint)Abf1Header.nFileStartMillisecs : Abf2Header.HeaderSection.uFileStartTimeMS;
             FileStart = AbfDateTime(uFileStartDate, uFileStartTimeMS);
+            fDACHoldingLevel = IsAbf1 ? Abf1Header.fDACHoldingLevel : Abf2Header.DacSection.fDACHoldingLevel;
 
             // scaling information required to convert ADC bytes to final values
             AdcDataInfo = new AdcDataInfo[ChannelCount];

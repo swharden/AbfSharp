@@ -77,34 +77,34 @@ namespace AbfSharp.HeaderData.Abf2
             Size = reader.ReadUInt32();
             Count = reader.ReadUInt32();
 
-            const int ABF_ADCCOUNT = 16;
-            nADCNum = new Int16[ABF_ADCCOUNT];
-            nTelegraphEnable = new Int16[ABF_ADCCOUNT];
-            nTelegraphInstrument = new Int16[ABF_ADCCOUNT];
-            fTelegraphAdditGain = new Single[ABF_ADCCOUNT];
-            fTelegraphFilter = new Single[ABF_ADCCOUNT];
-            fTelegraphMembraneCap = new Single[ABF_ADCCOUNT];
-            nTelegraphMode = new Int16[ABF_ADCCOUNT];
-            fTelegraphAccessResistance = new Single[ABF_ADCCOUNT];
-            nADCPtoLChannelMap = new Int16[ABF_ADCCOUNT];
-            nADCSamplingSeq = new Int16[ABF_ADCCOUNT];
-            fADCProgrammableGain = new Single[ABF_ADCCOUNT];
-            fADCDisplayAmplification = new Single[ABF_ADCCOUNT];
-            fADCDisplayOffset = new Single[ABF_ADCCOUNT];
-            fInstrumentScaleFactor = new Single[ABF_ADCCOUNT];
-            fInstrumentOffset = new Single[ABF_ADCCOUNT];
-            fSignalGain = new Single[ABF_ADCCOUNT];
-            fSignalOffset = new Single[ABF_ADCCOUNT];
-            fSignalLowpassFilter = new Single[ABF_ADCCOUNT];
-            fSignalHighpassFilter = new Single[ABF_ADCCOUNT];
-            nLowpassFilterType = new Char[ABF_ADCCOUNT];
-            nHighpassFilterType = new Char[ABF_ADCCOUNT];
-            fPostProcessLowpassFilter = new Single[ABF_ADCCOUNT];
-            nPostProcessLowpassFilterType = new Char[ABF_ADCCOUNT];
-            bEnabledDuringPN = new Byte[ABF_ADCCOUNT];
-            nStatsChannelPolarity = new Int16[ABF_ADCCOUNT];
-            lADCChannelNameIndex = new Int32[ABF_ADCCOUNT];
-            lADCUnitsIndex = new Int32[ABF_ADCCOUNT];
+            const int ADC_COUNT = 16;
+            nADCNum = new Int16[ADC_COUNT];
+            nTelegraphEnable = new Int16[ADC_COUNT];
+            nTelegraphInstrument = new Int16[ADC_COUNT];
+            fTelegraphAdditGain = new Single[ADC_COUNT];
+            fTelegraphFilter = new Single[ADC_COUNT];
+            fTelegraphMembraneCap = new Single[ADC_COUNT];
+            nTelegraphMode = new Int16[ADC_COUNT];
+            fTelegraphAccessResistance = new Single[ADC_COUNT];
+            nADCPtoLChannelMap = new Int16[ADC_COUNT];
+            nADCSamplingSeq = new Int16[ADC_COUNT];
+            fADCProgrammableGain = new Single[ADC_COUNT];
+            fADCDisplayAmplification = new Single[ADC_COUNT];
+            fADCDisplayOffset = new Single[ADC_COUNT];
+            fInstrumentScaleFactor = new Single[ADC_COUNT];
+            fInstrumentOffset = new Single[ADC_COUNT];
+            fSignalGain = new Single[ADC_COUNT];
+            fSignalOffset = new Single[ADC_COUNT];
+            fSignalLowpassFilter = new Single[ADC_COUNT];
+            fSignalHighpassFilter = new Single[ADC_COUNT];
+            nLowpassFilterType = new Char[ADC_COUNT];
+            nHighpassFilterType = new Char[ADC_COUNT];
+            fPostProcessLowpassFilter = new Single[ADC_COUNT];
+            nPostProcessLowpassFilterType = new Char[ADC_COUNT];
+            bEnabledDuringPN = new Byte[ADC_COUNT];
+            nStatsChannelPolarity = new Int16[ADC_COUNT];
+            lADCChannelNameIndex = new Int32[ADC_COUNT];
+            lADCUnitsIndex = new Int32[ADC_COUNT];
 
             for (int i = 0; i < Count; i++)
             {
@@ -144,7 +144,7 @@ namespace AbfSharp.HeaderData.Abf2
             // It's not actually stored in the ABF file. It must be calculated later.
             // https://github.com/swharden/ABFsharp/blob/5b79204068aec7258be6f3c02bd2ca6c125bab5c/dev/ABFFIO/axon32/AxAbfFio32/Oldheadr.cpp
             // This solution works for 99% of cases
-            for (int i = 0; i < ABF_ADCCOUNT; i++)
+            for (int i = 0; i < ADC_COUNT; i++)
                 nADCSamplingSeq[i] = 0;
             for (int i = 0; i < Count; i++)
                 nADCSamplingSeq[i] = nADCPtoLChannelMap[nADCNum[i]];

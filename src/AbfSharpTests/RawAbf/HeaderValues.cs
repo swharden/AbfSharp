@@ -212,5 +212,17 @@ namespace AbfSharpTests.RawAbf
                 Assert.AreEqual(official.Header.HeaderStruct.uFileStartTimeMS, raw.Header.uFileStartTimeMS);
             }
         }
+
+        [Test]
+        public void Test_MatchesOfficial_fDACHoldingLevel()
+        {
+            foreach (AbfSharp.ABF official in OfficialABFs)
+            {
+                var raw = new AbfSharp.RawABF(official.Path);
+                Console.WriteLine($"{System.IO.Path.GetFileName(official.Path)} {raw.Header.FileVersionNumber} {raw.Header.uFileStartDate} {raw.Header.FileStart}");
+
+                Assert.AreEqual(official.Header.HeaderStruct.fDACHoldingLevel, raw.Header.fDACHoldingLevel);
+            }
+        }
     }
 }

@@ -69,6 +69,11 @@ namespace AbfSharp.HeaderData.Abf1
         public readonly float[] fSignalOffset = new float[16];
         public readonly string[] sDACChannelName = new string[4]; // 10 chars
         public readonly string[] sDACChannelUnit = new string[4]; // 8 chars
+        public readonly Single[] fDACScaleFactor = new float[4];
+        public readonly Single[] fDACHoldingLevel = new float[4];
+
+        // Group 9
+        public readonly float[] fEpochInitLevel = new float[20];
 
         // Group 18 - Application Version Data
         public readonly Int16 nMajorVersion;
@@ -183,6 +188,14 @@ namespace AbfSharp.HeaderData.Abf1
             fSignalOffset = ReadArraySingle(reader, ABF_ADCCOUNT);
             sDACChannelName = ReadArrayStrings(reader, 4, 10);
             sDACChannelUnit = ReadArrayStrings(reader, 4, 8);
+            fDACScaleFactor = ReadArraySingle(reader, 4);
+
+            reader.BaseStream.Seek(1394, SeekOrigin.Begin);
+            fDACHoldingLevel = ReadArraySingle(reader, 8);
+
+            // Group 9 - Extended Epoch Waveform and Pulses (9,412 bytes)
+            reader.BaseStream.Seek(2348, SeekOrigin.Begin);
+            fEpochInitLevel = ReadArraySingle(reader, 20);
 
             // GROUP 18 - (16 bytes)
             // https://swharden.com/pyabf/abf1-file-format/#application-version-data-group-18-16-bytes
