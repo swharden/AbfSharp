@@ -106,6 +106,12 @@ namespace AbfSharp.HeaderData
         public readonly float[] fDACHoldingLevel;
 
         /// <summary>
+        /// Full path (on the original filesystem) to the protocol file.
+        /// Null if a protocol file was not used.
+        /// </summary>
+        public readonly string sProtocolPath;
+
+        /// <summary>
         /// Populate the AbfSharp header using an ABFFIO struct
         /// </summary>
         public Header(ABFFIO.Structs.ABFFileHeader header)
@@ -143,6 +149,7 @@ namespace AbfSharp.HeaderData
             uFileStartTimeMS = IsAbf1 ? ((uint)Abf1Header.lFileStartTime) * 1000 + (uint)Abf1Header.nFileStartMillisecs : Abf2Header.HeaderSection.uFileStartTimeMS;
             FileStart = AbfDateTime(uFileStartDate, uFileStartTimeMS);
             fDACHoldingLevel = IsAbf1 ? Abf1Header.fDACHoldingLevel : Abf2Header.DacSection.fDACHoldingLevel;
+            sProtocolPath = IsAbf1 ? Abf1Header.sProtocolPath : Abf2Header.StringsSection.Strings[Abf2Header.HeaderSection.uProtocolPathIndex];
 
             // scaling information required to convert ADC bytes to final values
             AdcDataInfo = new AdcDataInfo[ChannelCount];
