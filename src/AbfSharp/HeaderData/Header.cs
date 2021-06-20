@@ -175,6 +175,30 @@ namespace AbfSharp.HeaderData
         public readonly float fSynchTimeUnit;
 
         /// <summary>
+        /// Block number of start of the Synch Array section.
+        /// </summary>
+        public readonly int lSynchArrayPtr;
+
+        /// <summary>
+        /// Number of pairs of entries in the Synch Array section.
+        /// If averaging is enabled, this includes the entry for the averaged sweep.
+        /// </summary>
+        public readonly int lSynchArraySize;
+
+        /// <summary>
+        /// Block number of start of Data section
+        /// </summary>
+        public readonly int lDataSectionPtr;
+
+        /// <summary>
+        /// Format of data points in memory (0 = 2-byte integer; 1 = IEEE 4 byte float)
+        /// </summary>
+        public readonly int nDataFormat;
+
+        public int BytesPerDataPoint => nDataFormat == 0 ? 2 : 4;
+
+
+        /// <summary>
         /// Populate the AbfSharp header using an ABFFIO struct
         /// </summary>
         public Header(ABFFIO.Structs.ABFFileHeader header)
@@ -215,11 +239,15 @@ namespace AbfSharp.HeaderData
             fDACHoldingLevel = IsAbf1 ? Abf1Header.fDACHoldingLevel : Abf2Header.DacSection.fDACHoldingLevel;
             sProtocolPath = IsAbf1 ? Abf1Header.sProtocolPath : Abf2Header.StringsSection.Strings[Abf2Header.HeaderSection.uProtocolPathIndex];
             sFileComment = IsAbf1 ? Abf1Header.sFileComment : Abf2Header.StringsSection.Strings[Abf2Header.ProtocolSection.lFileCommentIndex];
-            SampleRate = IsAbf1 ? Abf1Header.SampleRate : Abf2Header.SampleRate;
+            SampleRate = IsAbf1 ? (int)(1e6 / Abf1Header.fADCSampleInterval / Abf1Header.nADCNumChannels) : (int)(1e6 / Abf2Header.ProtocolSection.fADCSequenceInterval);
             lTagSectionPtr = IsAbf1 ? (uint)Abf1Header.lTagSectionPtr : Abf2Header.TagSection.SectionBlock;
             lNumTagEntries = IsAbf1 ? (uint)Abf1Header.lNumTagEntries : Abf2Header.TagSection.SectionCount;
             fADCSequenceInterval = IsAbf1 ? Abf1Header.fADCSampleInterval * Abf1Header.nADCNumChannels : Abf2Header.ProtocolSection.fADCSequenceInterval;
             fSynchTimeUnit = IsAbf1 ? Abf1Header.fSynchTimeUnit : Abf2Header.ProtocolSection.fSynchTimeUnit;
+            lSynchArrayPtr = IsAbf1 ? Abf1Header.lSynchArrayPtr : (int)Abf2Header.SynchSection.SectionBlock;
+            lSynchArraySize = IsAbf1 ? Abf1Header.lSynchArraySize : (int)Abf2Header.SynchSection.SectionCount;
+            lDataSectionPtr = IsAbf1 ? Abf1Header.lDataSectionPtr : (int)Abf2Header.DataSection.SectionBlock;
+            nDataFormat = IsAbf1 ? Abf1Header.nDataFormat : Abf2Header.HeaderSection.nDataFormat;
 
             // TODO: refactor this
             // scaling information required to convert ADC bytes to final values

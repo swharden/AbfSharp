@@ -13,9 +13,8 @@ namespace AbfSharp.HeaderData.Abf2
         public readonly DacSection DacSection;
         public readonly StringsSection StringsSection;
         public readonly TagSection TagSection;
-
-        // CUSTOM
-        public readonly int SampleRate;
+        public readonly DataSection DataSection;
+        public readonly SynchSection SynchSection;
 
         public Abf2Header(BinaryReader reader)
         {
@@ -25,8 +24,8 @@ namespace AbfSharp.HeaderData.Abf2
             DacSection = new DacSection(reader);
             StringsSection = new StringsSection(reader);
             TagSection = new TagSection(reader);
-
-            SampleRate = (int)(1e6 / ProtocolSection.fADCSequenceInterval);
+            DataSection = new DataSection(reader);
+            SynchSection = new SynchSection(reader);
         }
     }
 }

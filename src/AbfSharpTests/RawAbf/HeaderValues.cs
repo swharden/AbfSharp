@@ -278,14 +278,39 @@ namespace AbfSharpTests.RawAbf
                 // Tag times may be in are in fSynchTimeUnit units.
                 Assert.AreEqual(official.Header.HeaderStruct.fSynchTimeUnit, raw.Header.fSynchTimeUnit);
 
-                //Console.WriteLine($"{raw.Header.fSynchTimeUnit:00.0}\t{System.IO.Path.GetFileName(official.Path)}");
                 if (raw.Header.fSynchTimeUnit != 0)
                 {
                     // TODO: clarify how fSynchTimeUnit can be calculated
-                    //int bytesPerDataPoint = 0;
-                    //double fs = 1e6 / raw.Header.SampleRate / raw.Header.ChannelCount;
+                    double samplePeriod = 1e6 / raw.Header.SampleRate;
+                    Console.WriteLine($"{raw.Header.fSynchTimeUnit:00.0}\t{samplePeriod}\t{System.IO.Path.GetFileName(official.Path)}");
+                    //double fs = 1e6 / raw.Header.SampleRate / raw.Header.ChannelCount / raw.Header.BytesPerDataPoint;
                     //Assert.AreEqual(raw.Header.fSynchTimeUnit, fs);
                 }
+            }
+        }
+
+        [Test]
+        public void Test_MatchesOfficial_DataHeaderValues()
+        {
+            foreach (AbfSharp.ABF official in OfficialABFs)
+            {
+                Console.WriteLine($"v={official.Header.HeaderStruct.fFileVersionNumber:0.0} {System.IO.Path.GetFileName(official.Path)}");
+                var raw = new AbfSharp.RawABF(official.Path);
+                Assert.AreEqual(official.Header.HeaderStruct.lDataSectionPtr, raw.Header.lDataSectionPtr);
+                Assert.AreEqual(official.Header.HeaderStruct.nDataFormat, raw.Header.nDataFormat);
+            }
+        }
+
+        [Test]
+        public void Test_MatchesOfficial_SyncSection()
+        {
+            foreach (AbfSharp.ABF official in OfficialABFs)
+            {
+                Console.WriteLine($"v={official.Header.HeaderStruct.fFileVersionNumber:0.0} {System.IO.Path.GetFileName(official.Path)}");
+                var raw = new AbfSharp.RawABF(official.Path);
+                Assert.AreEqual(official.Header.HeaderStruct.lSynchArrayPtr, raw.Header.lSynchArrayPtr);
+                Assert.AreEqual(official.Header.HeaderStruct.lSynchArraySize, raw.Header.lSynchArraySize);
+                Assert.AreEqual(official.Header.HeaderStruct.fSynchTimeUnit, raw.Header.fSynchTimeUnit);
             }
         }
     }
