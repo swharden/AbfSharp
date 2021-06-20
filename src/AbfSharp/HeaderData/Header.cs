@@ -17,7 +17,7 @@ namespace AbfSharp.HeaderData
         /// Access to low-level ABF1 header variables in memory with names that match the official documentation.
         /// Will be null if this is not an ABF1 file.
         /// </summary>
-        public Abf1.Abf1Header Abf1Header { get; private set; }
+        public readonly Abf1.Abf1Header Abf1Header;
 
         /// <summary>
         /// True if ABF contains a valid ABF1-formatted header
@@ -28,7 +28,7 @@ namespace AbfSharp.HeaderData
         /// Access to low-level ABF2 header variables in memory with names that match the official documentation.
         /// Will be null if this is not an ABF2 file.
         /// </summary>
-        public Abf2.Abf2Header Abf2Header { get; private set; }
+        public readonly Abf2.Abf2Header Abf2Header;
 
         /// <summary>
         /// True if ABF contains a valid ABF2-formatted header
@@ -38,12 +38,27 @@ namespace AbfSharp.HeaderData
         /// <summary>
         /// File format version stored in the data file during acquisition
         /// </summary>
-        public float FileVersionNumber { get; private set; }
+        public readonly float FileVersionNumber;
 
         /// <summary>
         /// Data mode (episodic, gap-free, oscilloscope, etc.)
         /// </summary>
-        public OperationMode OperationMode { get; private set; }
+        public OperationMode OperationMode => (OperationMode)nOperationMode;
+
+        /// <summary>
+        /// Operation mode: 
+        /// 1 = Event-driven, variable length
+        /// 2 = Oscilloscope, loss free (Same as Event-driven, fixed length);
+        /// 3 = Gap-free
+        /// 4 = Oscilloscope, high-speed
+        /// 5 = episodic stimulation (Clampex only)
+        /// </summary>
+        public readonly int nOperationMode;
+
+        /// <summary>
+        /// Total number of ADC samples in the ABF file (sample length * channel count)
+        /// </summary>
+        public readonly int lActualAcqLength;
 
         /// <summary>
         /// Name of the program that created this ABF file
@@ -69,7 +84,7 @@ namespace AbfSharp.HeaderData
         /// A NON-unique ABF file identifier.
         /// Sequential recordings using the same protocol have the same GUID...
         /// </summary>
-        public Guid GUID { get; private set; }
+        public readonly Guid FileGUID;
 
         /// <summary>
         /// Number of ADC channels
@@ -84,7 +99,12 @@ namespace AbfSharp.HeaderData
         /// <summary>
         /// Number of sweeps (gap-free ABFs have 1 sweep)
         /// </summary>
-        public readonly int SweepCount;
+        public int SweepCount => Math.Max(1, lActualEpisodes);
+
+        /// <summary>
+        /// Number of episodic sweeps
+        /// </summary>
+        public readonly int lActualEpisodes;
 
         /// <summary>
         /// Day the ABF recording was started (Format YYMMDD)
@@ -99,10 +119,12 @@ namespace AbfSharp.HeaderData
         /// <summary>
         /// When the ABF recording was started.
         /// </summary>
-        public DateTime FileStart;
+        public DateTime FileStart => AbfDateTime(uFileStartDate, uFileStartTimeMS);
 
         // TODO: document this
-        public readonly Int16[] nADCPtoLChannelMap;
+        public readonly Int16[] nADCPtoLChannelMap; // 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+        // TODO: document this
+        public readonly Int16[] nADCSamplingSeq; // 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 
         /// <summary>
         /// Holding level for the command signal. 
@@ -124,7 +146,7 @@ namespace AbfSharp.HeaderData
         /// <summary>
         /// Number of points per second (Hz)
         /// </summary>
-        public int SampleRate;
+        public double SampleRate => 1e6 / fADCSequenceInterval;
 
         /// <summary>
         /// ADC Channel Names
@@ -181,6 +203,16 @@ namespace AbfSharp.HeaderData
         public readonly int lSynchArraySize;
 
         /// <summary>
+        /// Start time of each sweep (fSynchTimeUnit units)
+        /// </summary>
+        public int[] SynchStartTimes;
+
+        /// <summary>
+        /// Length of each sweep (time points * channel count)
+        /// </summary>
+        public int[] SynchLengths;
+
+        /// <summary>
         /// Block number of start of Data section
         /// </summary>
         public readonly int lDataSectionPtr;
@@ -190,7 +222,23 @@ namespace AbfSharp.HeaderData
         /// </summary>
         public readonly int nDataFormat;
 
-        public int BytesPerDataPoint => nDataFormat == 0 ? 2 : 4;
+        /// <summary>
+        /// Number of bytes for each data point.
+        /// Each sample is this times the number of channels.
+        /// </summary>
+        public int BytesPerValue =>
+            nDataFormat switch
+            {
+                0 => 2,
+                1 => 4,
+                _ => throw new NotImplementedException($"unsupported nDataFormat: {nDataFormat}"),
+            };
+
+        /// <summary>
+        /// Number of bytes for each sample.
+        /// Each sample has one data point for each channel.
+        /// </summary>
+        public int BytesPerSample => BytesPerValue * ChannelCount;
 
         public readonly float[] fInstrumentOffset;
 
@@ -206,14 +254,13 @@ namespace AbfSharp.HeaderData
 
         public readonly float fADCRange;
 
-        /// <summary>
-        /// Populate the AbfSharp header using an ABFFIO struct
-        /// </summary>
-        public Header(ABFFIO.Structs.ABFFileHeader header)
-        {
-            FileVersionNumber = header.fFileVersionNumber;
-            OperationMode = (OperationMode)header.nOperationMode;
-        }
+        public readonly short[] nTelegraphEnable;
+        public readonly short[] nTelegraphInstrument;
+        public readonly float[] fTelegraphAdditGain;
+        public readonly float[] fTelegraphFilter;
+        public readonly float[] fTelegraphMembraneCap;
+        public readonly short[] nTelegraphMode;
+        public readonly short[] nTelegraphDACScaleFactorEnable;
 
         /// <summary>
         /// Populate the AbfSharp header by reading the binary content of the file
@@ -232,22 +279,22 @@ namespace AbfSharp.HeaderData
 
             // basic information about the ABF
             FileVersionNumber = IsAbf1 ? Abf1Header.fFileVersionNumber : Abf2Header.HeaderSection.fFileVersionNumber;
-            OperationMode = IsAbf1 ? (OperationMode)Abf1Header.nOperationMode : (OperationMode)Abf2Header.ProtocolSection.nOperationMode;
-            GUID = IsAbf1 ? MakeGuid(Abf1Header.FileGuid) : MakeGuid(Abf2Header.HeaderSection.FileGUID);
+            nOperationMode = IsAbf1 ? Abf1Header.nOperationMode : Abf2Header.ProtocolSection.nOperationMode;
+            lActualAcqLength = IsAbf1 ? Abf1Header.lActualAcqLength : (int)Abf2Header.DataSection.SectionCount;
+            FileGUID = IsAbf1 ? MakeGuid(Abf1Header.FileGuid) : MakeGuid(Abf2Header.HeaderSection.FileGUID);
             nADCNumChannels = IsAbf1 ? Abf1Header.nADCNumChannels : (short)Abf2Header.AdcSection.SectionCount;
-            SweepCount = IsAbf1 ? Abf1Header.lActualEpisodes : (int)Abf2Header.HeaderSection.lActualEpisodes;
+            lActualEpisodes = IsAbf1 ? Abf1Header.lActualEpisodes : (int)Abf2Header.HeaderSection.lActualEpisodes;
             nADCPtoLChannelMap = IsAbf1 ? Abf1Header.nADCPtoLChannelMap : Abf2Header.AdcSection.nADCPtoLChannelMap;
+            nADCSamplingSeq = IsAbf1 ? Abf1Header.nADCSamplingSeq : Abf2Header.AdcSection.nADCSamplingSeq;
             Creator = IsAbf1 ? Abf1Header.sCreatorInfo : Abf2Header.StringsSection.Strings[Abf2Header.HeaderSection.uCreatorNameIndex];
             CreatorVersion = IsAbf1 ? Abf1Header.CreatorVersion : Abf2Header.HeaderSection.CreatorVersion;
             Modifier = IsAbf1 ? Abf1Header.sModifierInfo : Abf2Header.StringsSection.Strings[Abf2Header.HeaderSection.uModifierNameIndex];
             ModifierVersion = IsAbf1 ? Abf1Header.ModifierVersion : Abf2Header.HeaderSection.ModifierVersion;
             uFileStartDate = IsAbf1 ? Abf1Header.uFileStartDate : Abf2Header.HeaderSection.uFileStartDate;
             uFileStartTimeMS = IsAbf1 ? ((uint)Abf1Header.lFileStartTime) * 1000 + (uint)Abf1Header.nFileStartMillisecs : Abf2Header.HeaderSection.uFileStartTimeMS;
-            FileStart = AbfDateTime(uFileStartDate, uFileStartTimeMS);
             fDACHoldingLevel = IsAbf1 ? Abf1Header.fDACHoldingLevel : Abf2Header.DacSection.fDACHoldingLevel;
             sProtocolPath = IsAbf1 ? Abf1Header.sProtocolPath : Abf2Header.StringsSection.Strings[Abf2Header.HeaderSection.uProtocolPathIndex];
             sFileComment = IsAbf1 ? Abf1Header.sFileComment : Abf2Header.StringsSection.Strings[Abf2Header.ProtocolSection.lFileCommentIndex];
-            SampleRate = IsAbf1 ? (int)(1e6 / Abf1Header.fADCSampleInterval / Abf1Header.nADCNumChannels) : (int)(1e6 / Abf2Header.ProtocolSection.fADCSequenceInterval);
             lTagSectionPtr = IsAbf1 ? (uint)Abf1Header.lTagSectionPtr : Abf2Header.TagSection.SectionBlock;
             lNumTagEntries = IsAbf1 ? (uint)Abf1Header.lNumTagEntries : Abf2Header.TagSection.SectionCount;
             fADCSequenceInterval = IsAbf1 ? Abf1Header.fADCSampleInterval * Abf1Header.nADCNumChannels : Abf2Header.ProtocolSection.fADCSequenceInterval;
@@ -264,6 +311,16 @@ namespace AbfSharp.HeaderData
             lADCResolution = IsAbf1 ? Abf1Header.lADCResolution : (int)Abf2Header.ProtocolSection.lADCResolution;
             fInstrumentOffset = IsAbf1 ? Abf1Header.fInstrumentOffset : Abf2Header.AdcSection.fInstrumentOffset;
             fADCRange = IsAbf1 ? Abf1Header.fADCRange : Abf2Header.ProtocolSection.fADCRange;
+            SynchStartTimes = IsAbf1 ? Abf1Header.SynchSection_lStart : Abf2Header.SynchSection.lStart;
+            SynchLengths = IsAbf1 ? Abf1Header.SynchSection_lLength : Abf2Header.SynchSection.lLength;
+
+            nTelegraphEnable = IsAbf1 ? Abf1Header.nTelegraphEnable : Abf2Header.AdcSection.nTelegraphEnable;
+            nTelegraphInstrument = IsAbf1 ? Abf1Header.nTelegraphInstrument : Abf2Header.AdcSection.nTelegraphInstrument;
+            fTelegraphAdditGain = IsAbf1 ? Abf1Header.fTelegraphAdditGain : Abf2Header.AdcSection.fTelegraphAdditGain;
+            fTelegraphFilter = IsAbf1 ? Abf1Header.fTelegraphFilter : Abf2Header.AdcSection.fTelegraphFilter;
+            fTelegraphMembraneCap = IsAbf1 ? Abf1Header.fTelegraphMembraneCap : Abf2Header.AdcSection.fTelegraphMembraneCap;
+            nTelegraphMode = IsAbf1 ? Abf1Header.nTelegraphMode : Abf2Header.AdcSection.nTelegraphMode;
+            nTelegraphDACScaleFactorEnable = IsAbf1 ? Abf1Header.nTelegraphDACScaleFactorEnable : Abf2Header.DacSection.nTelegraphDACScaleFactorEnable;
         }
 
         /// <summary>

@@ -4,8 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-#pragma warning disable CS0618 // Type or member is obsolete
-
 namespace AbfSharp.HeaderData.Abf2
 {
     public class AdcSection : Section
@@ -24,8 +22,6 @@ namespace AbfSharp.HeaderData.Abf2
 
         // mapping
         public readonly Int16[] nADCPtoLChannelMap;
-
-        [Obsolete("this may not always be calculated perfectly...")]
         public readonly Int16[] nADCSamplingSeq;
 
         // scaling
@@ -116,16 +112,9 @@ namespace AbfSharp.HeaderData.Abf2
                 nStatsChannelPolarity[adcNum] = reader.ReadInt16();
                 lADCChannelNameIndex[adcNum] = reader.ReadInt32();
                 lADCUnitsIndex[adcNum] = reader.ReadInt32();
-            }
 
-            // nADCPtoLChannelMap is a hot mess!
-            // It's not actually stored in the ABF file. It must be calculated later.
-            // https://github.com/swharden/ABFsharp/blob/5b79204068aec7258be6f3c02bd2ca6c125bab5c/dev/ABFFIO/axon32/AxAbfFio32/Oldheadr.cpp
-            // This solution works for 99% of cases
-            for (int i = 0; i < ADC_COUNT; i++)
-                nADCSamplingSeq[i] = 0;
-            for (int i = 0; i < SectionCount; i++)
-                nADCSamplingSeq[i] = nADCPtoLChannelMap[nADCNum[i]];
+                nADCSamplingSeq[i] = (Int16)adcNum;
+            }
         }
     }
 }

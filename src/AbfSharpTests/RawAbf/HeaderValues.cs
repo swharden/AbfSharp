@@ -48,7 +48,7 @@ namespace AbfSharpTests.RawAbf
                 if (official.Header.HeaderStruct.FileGUID == Guid.Empty)
                     continue;
 
-                Assert.AreEqual(official.Header.HeaderStruct.FileGUID, raw.Header.GUID);
+                Assert.AreEqual(official.Header.HeaderStruct.FileGUID, raw.Header.FileGUID);
             }
         }
 
@@ -71,10 +71,10 @@ namespace AbfSharpTests.RawAbf
                 var raw = new AbfSharp.RawABF(official.Path);
 
                 // TODO: support other operation modes
-                if (raw.Header.OperationMode != AbfSharp.HeaderData.OperationMode.EpisodicStimulation)
+                if (raw.Header.OperationMode != AbfSharp.HeaderData.OperationMode.Episodic)
                     continue;
 
-                Assert.AreEqual(official.Header.HeaderStruct.lActualEpisodes, raw.Header.SweepCount);
+                Assert.AreEqual(official.Header.HeaderStruct.lActualEpisodes, raw.Header.lActualEpisodes);
             }
         }
 
@@ -132,14 +132,20 @@ namespace AbfSharpTests.RawAbf
         }
 
         [Test]
-        public void Test_MatchesOfficial_nADCPtoLChannelMap()
+        public void Test_MatchesOfficial_ChannelMap()
         {
             foreach (AbfSharp.ABF official in OfficialABFs)
             {
                 var raw = new AbfSharp.RawABF(official.Path);
+
                 Assert.AreEqual(
                     expected: ArrayString(official.Header.HeaderStruct.nADCPtoLChannelMap),
                     actual: ArrayString(raw.Header.nADCPtoLChannelMap)
+                );
+
+                Assert.AreEqual(
+                    expected: ArrayString(official.Header.HeaderStruct.nADCSamplingSeq),
+                    actual: ArrayString(raw.Header.nADCSamplingSeq)
                 );
             }
         }
@@ -234,7 +240,7 @@ namespace AbfSharpTests.RawAbf
             foreach (AbfSharp.ABF official in OfficialABFs)
             {
                 var raw = new AbfSharp.RawABF(official.Path);
-                Assert.AreEqual((int)(1e6 / official.Header.HeaderStruct.fADCSequenceInterval), raw.Header.SampleRate);
+                Assert.AreEqual(1e6 / official.Header.HeaderStruct.fADCSequenceInterval, raw.Header.SampleRate);
             }
         }
 
@@ -288,34 +294,42 @@ namespace AbfSharpTests.RawAbf
                 Assert.AreEqual(official.Header.HeaderStruct.lSynchArrayPtr, raw.Header.lSynchArrayPtr);
                 Assert.AreEqual(official.Header.HeaderStruct.lSynchArraySize, raw.Header.lSynchArraySize);
                 Assert.AreEqual(official.Header.HeaderStruct.fSynchTimeUnit, raw.Header.fSynchTimeUnit);
+
+                if (raw.Header.fSynchTimeUnit > 0)
+                    Assert.AreEqual(raw.Header.lActualEpisodes, raw.Header.SynchStartTimes.Length);
             }
         }
 
         [Test]
-        public void Test_MatchesOfficial_DataScaling()
+        public void Test_MatchesOfficial_lActualAcqLength()
         {
-            /*
-                https://support.moleculardevices.com/s/article/Convert-data-file-from-another-program-to-an-ABF-file-so-that-it-can-be-read-by-pCLAMP
-                When converting binary floating point data, a scaling algorithm is applied. The algorithm is: 
-                    (DataPoint - fInstrumentOffset + fSignalOffset) * 
-                    fInstrumentScaleFactor * 
-                    fSignalGain * 
-                    fADCProgrammableGain) * 
-                    (lADCResolution / fADCRange)
+            foreach (AbfSharp.ABF official in OfficialABFs)
+            {
+                Console.WriteLine($"v={official.Header.HeaderStruct.fFileVersionNumber:0.0} {System.IO.Path.GetFileName(official.Path)}");
+                var raw = new AbfSharp.RawABF(official.Path);
+                Assert.AreEqual(official.Header.HeaderStruct.lActualAcqLength, raw.Header.lActualAcqLength);
+            }
+        }
 
-            */
+
+        [Test]
+        public void Test_MatchesOfficial_TelegraphOptions()
+        {
             foreach (AbfSharp.ABF official in OfficialABFs)
             {
                 Console.WriteLine($"v={official.Header.HeaderStruct.fFileVersionNumber:0.0} {System.IO.Path.GetFileName(official.Path)}");
                 var raw = new AbfSharp.RawABF(official.Path);
 
-                Assert.AreEqual(official.Header.HeaderStruct.fInstrumentOffset, raw.Header.fInstrumentOffset);
-                Assert.AreEqual(official.Header.HeaderStruct.fSignalOffset, raw.Header.fSignalOffset);
-                Assert.AreEqual(official.Header.HeaderStruct.fInstrumentScaleFactor, raw.Header.fInstrumentScaleFactor);
-                Assert.AreEqual(official.Header.HeaderStruct.fSignalGain, raw.Header.fSignalGain);
-                Assert.AreEqual(official.Header.HeaderStruct.fADCProgrammableGain, raw.Header.fADCProgrammableGain);
-                Assert.AreEqual(official.Header.HeaderStruct.lADCResolution, raw.Header.lADCResolution);
-                Assert.AreEqual(official.Header.HeaderStruct.fADCRange, raw.Header.fADCRange);
+                for (int i=0; i<8; i++)
+                {
+                    Assert.AreEqual(official.Header.HeaderStruct.nTelegraphEnable[i], raw.Header.nTelegraphEnable[i]);
+                    Assert.AreEqual(official.Header.HeaderStruct.nTelegraphInstrument[i], raw.Header.nTelegraphInstrument[i]);
+                    Assert.AreEqual(official.Header.HeaderStruct.fTelegraphAdditGain[i], raw.Header.fTelegraphAdditGain[i]);
+                    Assert.AreEqual(official.Header.HeaderStruct.fTelegraphFilter[i], raw.Header.fTelegraphFilter[i]);
+                    Assert.AreEqual(official.Header.HeaderStruct.fTelegraphMembraneCap[i], raw.Header.fTelegraphMembraneCap[i]);
+                    Assert.AreEqual(official.Header.HeaderStruct.nTelegraphMode[i], raw.Header.nTelegraphMode[i]);
+                    Assert.AreEqual(official.Header.HeaderStruct.nTelegraphDACScaleFactorEnable[i], raw.Header.nTelegraphDACScaleFactorEnable[i]);
+                }
             }
         }
     }

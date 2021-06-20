@@ -7,6 +7,7 @@ namespace AbfSharp.HeaderData.Abf1
     public class Abf1Header
     {
         const int ABF_ADCCOUNT = 16;
+        const int BLOCKSIZE = 512;
 
         // Group 1
         public readonly int lFileSignature;
@@ -98,6 +99,10 @@ namespace AbfSharp.HeaderData.Abf1
         public readonly string CreatorVersion;
         public readonly string ModifierVersion;
 
+        // Synch Section
+        public readonly int[] SynchSection_lStart;
+        public readonly int[] SynchSection_lLength;
+
         public Abf1Header(BinaryReader reader)
         {
             reader.BaseStream.Seek(0, SeekOrigin.Begin);
@@ -170,7 +175,6 @@ namespace AbfSharp.HeaderData.Abf1
             nFileStartMillisecs = reader.ReadInt16();
 
             // Extended Group 6 - Extended Environmental Information (898 bytes)
-            // https://swharden.com/pyabf/abf1-file-format/#extended-environmental-information-extended-group-6-898-bytes
 
             reader.BaseStream.Seek(4512, SeekOrigin.Begin);
             nTelegraphEnable = ReadArrayInt16(reader, 16);
@@ -180,6 +184,21 @@ namespace AbfSharp.HeaderData.Abf1
             fTelegraphMembraneCap = ReadArraySingle(reader, 16);
             nTelegraphMode = ReadArrayInt16(reader, 16);
             nTelegraphDACScaleFactorEnable = ReadArrayInt16(reader, 16);
+
+            // If telegraph info contains garbage data, zero-out everything.
+            // There may be a better way to determine if this section exists or not.
+            if (nTelegraphEnable.Min() < 0 || nTelegraphEnable.Max() > 16)
+            {
+                nTelegraphEnable = new Int16[16];
+                nTelegraphInstrument = new Int16[16];
+                fTelegraphAdditGain = new Single[16];
+                fTelegraphFilter = new Single[16];
+                fTelegraphMembraneCap = new Single[16];
+                nTelegraphMode = new Int16[16];
+                nTelegraphDACScaleFactorEnable = new Int16[16];
+            }
+
+            reader.BaseStream.Seek(4832, SeekOrigin.Begin);
             nAutoAnalyseEnable = reader.ReadInt16();
             sAutoAnalysisMacroName = ReadString(reader, 64);
             sProtocolPath = ReadString(reader, 256);
@@ -229,6 +248,16 @@ namespace AbfSharp.HeaderData.Abf1
             nModifierBuildVersion = reader.ReadInt16();
             CreatorVersion = VersionString(nMajorVersion, nMinorVersion, nBugfixVersion, nBuildVersion);
             ModifierVersion = VersionString(nModifierMajorVersion, nModifierMinorVersion, nModifierBugfixVersion, nModifierBuildVersion);
+
+            // Synch Section
+            SynchSection_lStart = new int[lSynchArraySize];
+            SynchSection_lLength = new int[lSynchArraySize];
+            for (int i = 0; i < lSynchArraySize; i++)
+            {
+                reader.BaseStream.Seek(lSynchArrayPtr * BLOCKSIZE, SeekOrigin.Begin);
+                SynchSection_lStart[i] = reader.ReadInt32();
+                SynchSection_lLength[i] = reader.ReadInt32();
+            }
         }
 
         private string VersionString(int a, int b, int c, int d)
