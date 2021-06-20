@@ -127,6 +127,18 @@ namespace AbfSharp.HeaderData
         public int SampleRate;
 
         /// <summary>
+        /// ADC Channel Names
+        /// </summary>
+        [Obsolete("not yet implemented")]
+        public string[] sADCChannelName;
+
+        /// <summary>
+        /// ADC Channel Units
+        /// </summary>
+        [Obsolete("not yet implemented")]
+        public string[] sADCUnits;
+
+        /// <summary>
         /// Populate the AbfSharp header using an ABFFIO struct
         /// </summary>
         public Header(ABFFIO.Structs.ABFFileHeader header)

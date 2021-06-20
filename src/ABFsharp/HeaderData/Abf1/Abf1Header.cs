@@ -271,7 +271,7 @@ namespace AbfSharp.HeaderData.Abf1
         {
             string[] strings = new string[stringCount];
             for (int i = 0; i < stringCount; i++)
-                strings[i] = new string(reader.ReadChars(stringSize));
+                strings[i] = new string(reader.ReadChars(stringSize)).Trim();
             return strings;
         }
 
