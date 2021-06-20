@@ -87,11 +87,6 @@ namespace AbfSharp.HeaderData
         public readonly int SweepCount;
 
         /// <summary>
-        /// Stores data scaling information for each ADC channel.
-        /// </summary>
-        public readonly AdcDataInfo[] AdcDataInfo;
-
-        /// <summary>
         /// Day the ABF recording was started (Format YYMMDD)
         /// </summary>
         public readonly UInt32 uFileStartDate;
@@ -197,6 +192,19 @@ namespace AbfSharp.HeaderData
 
         public int BytesPerDataPoint => nDataFormat == 0 ? 2 : 4;
 
+        public readonly float[] fInstrumentOffset;
+
+        public readonly float[] fSignalOffset;
+
+        public readonly float[] fInstrumentScaleFactor;
+
+        public readonly float[] fSignalGain;
+
+        public readonly float[] fADCProgrammableGain;
+
+        public readonly int lADCResolution;
+
+        public readonly float fADCRange;
 
         /// <summary>
         /// Populate the AbfSharp header using an ABFFIO struct
@@ -248,23 +256,14 @@ namespace AbfSharp.HeaderData
             lSynchArraySize = IsAbf1 ? Abf1Header.lSynchArraySize : (int)Abf2Header.SynchSection.SectionCount;
             lDataSectionPtr = IsAbf1 ? Abf1Header.lDataSectionPtr : (int)Abf2Header.DataSection.SectionBlock;
             nDataFormat = IsAbf1 ? Abf1Header.nDataFormat : Abf2Header.HeaderSection.nDataFormat;
-
-            // TODO: refactor this
-            // scaling information required to convert ADC bytes to final values
-            AdcDataInfo = new AdcDataInfo[ChannelCount];
-            for (int i = 0; i < ChannelCount; i++)
-            {
-                AdcDataInfo[i] = new(
-                    nDataFormat: IsAbf1 ? (uint)Abf1Header.nDataFormat : Abf2Header.HeaderSection.nDataFormat,
-                    fInstrumentOffset: IsAbf1 ? Abf1Header.fInstrumentOffset[i] : Abf2Header.AdcSection.fInstrumentOffset[i],
-                    fSignalOffset: IsAbf1 ? Abf1Header.fSignalOffset[i] : Abf2Header.AdcSection.fSignalOffset[i],
-                    fInstrumentScaleFactor: IsAbf1 ? Abf1Header.fInstrumentScaleFactor[i] : Abf2Header.AdcSection.fInstrumentScaleFactor[i],
-                    fSignalGain: IsAbf1 ? Abf1Header.fSignalGain[i] : Abf2Header.AdcSection.fSignalGain[i],
-                    fADCProgrammableGain: IsAbf1 ? Abf1Header.fADCProgrammableGain[i] : Abf2Header.AdcSection.fADCProgrammableGain[i],
-                    lADCResolution: IsAbf1 ? (uint)Abf1Header.lADCResolution : Abf2Header.ProtocolSection.lADCResolution,
-                    fADCRange: IsAbf1 ? Abf1Header.fADCRange : Abf2Header.ProtocolSection.fADCRange
-                    );
-            }
+            fInstrumentOffset = IsAbf1 ? Abf1Header.fInstrumentOffset : Abf2Header.AdcSection.fInstrumentOffset;
+            fSignalOffset = IsAbf1 ? Abf1Header.fSignalOffset : Abf2Header.AdcSection.fSignalOffset;
+            fInstrumentScaleFactor = IsAbf1 ? Abf1Header.fInstrumentScaleFactor : Abf2Header.AdcSection.fInstrumentScaleFactor;
+            fSignalGain = IsAbf1 ? Abf1Header.fSignalGain : Abf2Header.AdcSection.fSignalGain;
+            fADCProgrammableGain = IsAbf1 ? Abf1Header.fADCProgrammableGain : Abf2Header.AdcSection.fADCProgrammableGain;
+            lADCResolution = IsAbf1 ? Abf1Header.lADCResolution : (int)Abf2Header.ProtocolSection.lADCResolution;
+            fInstrumentOffset = IsAbf1 ? Abf1Header.fInstrumentOffset : Abf2Header.AdcSection.fInstrumentOffset;
+            fADCRange = IsAbf1 ? Abf1Header.fADCRange : Abf2Header.ProtocolSection.fADCRange;
         }
 
         /// <summary>

@@ -145,29 +145,6 @@ namespace AbfSharpTests.RawAbf
         }
 
         [Test]
-        public void Test_MatchesOfficial_AdcScalingVariables()
-        {
-            foreach (AbfSharp.ABF official in OfficialABFs)
-            {
-                var raw = new AbfSharp.RawABF(official.Path);
-                var officialHeader = official.Header.HeaderStruct;
-
-                for (int channelIndex = 0; channelIndex < official.ChannelCount; channelIndex++)
-                {
-                    var thisChannelInfo = raw.Header.AdcDataInfo[channelIndex];
-                    Assert.AreEqual(officialHeader.nDataFormat, thisChannelInfo.nDataFormat);
-                    Assert.AreEqual(officialHeader.fInstrumentOffset[channelIndex], thisChannelInfo.fInstrumentOffset);
-                    Assert.AreEqual(officialHeader.fSignalOffset[channelIndex], thisChannelInfo.fSignalOffset);
-                    Assert.AreEqual(officialHeader.fInstrumentScaleFactor[channelIndex], thisChannelInfo.fInstrumentScaleFactor);
-                    Assert.AreEqual(officialHeader.fSignalGain[channelIndex], thisChannelInfo.fSignalGain);
-                    Assert.AreEqual(officialHeader.fADCProgrammableGain[channelIndex], thisChannelInfo.fADCProgrammableGain);
-                    Assert.AreEqual(officialHeader.lADCResolution, thisChannelInfo.lADCResolution);
-                    Assert.AreEqual(officialHeader.fADCRange, thisChannelInfo.fADCRange);
-                }
-            }
-        }
-
-        [Test]
         public void Test_MatchesOfficial_Creator()
         {
             foreach (AbfSharp.ABF official in OfficialABFs)
@@ -311,6 +288,34 @@ namespace AbfSharpTests.RawAbf
                 Assert.AreEqual(official.Header.HeaderStruct.lSynchArrayPtr, raw.Header.lSynchArrayPtr);
                 Assert.AreEqual(official.Header.HeaderStruct.lSynchArraySize, raw.Header.lSynchArraySize);
                 Assert.AreEqual(official.Header.HeaderStruct.fSynchTimeUnit, raw.Header.fSynchTimeUnit);
+            }
+        }
+
+        [Test]
+        public void Test_MatchesOfficial_DataScaling()
+        {
+            /*
+                https://support.moleculardevices.com/s/article/Convert-data-file-from-another-program-to-an-ABF-file-so-that-it-can-be-read-by-pCLAMP
+                When converting binary floating point data, a scaling algorithm is applied. The algorithm is: 
+                    (DataPoint - fInstrumentOffset + fSignalOffset) * 
+                    fInstrumentScaleFactor * 
+                    fSignalGain * 
+                    fADCProgrammableGain) * 
+                    (lADCResolution / fADCRange)
+
+            */
+            foreach (AbfSharp.ABF official in OfficialABFs)
+            {
+                Console.WriteLine($"v={official.Header.HeaderStruct.fFileVersionNumber:0.0} {System.IO.Path.GetFileName(official.Path)}");
+                var raw = new AbfSharp.RawABF(official.Path);
+
+                Assert.AreEqual(official.Header.HeaderStruct.fInstrumentOffset, raw.Header.fInstrumentOffset);
+                Assert.AreEqual(official.Header.HeaderStruct.fSignalOffset, raw.Header.fSignalOffset);
+                Assert.AreEqual(official.Header.HeaderStruct.fInstrumentScaleFactor, raw.Header.fInstrumentScaleFactor);
+                Assert.AreEqual(official.Header.HeaderStruct.fSignalGain, raw.Header.fSignalGain);
+                Assert.AreEqual(official.Header.HeaderStruct.fADCProgrammableGain, raw.Header.fADCProgrammableGain);
+                Assert.AreEqual(official.Header.HeaderStruct.lADCResolution, raw.Header.lADCResolution);
+                Assert.AreEqual(official.Header.HeaderStruct.fADCRange, raw.Header.fADCRange);
             }
         }
     }
