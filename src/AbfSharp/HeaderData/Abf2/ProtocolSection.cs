@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 namespace AbfSharp.HeaderData.Abf2
 {
-    public class ProtocolSection
+    public class ProtocolSection : Section
     {
-        private const int BLOCKSIZE = 512;
-
         public readonly Int16 nOperationMode;
         public readonly Single fADCSequenceInterval;
         public readonly byte bEnableFileCompression;
@@ -80,93 +76,80 @@ namespace AbfSharp.HeaderData.Abf2
         public readonly Int16 nDigitizerSynchDigitalOuts;
         public readonly Int16 nDigitizerType;
 
-        public ProtocolSection(BinaryReader reader)
+        public ProtocolSection(BinaryReader reader) : base(reader, 76)
         {
-            // "h" = 2-byte int
-            // "H" = 2-byte uint
-            // "i" = 4-byte int
-            // "I" = 4-byte uint
-            // "l" = 4-byte int
-            // "L" = 4-byte uint
-            // "f" = 4-byte float
-
-            reader.BaseStream.Seek(76, SeekOrigin.Begin);
-            long firstByte = reader.ReadUInt32() * BLOCKSIZE;
-            long size = reader.ReadUInt32();
-            long count = reader.ReadUInt32();
-
-            reader.BaseStream.Seek(firstByte, SeekOrigin.Begin);
-            nOperationMode = reader.ReadInt16();  // 0
-            fADCSequenceInterval = reader.ReadSingle();  // 2
-            bEnableFileCompression = reader.ReadByte();  // 6
-            reader.ReadBytes(3); // 7
-            uFileCompressionRatio = reader.ReadUInt32();  // 10
-            fSynchTimeUnit = reader.ReadSingle();  // 14
-            fSecondsPerRun = reader.ReadSingle();  // 18
-            lNumSamplesPerEpisode = reader.ReadUInt32();  // 22
-            lPreTriggerSamples = reader.ReadUInt32();  // 26
-            lEpisodesPerRun = reader.ReadUInt32();  // 30
-            lRunsPerTrial = reader.ReadUInt32();  // 34
-            lNumberOfTrials = reader.ReadUInt32();  // 38
-            nAveragingMode = reader.ReadInt16();  // 42
-            nUndoRunCount = reader.ReadInt16();  // 44
-            nFirstEpisodeInRun = reader.ReadInt16();  // 46
-            fTriggerThreshold = reader.ReadSingle();  // 48
-            nTriggerSource = reader.ReadInt16();  // 52
-            nTriggerAction = reader.ReadInt16();  // 54
-            nTriggerPolarity = reader.ReadInt16();  // 56
-            fScopeOutputInterval = reader.ReadSingle();  // 58
-            fEpisodeStartToStart = reader.ReadSingle();  // 62
-            fRunStartToStart = reader.ReadSingle();  // 66
-            lAverageCount = reader.ReadUInt32();  // 70
-            fTrialStartToStart = reader.ReadSingle();  // 74
-            nAutoTriggerStrategy = reader.ReadInt16();  // 78
-            fFirstRunDelayS = reader.ReadSingle();  // 80
-            nChannelStatsStrategy = reader.ReadInt16();  // 84
-            lSamplesPerTrace = reader.ReadUInt32();  // 86
-            lStartDisplayNum = reader.ReadUInt32();  // 90
-            lFinishDisplayNum = reader.ReadUInt32();  // 94
-            nShowPNRawData = reader.ReadInt16();  // 98
-            fStatisticsPeriod = reader.ReadSingle();  // 100
-            lStatisticsMeasurements = reader.ReadUInt32();  // 104
-            nStatisticsSaveStrategy = reader.ReadInt16();  // 108
-            fADCRange = reader.ReadSingle();  // 110
-            fDACRange = reader.ReadSingle();  // 114
-            lADCResolution = reader.ReadUInt32();  // 118
-            lDACResolution = reader.ReadUInt32();  // 122
-            nExperimentType = reader.ReadInt16();  // 126
-            nManualInfoStrategy = reader.ReadInt16();  // 128
-            nCommentsEnable = reader.ReadInt16();  // 130
-            lFileCommentIndex = reader.ReadUInt32();  // 132
-            nAutoAnalyseEnable = reader.ReadInt16();  // 136
-            nSignalType = reader.ReadInt16();  // 138
-            nDigitalEnable = reader.ReadInt16();  // 140
-            nActiveDACChannel = reader.ReadInt16();  // 142
-            nDigitalHolding = reader.ReadInt16();  // 144
-            nDigitalInterEpisode = reader.ReadInt16();  // 146
-            nDigitalDACChannel = reader.ReadInt16();  // 148
-            nDigitalTrainActiveLogic = reader.ReadInt16();  // 150
-            nStatsEnable = reader.ReadInt16();  // 152
-            nStatisticsClearStrategy = reader.ReadInt16();  // 154
-            nLevelHysteresis = reader.ReadInt16();  // 156
-            lTimeHysteresis = reader.ReadUInt32();  // 158
-            nAllowExternalTags = reader.ReadInt16();  // 162
-            nAverageAlgorithm = reader.ReadInt16();  // 164
-            fAverageWeighting = reader.ReadSingle();  // 166
-            nUndoPromptStrategy = reader.ReadInt16();  // 170
-            nTrialTriggerSource = reader.ReadInt16();  // 172
-            nStatisticsDisplayStrategy = reader.ReadInt16();  // 174
-            nExternalTagType = reader.ReadInt16();  // 176
-            nScopeTriggerOut = reader.ReadInt16();  // 178
-            nLTPType = reader.ReadInt16();  // 180
-            nAlternateDACOutputState = reader.ReadInt16();  // 182
-            nAlternateDigitalOutputState = reader.ReadInt16();  // 184
-            Single[] fCellID = new Single[] { reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle() }; // 186
-            nDigitizerADCs = reader.ReadInt16();  // 198
-            nDigitizerDACs = reader.ReadInt16();  // 200
-            nDigitizerTotalDigitalOuts = reader.ReadInt16();  // 202
-            nDigitizerSynchDigitalOuts = reader.ReadInt16();  // 204
-            nDigitizerType = reader.ReadInt16();  // 206
+            reader.BaseStream.Seek(SectionStart, SeekOrigin.Begin);
+            nOperationMode = reader.ReadInt16();
+            fADCSequenceInterval = reader.ReadSingle();
+            bEnableFileCompression = reader.ReadByte();
+            reader.ReadBytes(3);
+            uFileCompressionRatio = reader.ReadUInt32();
+            fSynchTimeUnit = reader.ReadSingle();
+            fSecondsPerRun = reader.ReadSingle();
+            lNumSamplesPerEpisode = reader.ReadUInt32();
+            lPreTriggerSamples = reader.ReadUInt32();
+            lEpisodesPerRun = reader.ReadUInt32();
+            lRunsPerTrial = reader.ReadUInt32();
+            lNumberOfTrials = reader.ReadUInt32();
+            nAveragingMode = reader.ReadInt16();
+            nUndoRunCount = reader.ReadInt16();
+            nFirstEpisodeInRun = reader.ReadInt16();
+            fTriggerThreshold = reader.ReadSingle();
+            nTriggerSource = reader.ReadInt16();
+            nTriggerAction = reader.ReadInt16();
+            nTriggerPolarity = reader.ReadInt16();
+            fScopeOutputInterval = reader.ReadSingle();
+            fEpisodeStartToStart = reader.ReadSingle();
+            fRunStartToStart = reader.ReadSingle();
+            lAverageCount = reader.ReadUInt32();
+            fTrialStartToStart = reader.ReadSingle();
+            nAutoTriggerStrategy = reader.ReadInt16();
+            fFirstRunDelayS = reader.ReadSingle();
+            nChannelStatsStrategy = reader.ReadInt16();
+            lSamplesPerTrace = reader.ReadUInt32();
+            lStartDisplayNum = reader.ReadUInt32();
+            lFinishDisplayNum = reader.ReadUInt32();
+            nShowPNRawData = reader.ReadInt16();
+            fStatisticsPeriod = reader.ReadSingle();
+            lStatisticsMeasurements = reader.ReadUInt32();
+            nStatisticsSaveStrategy = reader.ReadInt16();
+            fADCRange = reader.ReadSingle();
+            fDACRange = reader.ReadSingle();
+            lADCResolution = reader.ReadUInt32();
+            lDACResolution = reader.ReadUInt32();
+            nExperimentType = reader.ReadInt16();
+            nManualInfoStrategy = reader.ReadInt16();
+            nCommentsEnable = reader.ReadInt16();
+            lFileCommentIndex = reader.ReadUInt32();
+            nAutoAnalyseEnable = reader.ReadInt16();
+            nSignalType = reader.ReadInt16();
+            nDigitalEnable = reader.ReadInt16();
+            nActiveDACChannel = reader.ReadInt16();
+            nDigitalHolding = reader.ReadInt16();
+            nDigitalInterEpisode = reader.ReadInt16();
+            nDigitalDACChannel = reader.ReadInt16();
+            nDigitalTrainActiveLogic = reader.ReadInt16();
+            nStatsEnable = reader.ReadInt16();
+            nStatisticsClearStrategy = reader.ReadInt16();
+            nLevelHysteresis = reader.ReadInt16();
+            lTimeHysteresis = reader.ReadUInt32();
+            nAllowExternalTags = reader.ReadInt16();
+            nAverageAlgorithm = reader.ReadInt16();
+            fAverageWeighting = reader.ReadSingle();
+            nUndoPromptStrategy = reader.ReadInt16();
+            nTrialTriggerSource = reader.ReadInt16();
+            nStatisticsDisplayStrategy = reader.ReadInt16();
+            nExternalTagType = reader.ReadInt16();
+            nScopeTriggerOut = reader.ReadInt16();
+            nLTPType = reader.ReadInt16();
+            nAlternateDACOutputState = reader.ReadInt16();
+            nAlternateDigitalOutputState = reader.ReadInt16();
+            fCellID = new Single[] { reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle() };
+            nDigitizerADCs = reader.ReadInt16();
+            nDigitizerDACs = reader.ReadInt16();
+            nDigitizerTotalDigitalOuts = reader.ReadInt16();
+            nDigitizerSynchDigitalOuts = reader.ReadInt16();
+            nDigitizerType = reader.ReadInt16();
         }
     }
 }

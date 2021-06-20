@@ -6,28 +6,21 @@ using System.Linq;
 
 namespace AbfSharp.HeaderData.Abf2
 {
-    public class StringsSection
+    public class StringsSection : Section
     {
-        private const int BLOCKSIZE = 512;
-
         public readonly string[] Strings;
 
-        public StringsSection(BinaryReader reader)
+        public StringsSection(BinaryReader reader) : base(reader, 220)
         {
-            reader.BaseStream.Seek(220, SeekOrigin.Begin);
-            long firstByte = reader.ReadUInt32() * BLOCKSIZE;
-            long size = reader.ReadUInt32();
-            long count = reader.ReadUInt32();
-
             int offset = 44; // measured with hex editor
-            reader.BaseStream.Seek(firstByte + offset, SeekOrigin.Begin);
+            reader.BaseStream.Seek(SectionStart + offset, SeekOrigin.Begin);
             while (reader.ReadByte() == 0) { };
             reader.BaseStream.Seek(-1, SeekOrigin.Current);
 
             StringBuilder sb = new();
             sb.Append(" \n");
             char last = '\0';
-            for (int i = 0; i < size; i++)
+            for (int i = 0; i < SectionSize; i++)
             {
                 char c = reader.ReadChar();
                 if (c == '\0')

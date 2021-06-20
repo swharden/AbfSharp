@@ -5,7 +5,7 @@ using System.Text;
 
 namespace AbfSharp.HeaderData.Abf2
 {
-    public class DacSection
+    public class DacSection : Section
     {
         const int BLOCKSIZE = 512;
         const int DAC_COUNT = 8;
@@ -52,16 +52,11 @@ namespace AbfSharp.HeaderData.Abf2
         public readonly Single[] fMembTestPostSettlingTimeMS = new Single[DAC_COUNT];
         public readonly Int16[] nLeakSubtractADCIndex = new Int16[DAC_COUNT];
 
-        public DacSection(BinaryReader reader)
+        public DacSection(BinaryReader reader) : base(reader, 108)
         {
-            reader.BaseStream.Seek(108, SeekOrigin.Begin);
-            uint FirstByte = reader.ReadUInt32() * BLOCKSIZE;
-            uint Size = reader.ReadUInt32();
-            uint Count = reader.ReadUInt32();
-
-            for (int i = 0; i < Count; i++)
+            for (int i = 0; i < SectionCount; i++)
             {
-                reader.BaseStream.Seek(FirstByte + i * Size, SeekOrigin.Begin);
+                reader.BaseStream.Seek(SectionStart + i * SectionSize, SeekOrigin.Begin);
 
                 nDACNum[i] = reader.ReadInt16();
                 int dacIndex = nDACNum[i];

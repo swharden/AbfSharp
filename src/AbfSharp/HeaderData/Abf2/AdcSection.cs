@@ -8,25 +8,8 @@ using System.Text;
 
 namespace AbfSharp.HeaderData.Abf2
 {
-    public class AdcSection
+    public class AdcSection : Section
     {
-        const int BLOCKSIZE = 512;
-
-        /// <summary>
-        /// Number of ADC channels
-        /// </summary>
-        public readonly uint Count;
-
-        /// <summary>
-        /// Position in the file of the dat
-        /// </summary>
-        public readonly uint FirstByte;
-
-        /// <summary>
-        /// Length (bytes) in memory for each channel's settings
-        /// </summary>
-        public readonly uint Size;
-
         // identifier (index)
         public readonly Int16[] nADCNum;
 
@@ -70,13 +53,8 @@ namespace AbfSharp.HeaderData.Abf2
         public readonly Int32[] lADCChannelNameIndex;
         public readonly Int32[] lADCUnitsIndex;
 
-        public AdcSection(BinaryReader reader)
+        public AdcSection(BinaryReader reader) : base(reader, 92)
         {
-            reader.BaseStream.Seek(92, SeekOrigin.Begin);
-            FirstByte = reader.ReadUInt32() * BLOCKSIZE;
-            Size = reader.ReadUInt32();
-            Count = reader.ReadUInt32();
-
             const int ADC_COUNT = 16;
             nADCNum = new Int16[ADC_COUNT];
             nTelegraphEnable = new Int16[ADC_COUNT];
@@ -106,9 +84,9 @@ namespace AbfSharp.HeaderData.Abf2
             lADCChannelNameIndex = new Int32[ADC_COUNT];
             lADCUnitsIndex = new Int32[ADC_COUNT];
 
-            for (int i = 0; i < Count; i++)
+            for (int i = 0; i < SectionCount; i++)
             {
-                reader.BaseStream.Seek(FirstByte + i * Size, SeekOrigin.Begin);
+                reader.BaseStream.Seek(SectionStart + i * SectionSize, SeekOrigin.Begin);
                 nADCNum[i] = reader.ReadInt16();
 
                 int adcNum = nADCNum[i];
@@ -146,7 +124,7 @@ namespace AbfSharp.HeaderData.Abf2
             // This solution works for 99% of cases
             for (int i = 0; i < ADC_COUNT; i++)
                 nADCSamplingSeq[i] = 0;
-            for (int i = 0; i < Count; i++)
+            for (int i = 0; i < SectionCount; i++)
                 nADCSamplingSeq[i] = nADCPtoLChannelMap[nADCNum[i]];
         }
     }

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
+﻿using System.IO;
 
 namespace AbfSharp.HeaderData.Abf2
 {
@@ -30,10 +27,10 @@ namespace AbfSharp.HeaderData.Abf2
         private const int BLOCKSIZE = 512;
 
         /// <summary>
-        /// This object describes information about a section in an ABF2 file
+        /// This object represents a dynamic section (with variable posiition in size) in ABF 2 files.
         /// </summary>
         /// <param name="reader"></param>
-        /// <param name="indexByte">Byte position to read section location and size information</param>
+        /// <param name="indexByte">Position indicating section location and size information</param>
         public Section(BinaryReader reader, int indexByte)
         {
             reader.BaseStream.Seek(indexByte, SeekOrigin.Begin);

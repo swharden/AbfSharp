@@ -226,7 +226,7 @@ namespace AbfSharp.HeaderData
             FileVersionNumber = IsAbf1 ? Abf1Header.fFileVersionNumber : Abf2Header.HeaderSection.fFileVersionNumber;
             OperationMode = IsAbf1 ? (OperationMode)Abf1Header.nOperationMode : (OperationMode)Abf2Header.ProtocolSection.nOperationMode;
             GUID = IsAbf1 ? MakeGuid(Abf1Header.FileGuid) : MakeGuid(Abf2Header.HeaderSection.FileGUID);
-            nADCNumChannels = IsAbf1 ? Abf1Header.nADCNumChannels : (short)Abf2Header.AdcSection.Count;
+            nADCNumChannels = IsAbf1 ? Abf1Header.nADCNumChannels : (short)Abf2Header.AdcSection.SectionCount;
             SweepCount = IsAbf1 ? Abf1Header.lActualEpisodes : (int)Abf2Header.HeaderSection.lActualEpisodes;
             nADCPtoLChannelMap = IsAbf1 ? Abf1Header.nADCPtoLChannelMap : Abf2Header.AdcSection.nADCPtoLChannelMap;
             Creator = IsAbf1 ? Abf1Header.sCreatorInfo : Abf2Header.StringsSection.Strings[Abf2Header.HeaderSection.uCreatorNameIndex];
