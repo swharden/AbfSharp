@@ -74,7 +74,12 @@ namespace AbfSharp.HeaderData
         /// <summary>
         /// Number of ADC channels
         /// </summary>
-        public readonly int ChannelCount;
+        public int ChannelCount => nADCNumChannels;
+
+        /// <summary>
+        /// Number of channels recorded.
+        /// </summary>
+        public readonly short nADCNumChannels;
 
         /// <summary>
         /// Number of sweeps (gap-free ABFs have 1 sweep)
@@ -139,6 +144,37 @@ namespace AbfSharp.HeaderData
         public string[] sADCUnits;
 
         /// <summary>
+        /// Location of the tag section in the ABF file.
+        /// Multiply this value by 512 to get the byte position.
+        /// </summary>
+        public uint lTagSectionPtr;
+
+        /// <summary>
+        /// Number of tags in this ABF.
+        /// </summary>
+        public uint lNumTagEntries;
+
+        /// <summary>
+        /// Number of microseconds between samples (divided by number of channels).
+        /// For a single-channel 20 kHz recording this will be 50.
+        /// </summary>
+        public readonly float fADCSequenceInterval;
+
+        /// <summary>
+        /// The ABF Synch array is an important array that stores the start time and length of each portion 
+        /// of the data if the data are not part of a continuous gap-free acquisition. 
+        /// The data section might contain equal length or variable length sweeps of data. 
+        /// The Synch Array contains a record to indicate the start time and length of every sweep or Event in the data file. 
+        /// The ABF reading routines automatically decode the Synch Array when providing information about the data.
+        /// 
+        /// A Synch array is created and used in the following acquisition modes: 
+        /// ABF_VARLENEVENTS, ABF_FIXLENEVENTS & ABF_HIGHSPEEDOSC.
+        /// 
+        /// The acquisition modes ABF_GAPFREEFILE and ABF_WAVEFORMFILE do not always use a Synch array.
+        /// </summary>
+        public readonly float fSynchTimeUnit;
+
+        /// <summary>
         /// Populate the AbfSharp header using an ABFFIO struct
         /// </summary>
         public Header(ABFFIO.Structs.ABFFileHeader header)
@@ -166,7 +202,7 @@ namespace AbfSharp.HeaderData
             FileVersionNumber = IsAbf1 ? Abf1Header.fFileVersionNumber : Abf2Header.HeaderSection.fFileVersionNumber;
             OperationMode = IsAbf1 ? (OperationMode)Abf1Header.nOperationMode : (OperationMode)Abf2Header.ProtocolSection.nOperationMode;
             GUID = IsAbf1 ? MakeGuid(Abf1Header.FileGuid) : MakeGuid(Abf2Header.HeaderSection.FileGUID);
-            ChannelCount = IsAbf1 ? Abf1Header.nADCNumChannels : (int)Abf2Header.AdcSection.Count;
+            nADCNumChannels = IsAbf1 ? Abf1Header.nADCNumChannels : (short)Abf2Header.AdcSection.Count;
             SweepCount = IsAbf1 ? Abf1Header.lActualEpisodes : (int)Abf2Header.HeaderSection.lActualEpisodes;
             nADCPtoLChannelMap = IsAbf1 ? Abf1Header.nADCPtoLChannelMap : Abf2Header.AdcSection.nADCPtoLChannelMap;
             Creator = IsAbf1 ? Abf1Header.sCreatorInfo : Abf2Header.StringsSection.Strings[Abf2Header.HeaderSection.uCreatorNameIndex];
@@ -180,6 +216,10 @@ namespace AbfSharp.HeaderData
             sProtocolPath = IsAbf1 ? Abf1Header.sProtocolPath : Abf2Header.StringsSection.Strings[Abf2Header.HeaderSection.uProtocolPathIndex];
             sFileComment = IsAbf1 ? Abf1Header.sFileComment : Abf2Header.StringsSection.Strings[Abf2Header.ProtocolSection.lFileCommentIndex];
             SampleRate = IsAbf1 ? Abf1Header.SampleRate : Abf2Header.SampleRate;
+            lTagSectionPtr = IsAbf1 ? (uint)Abf1Header.lTagSectionPtr : Abf2Header.TagSection.SectionBlock;
+            lNumTagEntries = IsAbf1 ? (uint)Abf1Header.lNumTagEntries : Abf2Header.TagSection.SectionCount;
+            fADCSequenceInterval = IsAbf1 ? Abf1Header.fADCSampleInterval * Abf1Header.nADCNumChannels : Abf2Header.ProtocolSection.fADCSequenceInterval;
+            fSynchTimeUnit = IsAbf1 ? Abf1Header.fSynchTimeUnit : Abf2Header.ProtocolSection.fSynchTimeUnit;
 
             // TODO: refactor this
             // scaling information required to convert ADC bytes to final values

@@ -74,7 +74,6 @@ namespace AbfSharpTests.RawAbf
                 if (raw.Header.OperationMode != AbfSharp.HeaderData.OperationMode.EpisodicStimulation)
                     continue;
 
-                Console.WriteLine($"{System.IO.Path.GetFileName(official.Path)} {raw.Header.FileVersionNumber} {raw.Header.uFileStartDate} {raw.Header.FileStart}");
                 Assert.AreEqual(official.Header.HeaderStruct.lActualEpisodes, raw.Header.SweepCount);
             }
         }
@@ -88,7 +87,6 @@ namespace AbfSharpTests.RawAbf
             {
                 var officialHeader = official.Header.HeaderStruct;
                 var raw = new AbfSharp.RawABF(official.Path);
-                Console.WriteLine($"ABF: {System.IO.Path.GetFileName(official.Path)} Ver={raw.Header.FileVersionNumber}");
 
                 if (officialHeader.fFileVersionNumber >= 2)
                 {
@@ -139,7 +137,6 @@ namespace AbfSharpTests.RawAbf
             foreach (AbfSharp.ABF official in OfficialABFs)
             {
                 var raw = new AbfSharp.RawABF(official.Path);
-                Console.WriteLine($"{System.IO.Path.GetFileName(official.Path)} Ver={raw.Header.FileVersionNumber}");
                 Assert.AreEqual(
                     expected: ArrayString(official.Header.HeaderStruct.nADCPtoLChannelMap),
                     actual: ArrayString(raw.Header.nADCPtoLChannelMap)
@@ -154,8 +151,6 @@ namespace AbfSharpTests.RawAbf
             {
                 var raw = new AbfSharp.RawABF(official.Path);
                 var officialHeader = official.Header.HeaderStruct;
-
-                Console.WriteLine($"{System.IO.Path.GetFileName(official.Path)} {raw.Header.FileVersionNumber}");
 
                 for (int channelIndex = 0; channelIndex < official.ChannelCount; channelIndex++)
                 {
@@ -199,7 +194,6 @@ namespace AbfSharpTests.RawAbf
             foreach (AbfSharp.ABF official in OfficialABFs)
             {
                 var raw = new AbfSharp.RawABF(official.Path);
-                Console.WriteLine($"{System.IO.Path.GetFileName(official.Path)} {raw.Header.FileVersionNumber}");
 
                 if (string.IsNullOrWhiteSpace(official.Header.HeaderStruct.sModifierInfo) == false)
                     Assert.AreEqual(official.Header.HeaderStruct.sModifierInfo.Trim(), raw.Header.Modifier);
@@ -222,8 +216,6 @@ namespace AbfSharpTests.RawAbf
             foreach (AbfSharp.ABF official in OfficialABFs)
             {
                 var raw = new AbfSharp.RawABF(official.Path);
-                Console.WriteLine($"{System.IO.Path.GetFileName(official.Path)} {raw.Header.FileVersionNumber} {raw.Header.uFileStartDate} {raw.Header.FileStart}");
-
                 Assert.AreEqual(official.Header.HeaderStruct.uFileStartDate, raw.Header.uFileStartDate);
                 Assert.AreEqual(official.Header.HeaderStruct.uFileStartTimeMS, raw.Header.uFileStartTimeMS);
             }
@@ -235,8 +227,6 @@ namespace AbfSharpTests.RawAbf
             foreach (AbfSharp.ABF official in OfficialABFs)
             {
                 var raw = new AbfSharp.RawABF(official.Path);
-                Console.WriteLine($"{System.IO.Path.GetFileName(official.Path)} {raw.Header.FileVersionNumber} {raw.Header.uFileStartDate} {raw.Header.FileStart}");
-
                 Assert.AreEqual(official.Header.HeaderStruct.fDACHoldingLevel, raw.Header.fDACHoldingLevel);
             }
         }
@@ -247,7 +237,6 @@ namespace AbfSharpTests.RawAbf
             foreach (AbfSharp.ABF official in OfficialABFs)
             {
                 var raw = new AbfSharp.RawABF(official.Path);
-                Console.WriteLine($"{System.IO.Path.GetFileName(official.Path)} {raw.Header.FileVersionNumber} {raw.Header.uFileStartDate} {raw.Header.FileStart}");
                 Assert.AreEqual(official.Header.HeaderStruct.sProtocolPath.Trim(), raw.Header.sProtocolPath);
             }
         }
@@ -258,7 +247,6 @@ namespace AbfSharpTests.RawAbf
             foreach (AbfSharp.ABF official in OfficialABFs)
             {
                 var raw = new AbfSharp.RawABF(official.Path);
-                Console.WriteLine($"{System.IO.Path.GetFileName(official.Path)} {raw.Header.FileVersionNumber} {raw.Header.uFileStartDate} {raw.Header.FileStart}");
                 Assert.AreEqual(official.Header.HeaderStruct.sFileComment.Trim(), raw.Header.sFileComment);
             }
         }
@@ -269,8 +257,35 @@ namespace AbfSharpTests.RawAbf
             foreach (AbfSharp.ABF official in OfficialABFs)
             {
                 var raw = new AbfSharp.RawABF(official.Path);
-                Console.WriteLine($"{System.IO.Path.GetFileName(official.Path)} {raw.Header.FileVersionNumber} {raw.Header.uFileStartDate} {raw.Header.FileStart}");
                 Assert.AreEqual((int)(1e6 / official.Header.HeaderStruct.fADCSequenceInterval), raw.Header.SampleRate);
+            }
+        }
+
+        [Test]
+        public void Test_MatchesOfficial_TagHeaderValues()
+        {
+            foreach (AbfSharp.ABF official in OfficialABFs)
+            {
+                var raw = new AbfSharp.RawABF(official.Path);
+                Assert.AreEqual(official.Header.HeaderStruct.lTagSectionPtr, raw.Header.lTagSectionPtr);
+                Assert.AreEqual(official.Header.HeaderStruct.lNumTagEntries, raw.Header.lNumTagEntries);
+
+                // Converting tag positions to tag times requires a multiplier.
+                // These checks verify the header values the multiplier depends on are accurate.
+                Assert.AreEqual(official.Header.HeaderStruct.fADCSequenceInterval, raw.Header.fADCSequenceInterval);
+                Assert.AreEqual(official.Header.HeaderStruct.nADCNumChannels, raw.Header.nADCNumChannels);
+
+                // Tag times may be in are in fSynchTimeUnit units.
+                Assert.AreEqual(official.Header.HeaderStruct.fSynchTimeUnit, raw.Header.fSynchTimeUnit);
+
+                //Console.WriteLine($"{raw.Header.fSynchTimeUnit:00.0}\t{System.IO.Path.GetFileName(official.Path)}");
+                if (raw.Header.fSynchTimeUnit != 0)
+                {
+                    // TODO: clarify how fSynchTimeUnit can be calculated
+                    //int bytesPerDataPoint = 0;
+                    //double fs = 1e6 / raw.Header.SampleRate / raw.Header.ChannelCount;
+                    //Assert.AreEqual(raw.Header.fSynchTimeUnit, fs);
+                }
             }
         }
     }

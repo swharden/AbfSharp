@@ -12,6 +12,7 @@ namespace AbfSharp.HeaderData.Abf2
         public readonly AdcSection AdcSection;
         public readonly DacSection DacSection;
         public readonly StringsSection StringsSection;
+        public readonly TagSection TagSection;
 
         // CUSTOM
         public readonly int SampleRate;
@@ -23,6 +24,7 @@ namespace AbfSharp.HeaderData.Abf2
             AdcSection = new AdcSection(reader);
             DacSection = new DacSection(reader);
             StringsSection = new StringsSection(reader);
+            TagSection = new TagSection(reader);
 
             SampleRate = (int)(1e6 / ProtocolSection.fADCSequenceInterval);
         }
