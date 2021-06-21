@@ -43,6 +43,8 @@ namespace AbfSharp
             SynchSection = new SynchSection(reader);
 
             ReadGroup1();
+            ReadGroup2();
+            ReadGroup3();
         }
 
         private void ReadGroup1()
@@ -56,6 +58,54 @@ namespace AbfSharp
             uFileStartTimeMS = HeaderSection.uFileStartTimeMS;
             lStopwatchTime = (int)HeaderSection.uStopwatchTime;
             nFileType = (short)HeaderSection.nFileType;
+        }
+
+        private void ReadGroup2()
+        {
+            lDataSectionPtr = (int)DataSection.SectionBlock;
+            lTagSectionPtr = (int)TagSection.SectionBlock;
+            lNumTagEntries = (int)TagSection.SectionCount;
+            lSynchArrayPtr = (int)SynchSection.SectionBlock;
+            lSynchArraySize = (int)SynchSection.SectionCount;
+            nDataFormat = (short)HeaderSection.nDataFormat;
+            nSimultaneousScan = (short)HeaderSection.nSimultaneousScan;
+            lDACFilePtr = DacSection.lDACFilePtr;
+            lDACFileNumEpisodes = DacSection.lDACFileNumEpisodes;
+
+            // TODO: scope section
+            // TODO: delta array section
+            // TODO: voice tag section
+            // TODO: statistics section
+            // TODO: annotations section
+        }
+
+        private void ReadGroup3()
+        {
+            nADCNumChannels = (short)AdcSection.SectionCount;
+            fADCSequenceInterval = ProtocolSection.fADCSequenceInterval;
+            uFileCompressionRatio = ProtocolSection.uFileCompressionRatio;
+            bEnableFileCompression = ProtocolSection.bEnableFileCompression;
+            fSynchTimeUnit = ProtocolSection.fSynchTimeUnit;
+            fSecondsPerRun = ProtocolSection.fSecondsPerRun;
+            lNumSamplesPerEpisode = (int)ProtocolSection.lNumSamplesPerEpisode;
+            lPreTriggerSamples = (int)ProtocolSection.lPreTriggerSamples;
+            lEpisodesPerRun = (int)ProtocolSection.lEpisodesPerRun;
+            lRunsPerTrial = (int)ProtocolSection.lRunsPerTrial;
+            lNumberOfTrials = (int)ProtocolSection.lNumberOfTrials;
+            nAveragingMode = ProtocolSection.nAveragingMode;
+            nUndoRunCount = ProtocolSection.nUndoRunCount;
+            nFirstEpisodeInRun = ProtocolSection.nFirstEpisodeInRun;
+            fTriggerThreshold = ProtocolSection.fTriggerThreshold;
+            nTriggerSource = ProtocolSection.nTriggerSource;
+            nTriggerAction = ProtocolSection.nTriggerAction;
+            nTriggerPolarity = ProtocolSection.nTriggerPolarity;
+            fScopeOutputInterval = ProtocolSection.fScopeOutputInterval;
+            fEpisodeStartToStart = ProtocolSection.fEpisodeStartToStart;
+            fRunStartToStart = ProtocolSection.fRunStartToStart;
+            fTrialStartToStart = ProtocolSection.fTrialStartToStart;
+            lAverageCount = (int)ProtocolSection.lAverageCount;
+            nAutoTriggerStrategy = ProtocolSection.nAutoTriggerStrategy;
+            fFirstRunDelayS = ProtocolSection.fFirstRunDelayS;
         }
     }
 }

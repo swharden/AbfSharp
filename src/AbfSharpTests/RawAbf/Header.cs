@@ -49,5 +49,76 @@ namespace AbfSharpTests.RawAbf
                     Assert.AreEqual(officialHeader.nFileType, testHeader.nFileType);
             }
         }
+
+        [Test]
+        public void Test_MatchesOfficial_Group2()
+        {
+            foreach (var dict in AbfHeaders)
+            {
+                AbfSharp.ABFFIO.Structs.ABFFileHeader officialHeader = dict.Key;
+                AbfSharp.HeaderBase testHeader = dict.Value;
+                Console.WriteLine($"{testHeader.AbfID} {testHeader.fFileVersionNumber}");
+
+                Assert.AreEqual(officialHeader.lDataSectionPtr, testHeader.lDataSectionPtr);
+                Assert.AreEqual(officialHeader.lTagSectionPtr, testHeader.lTagSectionPtr);
+                Assert.AreEqual(officialHeader.lNumTagEntries, testHeader.lNumTagEntries);
+                //Assert.AreEqual(officialHeader.lScopeConfigPtr, testHeader.lScopeConfigPtr);
+                //Assert.AreEqual(officialHeader.lNumScopes, testHeader.lNumScopes);
+                //Assert.AreEqual(officialHeader.lDeltaArrayPtr, testHeader.lDeltaArrayPtr);
+                //Assert.AreEqual(officialHeader.lNumDeltas, testHeader.lNumDeltas);
+                //Assert.AreEqual(officialHeader.lVoiceTagPtr, testHeader.lVoiceTagPtr);
+                //Assert.AreEqual(officialHeader.lVoiceTagEntries, testHeader.lVoiceTagEntries);
+                Assert.AreEqual(officialHeader.lSynchArrayPtr, testHeader.lSynchArrayPtr);
+                Assert.AreEqual(officialHeader.lSynchArraySize, testHeader.lSynchArraySize);
+                Assert.AreEqual(officialHeader.nDataFormat, testHeader.nDataFormat);
+                Assert.AreEqual(officialHeader.nSimultaneousScan, testHeader.nSimultaneousScan);
+                //Assert.AreEqual(officialHeader.lStatisticsConfigPtr, testHeader.lStatisticsConfigPtr);
+                //Assert.AreEqual(officialHeader.lAnnotationSectionPtr, testHeader.lAnnotationSectionPtr);
+                //Assert.AreEqual(officialHeader.lNumAnnotations, testHeader.lNumAnnotations);
+                Assert.AreEqual(officialHeader.lDACFilePtr, testHeader.lDACFilePtr);
+                Assert.AreEqual(officialHeader.lDACFileNumEpisodes, testHeader.lDACFileNumEpisodes);
+            }
+        }
+
+        [Test]
+        public void Test_MatchesOfficial_Group3()
+        {
+            foreach (var dict in AbfHeaders)
+            {
+                AbfSharp.ABFFIO.Structs.ABFFileHeader officialHeader = dict.Key;
+                AbfSharp.HeaderBase testHeader = dict.Value;
+                Console.WriteLine($"{testHeader.AbfID} {testHeader.fFileVersionNumber}");
+
+                Assert.AreEqual(officialHeader.nADCNumChannels, testHeader.nADCNumChannels);
+                Assert.AreEqual(officialHeader.fADCSequenceInterval, testHeader.fADCSequenceInterval);
+                Assert.AreEqual(officialHeader.fSynchTimeUnit, testHeader.fSynchTimeUnit);
+                Assert.AreEqual(officialHeader.fSecondsPerRun, testHeader.fSecondsPerRun);
+
+                if (testHeader.OperationMode == AbfSharp.HeaderData.OperationMode.Episodic)
+                    Assert.AreEqual(officialHeader.lNumSamplesPerEpisode, testHeader.lNumSamplesPerEpisode);
+
+                Assert.AreEqual(officialHeader.lPreTriggerSamples, testHeader.lPreTriggerSamples);
+                Assert.AreEqual(officialHeader.lEpisodesPerRun, testHeader.lEpisodesPerRun);
+                Assert.AreEqual(officialHeader.lRunsPerTrial, testHeader.lRunsPerTrial);
+                Assert.AreEqual(officialHeader.lNumberOfTrials, testHeader.lNumberOfTrials);
+                Assert.AreEqual(officialHeader.nAveragingMode, testHeader.nAveragingMode);
+                Assert.AreEqual(officialHeader.nUndoRunCount, testHeader.nUndoRunCount);
+                Assert.AreEqual(officialHeader.nFirstEpisodeInRun, testHeader.nFirstEpisodeInRun);
+                Assert.AreEqual(officialHeader.fTriggerThreshold, testHeader.fTriggerThreshold);
+
+                if (testHeader.fFileVersionNumber >= 2)
+                    Assert.AreEqual(officialHeader.nTriggerSource, testHeader.nTriggerSource);
+
+                Assert.AreEqual(officialHeader.nTriggerAction, testHeader.nTriggerAction);
+                Assert.AreEqual(officialHeader.nTriggerPolarity, testHeader.nTriggerPolarity);
+                Assert.AreEqual(officialHeader.fScopeOutputInterval, testHeader.fScopeOutputInterval);
+                Assert.AreEqual(officialHeader.fEpisodeStartToStart, testHeader.fEpisodeStartToStart);
+                Assert.AreEqual(officialHeader.fRunStartToStart, testHeader.fRunStartToStart);
+                Assert.AreEqual(officialHeader.fTrialStartToStart, testHeader.fTrialStartToStart);
+                Assert.AreEqual(officialHeader.lAverageCount, testHeader.lAverageCount);
+                Assert.AreEqual(officialHeader.lLegacyClockChange, testHeader.lLegacyClockChange);
+                Assert.AreEqual(officialHeader.nAutoTriggerStrategy, testHeader.nAutoTriggerStrategy);
+            }
+        }
     }
 }

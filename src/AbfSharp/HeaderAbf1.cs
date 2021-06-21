@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace AbfSharp
@@ -24,6 +25,8 @@ namespace AbfSharp
         private void Read(BinaryReader reader)
         {
             ReadGroup1(reader);
+            ReadGroup2(reader);
+            ReadGroup3(reader);
         }
 
         private void ReadGroup1(BinaryReader reader)
@@ -61,6 +64,69 @@ namespace AbfSharp
             // Add nFileStartMillisecs from group 6
             reader.BaseStream.Seek(366, SeekOrigin.Begin);
             uFileStartTimeMS += (uint)reader.ReadInt16();
+        }
+
+        private void ReadGroup2(BinaryReader reader)
+        {
+            reader.BaseStream.Seek(40, SeekOrigin.Begin);
+            lDataSectionPtr = reader.ReadInt32();
+            lTagSectionPtr = reader.ReadInt32();
+            lNumTagEntries = reader.ReadInt32();
+            lScopeConfigPtr = reader.ReadInt32();
+            lNumScopes = reader.ReadInt32();
+            lNumDeltas = reader.ReadInt32();
+            lVoiceTagPtr = reader.ReadInt32();
+            lVoiceTagEntries = reader.ReadInt32();
+
+            reader.BaseStream.Seek(92, SeekOrigin.Begin);
+            lSynchArrayPtr = reader.ReadInt32();
+            lSynchArraySize = reader.ReadInt32();
+            nDataFormat = reader.ReadInt16();
+            nSimultaneousScan = reader.ReadInt16();
+            lStatisticsConfigPtr = reader.ReadInt32();
+            lAnnotationSectionPtr = reader.ReadInt32();
+
+            /*
+            reader.BaseStream.Seek(2048, SeekOrigin.Begin);
+
+            lDACFilePtr = new int[8];
+            for (int i = 0; i < 2; i++)
+                lDACFilePtr[i] = reader.ReadInt32();
+
+            lDACFileNumEpisodes = new int[8];
+            for (int i = 0; i < 2; i++)
+                lDACFileNumEpisodes[i] = reader.ReadInt32();
+            */
+        }
+
+        private void ReadGroup3(BinaryReader reader)
+        {
+            reader.BaseStream.Seek(120, SeekOrigin.Begin);
+            nADCNumChannels = reader.ReadInt16();
+            float fADCSampleInterval = reader.ReadSingle();
+            fADCSequenceInterval = fADCSampleInterval * nADCNumChannels;
+            float fADCSecondSampleInterval = reader.ReadSingle();
+            fSynchTimeUnit = reader.ReadSingle();
+            fSecondsPerRun = reader.ReadSingle();
+            lNumSamplesPerEpisode = reader.ReadInt32();
+            lPreTriggerSamples = reader.ReadInt32();
+            lEpisodesPerRun = reader.ReadInt32();
+            lRunsPerTrial = reader.ReadInt32();
+            lNumberOfTrials = reader.ReadInt32();
+            nAveragingMode = reader.ReadInt16();
+            nUndoRunCount = reader.ReadInt16();
+            nFirstEpisodeInRun = reader.ReadInt16();
+            fTriggerThreshold = reader.ReadSingle();
+            nTriggerSource = reader.ReadInt16();
+            nTriggerAction = reader.ReadInt16();
+            nTriggerPolarity = reader.ReadInt16();
+            fScopeOutputInterval = reader.ReadSingle();
+            fEpisodeStartToStart = reader.ReadSingle();
+            fRunStartToStart = reader.ReadSingle();
+            fTrialStartToStart = reader.ReadSingle();
+            lAverageCount = reader.ReadInt32();
+            lLegacyClockChange = reader.ReadInt32();
+            nAutoTriggerStrategy = reader.ReadInt16();
         }
     }
 }
