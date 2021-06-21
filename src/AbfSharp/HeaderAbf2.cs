@@ -45,6 +45,7 @@ namespace AbfSharp
             ReadGroup1();
             ReadGroup2();
             ReadGroup3();
+            ReadGroup5();
         }
 
         private void ReadGroup1()
@@ -106,6 +107,14 @@ namespace AbfSharp
             lAverageCount = (int)ProtocolSection.lAverageCount;
             nAutoTriggerStrategy = ProtocolSection.nAutoTriggerStrategy;
             fFirstRunDelayS = ProtocolSection.fFirstRunDelayS;
+        }
+
+        private void ReadGroup5()
+        {
+            fADCRange = ProtocolSection.fADCRange;
+            fDACRange = ProtocolSection.fDACRange;
+            lADCResolution = (int)ProtocolSection.lADCResolution;
+            lDACResolution = (int)ProtocolSection.lDACResolution;
         }
     }
 }

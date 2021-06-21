@@ -27,6 +27,7 @@ namespace AbfSharp
             ReadGroup1(reader);
             ReadGroup2(reader);
             ReadGroup3(reader);
+            ReadGroup5(reader);
         }
 
         private void ReadGroup1(BinaryReader reader)
@@ -127,6 +128,15 @@ namespace AbfSharp
             lAverageCount = reader.ReadInt32();
             lLegacyClockChange = reader.ReadInt32();
             nAutoTriggerStrategy = reader.ReadInt16();
+        }
+
+        public void ReadGroup5(BinaryReader reader)
+        {
+            reader.BaseStream.Seek(244, SeekOrigin.Begin);
+            fADCRange = reader.ReadSingle();
+            fDACRange = reader.ReadSingle();
+            lADCResolution = reader.ReadInt32();
+            lDACResolution = reader.ReadInt32();
         }
     }
 }

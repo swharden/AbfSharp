@@ -62,21 +62,23 @@ namespace AbfSharpTests.RawAbf
                 Assert.AreEqual(officialHeader.lDataSectionPtr, testHeader.lDataSectionPtr);
                 Assert.AreEqual(officialHeader.lTagSectionPtr, testHeader.lTagSectionPtr);
                 Assert.AreEqual(officialHeader.lNumTagEntries, testHeader.lNumTagEntries);
+                Assert.AreEqual(officialHeader.lSynchArrayPtr, testHeader.lSynchArrayPtr);
+                Assert.AreEqual(officialHeader.lSynchArraySize, testHeader.lSynchArraySize);
+                Assert.AreEqual(officialHeader.nDataFormat, testHeader.nDataFormat);
+                Assert.AreEqual(officialHeader.nSimultaneousScan, testHeader.nSimultaneousScan);
+                Assert.AreEqual(officialHeader.lDACFilePtr, testHeader.lDACFilePtr);
+                Assert.AreEqual(officialHeader.lDACFileNumEpisodes, testHeader.lDACFileNumEpisodes);
+
+                // TODO: implement more sections
                 //Assert.AreEqual(officialHeader.lScopeConfigPtr, testHeader.lScopeConfigPtr);
                 //Assert.AreEqual(officialHeader.lNumScopes, testHeader.lNumScopes);
                 //Assert.AreEqual(officialHeader.lDeltaArrayPtr, testHeader.lDeltaArrayPtr);
                 //Assert.AreEqual(officialHeader.lNumDeltas, testHeader.lNumDeltas);
                 //Assert.AreEqual(officialHeader.lVoiceTagPtr, testHeader.lVoiceTagPtr);
                 //Assert.AreEqual(officialHeader.lVoiceTagEntries, testHeader.lVoiceTagEntries);
-                Assert.AreEqual(officialHeader.lSynchArrayPtr, testHeader.lSynchArrayPtr);
-                Assert.AreEqual(officialHeader.lSynchArraySize, testHeader.lSynchArraySize);
-                Assert.AreEqual(officialHeader.nDataFormat, testHeader.nDataFormat);
-                Assert.AreEqual(officialHeader.nSimultaneousScan, testHeader.nSimultaneousScan);
                 //Assert.AreEqual(officialHeader.lStatisticsConfigPtr, testHeader.lStatisticsConfigPtr);
                 //Assert.AreEqual(officialHeader.lAnnotationSectionPtr, testHeader.lAnnotationSectionPtr);
                 //Assert.AreEqual(officialHeader.lNumAnnotations, testHeader.lNumAnnotations);
-                Assert.AreEqual(officialHeader.lDACFilePtr, testHeader.lDACFilePtr);
-                Assert.AreEqual(officialHeader.lDACFileNumEpisodes, testHeader.lDACFileNumEpisodes);
             }
         }
 
@@ -118,6 +120,28 @@ namespace AbfSharpTests.RawAbf
                 Assert.AreEqual(officialHeader.lAverageCount, testHeader.lAverageCount);
                 Assert.AreEqual(officialHeader.lLegacyClockChange, testHeader.lLegacyClockChange);
                 Assert.AreEqual(officialHeader.nAutoTriggerStrategy, testHeader.nAutoTriggerStrategy);
+            }
+        }
+
+
+        [Test]
+        public void Test_MatchesOfficial_Group5()
+        {
+            foreach (var dict in AbfHeaders)
+            {
+                AbfSharp.ABFFIO.Structs.ABFFileHeader officialHeader = dict.Key;
+                AbfSharp.HeaderBase testHeader = dict.Value;
+                Console.WriteLine($"{testHeader.AbfID} {testHeader.fFileVersionNumber}");
+
+                Assert.AreEqual(officialHeader.fADCRange, testHeader.fADCRange);
+                Assert.AreEqual(officialHeader.lADCResolution, testHeader.lADCResolution);
+
+                // ignore de devo ABFs with zeros for DAC
+                if (testHeader.fDACRange == 0)
+                    continue;
+
+                Assert.AreEqual(officialHeader.fDACRange, testHeader.fDACRange);
+                Assert.AreEqual(officialHeader.lDACResolution, testHeader.lDACResolution);
             }
         }
     }

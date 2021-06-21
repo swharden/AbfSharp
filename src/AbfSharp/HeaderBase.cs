@@ -354,27 +354,47 @@ namespace AbfSharp
         #endregion
 
         #region GROUP 4 - Display Parameters
-        public short nDataDisplayMode;
-        public short nChannelStatsStrategy;
-        public int lSamplesPerTrace;
-        public int lStartDisplayNum;
-        public int lFinishDisplayNum;
-        public short nShowPNRawData;
-        public float fStatisticsPeriod;
-        public int lStatisticsMeasurements;
-        public short nStatisticsSaveStrategy;
+        // I think these control the view on the screen when you open an ABF
+        [Obsolete("not implemented")] public short nDataDisplayMode;
+        [Obsolete("not implemented")] public short nChannelStatsStrategy;
+        [Obsolete("not implemented")] public int lSamplesPerTrace;
+        [Obsolete("not implemented")] public int lStartDisplayNum;
+        [Obsolete("not implemented")] public int lFinishDisplayNum;
+        [Obsolete("not implemented")] public short nShowPNRawData;
+        [Obsolete("not implemented")] public float fStatisticsPeriod;
+        [Obsolete("not implemented")] public int lStatisticsMeasurements;
+        [Obsolete("not implemented")] public short nStatisticsSaveStrategy;
         #endregion
 
         #region GROUP 5 - Hardware information
+
+        /// <summary>
+        /// ADC positive full-scale input in volts (e.g. 10.00V)
+        /// </summary>
         public float fADCRange;
+
+        /// <summary>
+        /// DAC positive full-scale range in volts
+        /// </summary>
         public float fDACRange;
+
+        /// <summary>
+        /// Number of ADC counts corresponding to the positive full-scale voltage in ADCRange (e.g. 2000, 2048, 32000 or 32768)
+        /// </summary>
         public int lADCResolution;
+
+        /// <summary>
+        /// Number of DAC counts corresponding to the positive full-scale voltage in DACRange
+        /// </summary>
         public int lDACResolution;
-        public short nDigitizerADCs;
-        public short nDigitizerDACs;
-        public short nDigitizerTotalDigitalOuts;
-        public short nDigitizerSynchDigitalOuts;
-        public short nDigitizerType;
+
+        // I donp't think the rest of these aren't supported in ABF1 files
+        [Obsolete("not implemented")] public short nDigitizerADCs;
+        [Obsolete("not implemented")] public short nDigitizerDACs;
+        [Obsolete("not implemented")] public short nDigitizerTotalDigitalOuts;
+        [Obsolete("not implemented")] public short nDigitizerSynchDigitalOuts;
+        [Obsolete("not implemented")] public short nDigitizerType;
+
         #endregion
 
         #region GROUP 6 Environmental Information
