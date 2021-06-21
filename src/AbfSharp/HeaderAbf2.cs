@@ -46,6 +46,7 @@ namespace AbfSharp
             ReadGroup2();
             ReadGroup3();
             ReadGroup5();
+            ReadGroup6();
         }
 
         private void ReadGroup1()
@@ -115,6 +116,11 @@ namespace AbfSharp
             fDACRange = ProtocolSection.fDACRange;
             lADCResolution = (int)ProtocolSection.lADCResolution;
             lDACResolution = (int)ProtocolSection.lDACResolution;
+        }
+
+        private void ReadGroup6()
+        {
+
         }
     }
 }

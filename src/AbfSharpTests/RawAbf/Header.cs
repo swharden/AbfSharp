@@ -123,7 +123,6 @@ namespace AbfSharpTests.RawAbf
             }
         }
 
-
         [Test]
         public void Test_MatchesOfficial_Group5()
         {
@@ -142,6 +141,56 @@ namespace AbfSharpTests.RawAbf
 
                 Assert.AreEqual(officialHeader.fDACRange, testHeader.fDACRange);
                 Assert.AreEqual(officialHeader.lDACResolution, testHeader.lDACResolution);
+            }
+        }
+
+        [Test]
+        public void Test_MatchesOfficial_Group6()
+        {
+            foreach (var dict in AbfHeaders)
+            {
+                AbfSharp.ABFFIO.Structs.ABFFileHeader officialHeader = dict.Key;
+                AbfSharp.HeaderBase testHeader = dict.Value;
+                Console.WriteLine($"{testHeader.AbfID} {testHeader.fFileVersionNumber}");
+
+                if (testHeader.fFileVersionNumber >= 2)
+                    continue;
+
+                Assert.AreEqual(officialHeader.nExperimentType, testHeader.nExperimentType);
+                Assert.AreEqual(officialHeader.nManualInfoStrategy, testHeader.nManualInfoStrategy);
+                Assert.AreEqual(officialHeader.fCellID1, testHeader.fCellID1);
+                Assert.AreEqual(officialHeader.fCellID2, testHeader.fCellID2);
+                Assert.AreEqual(officialHeader.fCellID3, testHeader.fCellID3);
+
+                if (!string.IsNullOrWhiteSpace(officialHeader.sProtocolPath))
+                    Assert.AreEqual(officialHeader.sProtocolPath.Trim(), testHeader.sProtocolPath);
+
+                if (!string.IsNullOrWhiteSpace(officialHeader.sCreatorInfo))
+                    Assert.AreEqual(officialHeader.sCreatorInfo.Trim(), testHeader.sCreatorInfo);
+
+                if (!string.IsNullOrWhiteSpace(officialHeader.sModifierInfo))
+                    Assert.AreEqual(officialHeader.sModifierInfo.Trim(), testHeader.sModifierInfo);
+
+                if (!string.IsNullOrWhiteSpace(officialHeader.sFileComment))
+                    Assert.AreEqual(officialHeader.sFileComment.Trim(), testHeader.sFileComment);
+
+                if (!officialHeader.sCreatorInfo.Contains("FETCHEX"))
+                {
+                    Assert.AreEqual(officialHeader.nTelegraphEnable, testHeader.nTelegraphEnable);
+                    Assert.AreEqual(officialHeader.nTelegraphInstrument, testHeader.nTelegraphInstrument);
+                    Assert.AreEqual(officialHeader.fTelegraphAdditGain, testHeader.fTelegraphAdditGain);
+                    Assert.AreEqual(officialHeader.fTelegraphFilter, testHeader.fTelegraphFilter);
+                    Assert.AreEqual(officialHeader.fTelegraphMembraneCap, testHeader.fTelegraphMembraneCap);
+                    Assert.AreEqual(officialHeader.nTelegraphMode, testHeader.nTelegraphMode);
+                    Assert.AreEqual(officialHeader.nTelegraphDACScaleFactorEnable, testHeader.nTelegraphDACScaleFactorEnable.Take(officialHeader.nTelegraphDACScaleFactorEnable.Length));
+                }
+
+                if (officialHeader.FileGUID != Guid.Empty)
+                    Assert.AreEqual(officialHeader.FileGUID, testHeader.FileGUID);
+
+                for (int i = 0; i < officialHeader.fInstrumentHoldingLevel.Length; i++)
+                    if (officialHeader.fInstrumentHoldingLevel[i] > 0)
+                        Assert.AreEqual(officialHeader.fInstrumentHoldingLevel[i], testHeader.fInstrumentHoldingLevel[i]);
             }
         }
     }

@@ -28,6 +28,7 @@ namespace AbfSharp
             ReadGroup2(reader);
             ReadGroup3(reader);
             ReadGroup5(reader);
+            ReadGroup6(reader);
         }
 
         private void ReadGroup1(BinaryReader reader)
@@ -137,6 +138,57 @@ namespace AbfSharp
             fDACRange = reader.ReadSingle();
             lADCResolution = reader.ReadInt32();
             lDACResolution = reader.ReadInt32();
+        }
+
+        public void ReadGroup6(BinaryReader reader)
+        {
+            reader.BaseStream.Seek(260, SeekOrigin.Begin);
+            nExperimentType = reader.ReadInt16();
+
+            reader.BaseStream.Seek(280, SeekOrigin.Begin);
+            nManualInfoStrategy = reader.ReadInt16();
+            fCellID1 = reader.ReadSingle();
+            fCellID2 = reader.ReadSingle();
+            fCellID3 = reader.ReadSingle();
+
+            reader.BaseStream.Seek(294, SeekOrigin.Begin);
+            sCreatorInfo = new string(reader.ReadChars(15)).Replace("\0", "").Trim();
+
+            reader.BaseStream.Seek(4512, SeekOrigin.Begin);
+            nTelegraphEnable = ReadArrayInt16(reader, 16);
+            nTelegraphInstrument = ReadArrayInt16(reader, 16);
+            fTelegraphAdditGain = ReadArraySingle(reader, 16);
+            fTelegraphFilter = ReadArraySingle(reader, 16);
+            fTelegraphMembraneCap = ReadArraySingle(reader, 16);
+            nTelegraphMode = ReadArrayInt16(reader, 16);
+            nTelegraphDACScaleFactorEnable = ReadArrayInt16(reader, 16);
+
+            // If telegraph info contains garbage data, zero-out everything.
+            // There may be a better way to determine if this section exists or not.
+            if (nTelegraphEnable.Min() < 0 || nTelegraphEnable.Max() > 16)
+            {
+                nTelegraphEnable = new Int16[16];
+                nTelegraphInstrument = new Int16[16];
+                fTelegraphAdditGain = new Single[16];
+                fTelegraphFilter = new Single[16];
+                fTelegraphMembraneCap = new Single[16];
+                nTelegraphMode = new Int16[16];
+                nTelegraphDACScaleFactorEnable = new Int16[8];
+            }
+
+            reader.BaseStream.Seek(4832, SeekOrigin.Begin);
+            nAutoAnalyseEnable = reader.ReadInt16();
+            string sAutoAnalysisMacroName = ReadString(reader, 64);
+            sProtocolPath = ReadString(reader, 256);
+            sFileComment = ReadString(reader, 128);
+            FileGUID = MakeGuid(reader.ReadBytes(16));
+
+            reader.BaseStream.Seek(5298, SeekOrigin.Begin);
+            fInstrumentHoldingLevel = ReadArraySingle(reader, 16);
+            ulFileCRC = reader.ReadUInt32();
+
+            reader.BaseStream.Seek(5318, SeekOrigin.Begin);
+            sModifierInfo = new string(reader.ReadChars(16).Where(x => x >= 'A' && x < 'z').ToArray()).Trim();
         }
     }
 }

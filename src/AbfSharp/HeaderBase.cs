@@ -1,10 +1,13 @@
 ﻿using AbfSharp.HeaderData;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 namespace AbfSharp
 {
+    public enum ClampType { VoltageClamp, CurrentClamp };
+
     public class HeaderBase
     {
         /* Fields were brought in from the ABFFIO header struct.
@@ -397,30 +400,141 @@ namespace AbfSharp
 
         #endregion
 
-        #region GROUP 6 Environmental Information
+        #region GROUP 6 - Environmental Information
+
+        /// <summary>
+        /// Experiment type: 
+        /// 0 = Voltage Clamp
+        /// 1 = Current Clamp
+        /// </summary>
         public short nExperimentType;
+
+        /// <summary>
+        /// Type of experiment (voltage or current clamp)
+        /// </summary>
+        public ClampType ExperimentType => (ClampType)nExperimentType;
+
+        /// <summary>
+        /// Strategy for writing the manually entered information:
+        /// 0 = Do not write
+        /// 1 = Write each trial
+        /// 2 = Prompt each trial
+        /// </summary>
         public short nManualInfoStrategy;
+
+        /// <summary>
+        /// Numeric identifier #1, e.g. cell identifier
+        /// </summary>
         public float fCellID1;
+
+        /// <summary>
+        /// Numeric identifier #2, e.g. temperature in °C
+        /// </summary>
         public float fCellID2;
+
+        /// <summary>
+        /// Numeric identifier #3.
+        /// </summary>
         public float fCellID3;
+
+        /// <summary>
+        /// Full path to the protocol file used at the time of recording
+        /// </summary>
         public string sProtocolPath;
+
+        /// <summary>
+        /// Name and version of the software used to record the ABF
+        /// </summary>
         public string sCreatorInfo;
+
+        /// <summary>
+        /// Name and version of the software used to last modify the ABF
+        /// </summary>
         public string sModifierInfo;
-        public short nCommentsEnable;
+
+        /// <summary>
+        /// Whether the comments form is enabled
+        /// </summary>
+        [Obsolete("inconsistent between file and ABFFIO")] public short nCommentsEnable;
+
+        /// <summary>
+        /// A text comment for the ABF typed in the protocol editor window
+        /// </summary>
         public string sFileComment;
+
+        /// <summary>
+        /// Indicates which ADC channels have telegraph enabled.
+        /// 1 = enabled, 0 = disabled, index = ADC channel.
+        /// </summary>
         public short[] nTelegraphEnable;
+
+        /// <summary>
+        /// Telegraphs instrument identifier (index = ADC channel)
+        /// </summary>
         public short[] nTelegraphInstrument;
+
+        /// <summary>
+        /// Additional gain multiplier of the telegraphed instrument (index = ADC channel)
+        /// </summary>
         public float[] fTelegraphAdditGain;
+
+        /// <summary>
+        /// Lowpass filter cutoff frequency of Instrument connected to nAutosampleADCNum (index = ADC channel)
+        /// </summary>
         public float[] fTelegraphFilter;
+
+        /// <summary>
+        /// Patch-clamp membrane capacitance compensation (index = ADC channel)
+        /// </summary>
         public float[] fTelegraphMembraneCap;
-        public float[] fTelegraphAccessResistance;
+
+        [Obsolete("intentionaly not supported")] public float[] fTelegraphAccessResistance;
+
+        /// <summary>
+        /// I-Clamp (0) or V-Clamp (1) mode per ADC channel.
+        /// Currently this field is supported only for MultiClamp.
+        /// </summary>
         public short[] nTelegraphMode;
-        public short[] nTelegraphDACScaleFactorEnable;
-        public short nAutoAnalyseEnable;
+
+        /// <summary>
+        /// Determines whether fDACScaleFactor was telegraphed: 
+        /// 1 = telegraphed
+        /// 0 = not telegraphed
+        /// </summary>
+        [Obsolete("inconsistent during testing")] public short[] nTelegraphDACScaleFactorEnable;
+
+        [Obsolete("intentionally not implemented")] public short nAutoAnalyseEnable;
+
+        /// <summary>
+        /// A GUID which isn't actually GU :-P
+        /// I think this uniquely identifies the protocol (not the ABF)
+        /// </summary>
         public Guid FileGUID;
+
+        /// <summary>
+        /// Use the ABF convention to rearrange bytes and return them as a .NET GUID
+        /// </summary>
+        protected static Guid MakeGuid(byte[] bytes)
+        {
+            if (bytes is null || bytes.Length != 16)
+                throw new ArgumentException("bytes must be length 16");
+
+            byte[] bytes2 = new byte[16];
+            int[] indexes = { 3, 2, 1, 0, 5, 4, 7, 6, 8, 9, 10, 11, 12, 13, 14, 15 };
+            for (int i = 0; i < 16; i++)
+                bytes2[i] = bytes[indexes[i]];
+
+            return new Guid(bytes);
+        }
+
+        /// <summary>
+        /// DAC channel holding level (user units)
+        /// </summary>
         public float[] fInstrumentHoldingLevel;
+
         public uint ulFileCRC;
-        public short nCRCEnable;
+        [Obsolete("intentionally not implemented")] public short nCRCEnable;
+
         #endregion
 
         #region GROUP 7 - Multi-channel information
@@ -646,5 +760,49 @@ namespace AbfSharp
         public byte[] nGapFreeDigitalValue;
         public short nGapFreeEpochStart;
         #endregion
+
+        protected string VersionString(int a, int b, int c, int d)
+        {
+            int[] p = { a, b, c, d };
+            for (int i = 0; i < p.Length; i++)
+            {
+                if (p[i] < 0)
+                    p[i] = 0;
+                if (p[i] > 999)
+                    p[i] = 0;
+            }
+            return $"{p[0]}.{p[1]}.{p[2]}.{p[3]}";
+        }
+
+        protected static Int16[] ReadArrayInt16(BinaryReader reader, int size)
+        {
+            Int16[] arr = new Int16[size];
+            for (int i = 0; i < size; i++)
+                arr[i] = reader.ReadInt16();
+            return arr;
+        }
+
+        protected static Single[] ReadArraySingle(BinaryReader reader, int size)
+        {
+            Single[] arr = new Single[size];
+            for (int i = 0; i < size; i++)
+                arr[i] = reader.ReadSingle();
+            return arr;
+        }
+
+        protected static string[] ReadArrayStrings(BinaryReader reader, int stringCount, int stringSize)
+        {
+            string[] strings = new string[stringCount];
+            for (int i = 0; i < stringCount; i++)
+                strings[i] = new string(reader.ReadChars(stringSize)).Trim();
+            return strings;
+        }
+
+        protected static string ReadString(BinaryReader reader, int length)
+        {
+            byte[] bytes = reader.ReadBytes(length);
+            string path = System.Text.Encoding.ASCII.GetString(bytes).Trim();
+            return path.StartsWith("?") ? "" : path;
+        }
     }
 }
