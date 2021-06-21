@@ -8,6 +8,7 @@ namespace AbfSharp.HeaderData.Abf2
 {
     public class HeaderSection
     {
+        public readonly byte[] SignatureBytes;
         public readonly string fFileSignature;
         public readonly float fFileVersionNumber;
         public readonly UInt32 uFileInfoSize;
@@ -35,7 +36,8 @@ namespace AbfSharp.HeaderData.Abf2
         public HeaderSection(BinaryReader reader)
         {
             reader.BaseStream.Seek(0, SeekOrigin.Begin);
-            fFileSignature = string.Join("", reader.ReadChars(4));
+            SignatureBytes = reader.ReadBytes(4);
+            fFileSignature = Encoding.ASCII.GetString(SignatureBytes);
 
             // TODO: locate documentation that describes this
             byte[] v = reader.ReadBytes(4);
