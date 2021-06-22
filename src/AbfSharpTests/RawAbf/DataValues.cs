@@ -40,6 +40,7 @@ namespace AbfSharpTests.RawAbf
             }
         }
 
+        [Ignore("takes too much memory")]
         [Test]
         public void Test_MatchesOfficial_SweepLength()
         {

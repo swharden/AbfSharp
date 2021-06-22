@@ -36,10 +36,10 @@ namespace AbfSharp.HeaderData.Abf2
         // filtering
         public readonly Single[] fSignalLowpassFilter;
         public readonly Single[] fSignalHighpassFilter;
-        public readonly Char[] nLowpassFilterType;
-        public readonly Char[] nHighpassFilterType;
+        public readonly Byte[] nLowpassFilterType;
+        public readonly Byte[] nHighpassFilterType;
         public readonly Single[] fPostProcessLowpassFilter;
-        public readonly Char[] nPostProcessLowpassFilterType;
+        public readonly Byte[] nPostProcessLowpassFilterType;
 
         // options
         public readonly Byte[] bEnabledDuringPN;
@@ -71,10 +71,10 @@ namespace AbfSharp.HeaderData.Abf2
             fSignalOffset = new Single[ADC_COUNT];
             fSignalLowpassFilter = new Single[ADC_COUNT];
             fSignalHighpassFilter = new Single[ADC_COUNT];
-            nLowpassFilterType = new Char[ADC_COUNT];
-            nHighpassFilterType = new Char[ADC_COUNT];
+            nLowpassFilterType = new Byte[ADC_COUNT];
+            nHighpassFilterType = new Byte[ADC_COUNT];
             fPostProcessLowpassFilter = new Single[ADC_COUNT];
-            nPostProcessLowpassFilterType = new Char[ADC_COUNT];
+            nPostProcessLowpassFilterType = new Byte[ADC_COUNT];
             bEnabledDuringPN = new Byte[ADC_COUNT];
             nStatsChannelPolarity = new Int16[ADC_COUNT];
             lADCChannelNameIndex = new Int32[ADC_COUNT];
@@ -104,10 +104,10 @@ namespace AbfSharp.HeaderData.Abf2
                 fSignalOffset[adcNum] = reader.ReadSingle();
                 fSignalLowpassFilter[adcNum] = reader.ReadSingle();
                 fSignalHighpassFilter[adcNum] = reader.ReadSingle();
-                nLowpassFilterType[adcNum] = reader.ReadChar();
-                nHighpassFilterType[adcNum] = reader.ReadChar();
+                nLowpassFilterType[adcNum] = reader.ReadByte();
+                nHighpassFilterType[adcNum] = reader.ReadByte();
                 fPostProcessLowpassFilter[adcNum] = reader.ReadSingle();
-                nPostProcessLowpassFilterType[adcNum] = reader.ReadChar();
+                nPostProcessLowpassFilterType[adcNum] = reader.ReadByte();
                 bEnabledDuringPN[adcNum] = reader.ReadByte();
                 nStatsChannelPolarity[adcNum] = reader.ReadInt16();
                 lADCChannelNameIndex[adcNum] = reader.ReadInt32();

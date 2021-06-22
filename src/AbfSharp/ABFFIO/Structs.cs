@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections;
+using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text;
 
 namespace AbfSharp.ABFFIO
 {
@@ -42,6 +45,196 @@ namespace AbfSharp.ABFFIO
             public Int16 nTagType;
             public Int16 nVoiceTagNumber_or_nAnnotationIndex;
         };
+
+        /// <summary>
+        /// A fixed-length string with 8 characters
+        /// </summary>
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
+        public struct CharArray8
+        {
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)] public byte[] Chars;
+            public override int GetHashCode() => base.GetHashCode();
+            public override string ToString() => Encoding.UTF8.GetString(Chars.Where(x => x > 0).ToArray()).Trim();
+            public override bool Equals(object obj)
+            {
+                if (obj.GetType() == typeof(string))
+                {
+                    string objString = (string)obj;
+
+                    if (string.IsNullOrWhiteSpace(objString) && Chars.Max() == 0)
+                        return true;
+
+                    return objString == ToString();
+                }
+                else
+                    throw new NotImplementedException("invalid comparison type");
+            }
+        }
+
+        /// <summary>
+        /// A fixed-length string with 10 characters
+        /// </summary>
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
+        public struct CharArray10
+        {
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 10)] public byte[] Chars;
+            public override int GetHashCode() => base.GetHashCode();
+            public override string ToString() => Encoding.UTF8.GetString(Chars.Where(x => x > 0).ToArray()).Trim();
+            public override bool Equals(object obj)
+            {
+                if (obj.GetType() == typeof(string))
+                {
+                    string objString = (string)obj;
+
+                    if (string.IsNullOrWhiteSpace(objString) && Chars.Max() == 0)
+                        return true;
+
+                    return objString == ToString();
+                }
+                else
+                    throw new NotImplementedException("invalid comparison type");
+            }
+        }
+
+        /// <summary>
+        /// 16 numerical values, one byte each, NOT intended to be characters in a string. Zero is allowed.
+        /// </summary>
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
+        public struct SixteenBytes
+        {
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)] public byte[] Bytes;
+            public override string ToString() => "[ " + string.Join(", ", Bytes.Select(x => x.ToString())) + " ]";
+            public override int GetHashCode() => base.GetHashCode();
+            public override bool Equals(object obj)
+            {
+                if (obj.GetType() == typeof(byte[]))
+                {
+                    byte[] other = (byte[])obj;
+                    if (other.Length != Bytes.Length)
+                        return false;
+                    for (int i = 0; i < Bytes.Length; i++)
+                        if (Bytes[i] != other[i])
+                            return false;
+                    return true;
+                }
+                if (obj.GetType() == typeof(SixteenBytes))
+                    return ((SixteenBytes)obj).ToString() == ToString();
+                else
+                    throw new NotImplementedException($"invalid comparison type: {obj.GetType()}");
+            }
+        }
+
+        /// <summary>
+        /// A fixed-length string with 10 characters
+        /// </summary>
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
+        public struct CharArray16
+        {
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)] public byte[] Chars;
+            public override int GetHashCode() => base.GetHashCode();
+            public override string ToString() => Encoding.UTF8.GetString(Chars.Where(x => x > 0).ToArray()).Trim();
+            public override bool Equals(object obj)
+            {
+                if (obj.GetType() == typeof(string))
+                {
+                    string objString = (string)obj;
+
+                    if (string.IsNullOrWhiteSpace(objString) && Chars.Max() == 0)
+                        return true;
+
+                    return objString == ToString();
+                }
+                else if (obj.GetType() == typeof(byte[]))
+                {
+                    byte[] other = (byte[])obj;
+                    if (other.Length != Chars.Length)
+                        return false;
+                    for (int i = 0; i < Chars.Length; i++)
+                        if (Chars[i] != other[i])
+                            return false;
+                    return true;
+                }
+                if (obj.GetType() == typeof(CharArray16))
+                    return ((CharArray16)obj).ToString() == ToString();
+                else
+                    throw new NotImplementedException($"invalid comparison type: {obj.GetType()}");
+            }
+        }
+
+        /// <summary>
+        /// The ABF header struct in memory identically to the latest ABFFIO DLL provided with Clampex 11
+        /// </summary>
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
+        public struct StringArray16x10
+        {
+            const int STRING_LENGTH = 10;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = STRING_LENGTH)] public string string1;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = STRING_LENGTH)] public string string2;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = STRING_LENGTH)] public string string3;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = STRING_LENGTH)] public string string4;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = STRING_LENGTH)] public string string5;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = STRING_LENGTH)] public string string6;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = STRING_LENGTH)] public string string7;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = STRING_LENGTH)] public string string8;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = STRING_LENGTH)] public string string9;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = STRING_LENGTH)] public string string10;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = STRING_LENGTH)] public string string11;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = STRING_LENGTH)] public string string12;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = STRING_LENGTH)] public string string13;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = STRING_LENGTH)] public string string14;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = STRING_LENGTH)] public string string15;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = STRING_LENGTH)] public string string16;
+
+            public string[] GetArray()
+            {
+                string[] strings = new string[]
+                {
+                    string1, string2, string3, string4, string5, string6, string7, string8,
+                    string9, string10, string11, string12, string13, string14, string15, string16,
+                };
+
+                for (int i = 0; i < strings.Length; i++)
+                    strings[i] = strings[i].Trim();
+
+                return strings;
+            }
+        }
+
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
+        public struct StringArray16x8
+        {
+            const int STRING_LENGTH = 8;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = STRING_LENGTH)] public string string1;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = STRING_LENGTH)] public string string2;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = STRING_LENGTH)] public string string3;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = STRING_LENGTH)] public string string4;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = STRING_LENGTH)] public string string5;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = STRING_LENGTH)] public string string6;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = STRING_LENGTH)] public string string7;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = STRING_LENGTH)] public string string8;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = STRING_LENGTH)] public string string9;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = STRING_LENGTH)] public string string10;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = STRING_LENGTH)] public string string11;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = STRING_LENGTH)] public string string12;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = STRING_LENGTH)] public string string13;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = STRING_LENGTH)] public string string14;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = STRING_LENGTH)] public string string15;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = STRING_LENGTH)] public string string16;
+
+            public string[] GetArray()
+            {
+                string[] strings = new string[]
+                {
+                    string1, string2, string3, string4, string5, string6, string7, string8,
+                    string9, string10, string11, string12, string13, string14, string15, string16,
+                };
+
+                for (int i = 0; i < strings.Length; i++)
+                    strings[i] = strings[i].Trim();
+
+                return strings;
+            }
+        }
 
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
         public unsafe struct ABFFileHeader
@@ -168,17 +361,17 @@ namespace AbfSharp.ABFFIO
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = ABF_ADCCOUNT)] public Single[] fSignalOffset;
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = ABF_ADCCOUNT)] public Single[] fSignalLowpassFilter;
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = ABF_ADCCOUNT)] public Single[] fSignalHighpassFilter;
-            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = ABF_ADCCOUNT)] public string nLowpassFilterType;
-            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = ABF_ADCCOUNT)] public string nHighpassFilterType;
+            public SixteenBytes nLowpassFilterType;
+            public SixteenBytes nHighpassFilterType;
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = ABF_ADCCOUNT)] public Byte[] bHumFilterEnable;
-            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = ABF_ADCCOUNT * ABF_ADCNAMELEN)] public string sADCChannelName;
-            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = ABF_ADCCOUNT * ABF_ADCUNITLEN)] public string sADCUnits;
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = ABF_ADCCOUNT)] public CharArray10[] sADCChannelName;
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = ABF_ADCCOUNT)] public CharArray8[] sADCUnits;
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = ABF_DACCOUNT)] public Single[] fDACScaleFactor;
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = ABF_DACCOUNT)] public Single[] fDACHoldingLevel;
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = ABF_DACCOUNT)] public Single[] fDACCalibrationFactor;
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = ABF_DACCOUNT)] public Single[] fDACCalibrationOffset;
-            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = ABF_DACCOUNT * ABF_DACNAMELEN)] public string sDACChannelName;
-            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = ABF_DACCOUNT * ABF_DACUNITLEN)] public string sDACChannelUnits;
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = ABF_DACCOUNT)] public CharArray10[] sDACChannelName;
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = ABF_DACCOUNT)] public CharArray8[] sDACChannelUnits;
 
             // GROUP #9 - Epoch Waveform and Pulses
             public Int16 nDigitalEnable;

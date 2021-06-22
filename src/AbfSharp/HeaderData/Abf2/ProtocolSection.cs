@@ -69,7 +69,9 @@ namespace AbfSharp.HeaderData.Abf2
         public readonly Int16 nLTPType;
         public readonly Int16 nAlternateDACOutputState;
         public readonly Int16 nAlternateDigitalOutputState;
-        public readonly Single[] fCellID;
+        public readonly Single fCellID1;
+        public readonly Single fCellID2;
+        public readonly Single fCellID3;
         public readonly Int16 nDigitizerADCs;
         public readonly Int16 nDigitizerDACs;
         public readonly Int16 nDigitizerTotalDigitalOuts;
@@ -144,7 +146,9 @@ namespace AbfSharp.HeaderData.Abf2
             nLTPType = reader.ReadInt16();
             nAlternateDACOutputState = reader.ReadInt16();
             nAlternateDigitalOutputState = reader.ReadInt16();
-            fCellID = new Single[] { reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle() };
+            fCellID1 = reader.ReadSingle();
+            fCellID2 = reader.ReadSingle();
+            fCellID3 = reader.ReadSingle();
             nDigitizerADCs = reader.ReadInt16();
             nDigitizerDACs = reader.ReadInt16();
             nDigitizerTotalDigitalOuts = reader.ReadInt16();

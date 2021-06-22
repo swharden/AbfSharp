@@ -29,6 +29,7 @@ namespace AbfSharp
             ReadGroup3(reader);
             ReadGroup5(reader);
             ReadGroup6(reader);
+            ReadGroup7(reader);
         }
 
         private void ReadGroup1(BinaryReader reader)
@@ -189,6 +190,50 @@ namespace AbfSharp
 
             reader.BaseStream.Seek(5318, SeekOrigin.Begin);
             sModifierInfo = new string(reader.ReadChars(16).Where(x => x >= 'A' && x < 'z').ToArray()).Trim();
+        }
+
+        public void ReadGroup7(BinaryReader reader)
+        {
+            reader.BaseStream.Seek(378, SeekOrigin.Begin);
+            nADCPtoLChannelMap = ReadArrayInt16(reader, 16);
+            nADCSamplingSeq = ReadArrayInt16(reader, 16);
+            sADCChannelName = ReadArrayStrings(reader, 16, 10);
+            sADCUnits = ReadArrayStrings(reader, 16, 8);
+            fADCProgrammableGain = ReadArraySingle(reader, 16);
+            fADCDisplayAmplification = ReadArraySingle(reader, 16);
+            fADCDisplayOffset = ReadArraySingle(reader, 16);
+            fInstrumentScaleFactor = ReadArraySingle(reader, 16);
+            fInstrumentOffset = ReadArraySingle(reader, 16);
+            fSignalGain = ReadArraySingle(reader, 16);
+            fSignalOffset = ReadArraySingle(reader, 16);
+            fSignalLowpassFilter = ReadArraySingle(reader, 16);
+            fSignalHighpassFilter = ReadArraySingle(reader, 16);
+            sDACChannelName = ReadArrayStrings(reader, 4, 10);
+            sDACChannelUnits = ReadArrayStrings(reader, 4, 8);
+            fDACScaleFactor = ReadArraySingle(reader, 4);
+            fDACHoldingLevel = ReadArraySingle(reader, 4);
+            nSignalType = reader.ReadInt16();
+
+            // ABF1 doesn't support the hum filter so it's always zero
+            bHumFilterEnable = new byte[16];
+
+            // extended group 7
+            reader.BaseStream.Seek(2074, SeekOrigin.Begin);
+            fDACCalibrationFactor = ReadArraySingle(reader, 4);
+            fDACCalibrationOffset = ReadArraySingle(reader, 4);
+
+            if (fFileVersionNumber < 1.6)
+            {
+                for (int i=0; i<4; i++)
+                {
+                    fDACCalibrationFactor[i] = 1;
+                    fDACCalibrationOffset[i] = 1;
+                }
+            }
+
+            // ABF1 doesn't support these
+            nLowpassFilterType = new byte[16];
+            nHighpassFilterType = new byte[16];
         }
     }
 }

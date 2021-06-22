@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using AbfSharp.HeaderData.Abf2;
 
@@ -35,18 +36,19 @@ namespace AbfSharp
         {
             HeaderSection = new(reader);
             ProtocolSection = new(reader);
-            AdcSection = new AdcSection(reader);
-            DacSection = new DacSection(reader);
-            StringsSection = new StringsSection(reader);
-            TagSection = new TagSection(reader);
-            DataSection = new DataSection(reader);
-            SynchSection = new SynchSection(reader);
+            AdcSection = new(reader);
+            DacSection = new(reader);
+            StringsSection = new(reader);
+            TagSection = new(reader);
+            DataSection = new(reader);
+            SynchSection = new(reader);
 
             ReadGroup1();
             ReadGroup2();
             ReadGroup3();
             ReadGroup5();
             ReadGroup6();
+            ReadGroup7();
         }
 
         private void ReadGroup1()
@@ -120,7 +122,60 @@ namespace AbfSharp
 
         private void ReadGroup6()
         {
+            nExperimentType = ProtocolSection.nExperimentType;
+            nManualInfoStrategy = ProtocolSection.nManualInfoStrategy;
 
+            fCellID1 = ProtocolSection.fCellID1;
+            fCellID2 = ProtocolSection.fCellID2;
+            fCellID3 = ProtocolSection.fCellID3;
+
+            sProtocolPath = StringsSection.Strings[HeaderSection.uProtocolPathIndex];
+            sCreatorInfo = StringsSection.Strings[HeaderSection.uCreatorNameIndex];
+            sModifierInfo = StringsSection.Strings[HeaderSection.uModifierNameIndex];
+            nCommentsEnable = ProtocolSection.nCommentsEnable;
+            sFileComment = StringsSection.Strings[ProtocolSection.lFileCommentIndex];
+
+            nTelegraphEnable = AdcSection.nTelegraphEnable;
+            nTelegraphInstrument = AdcSection.nTelegraphInstrument;
+            fTelegraphAdditGain = AdcSection.fTelegraphAdditGain;
+            fTelegraphFilter = AdcSection.fTelegraphFilter;
+            fTelegraphMembraneCap = AdcSection.fTelegraphMembraneCap;
+            fTelegraphAccessResistance = AdcSection.fTelegraphAccessResistance;
+            nTelegraphMode = AdcSection.nTelegraphMode;
+            nTelegraphDACScaleFactorEnable = DacSection.nTelegraphDACScaleFactorEnable;
+
+            FileGUID = MakeGuid(HeaderSection.FileGUID);
+            fInstrumentHoldingLevel = DacSection.fInstrumentHoldingLevel;
+            nCRCEnable = (short)HeaderSection.nCRCEnable;
+        }
+
+        private void ReadGroup7()
+        {
+            nSignalType = ProtocolSection.nSignalType;
+
+            nADCPtoLChannelMap = AdcSection.nADCPtoLChannelMap;
+            nADCSamplingSeq = AdcSection.nADCSamplingSeq;
+            fADCProgrammableGain = AdcSection.fADCProgrammableGain;
+            fADCDisplayAmplification = AdcSection.fADCDisplayAmplification;
+            fADCDisplayOffset = AdcSection.fADCDisplayOffset;
+            fInstrumentScaleFactor = AdcSection.fInstrumentScaleFactor;
+            fInstrumentOffset = AdcSection.fInstrumentOffset;
+            fSignalGain = AdcSection.fSignalGain;
+            fSignalOffset = AdcSection.fSignalOffset;
+            fSignalLowpassFilter = AdcSection.fSignalLowpassFilter;
+            fSignalHighpassFilter = AdcSection.fSignalHighpassFilter;
+            nLowpassFilterType = AdcSection.nLowpassFilterType;
+            nHighpassFilterType = AdcSection.nHighpassFilterType;
+            
+            sADCChannelName = AdcSection.lADCChannelNameIndex.Select(x => StringsSection.Strings[x]).ToArray();
+            sADCUnits = AdcSection.lADCUnitsIndex.Select(x => StringsSection.Strings[x]).ToArray();
+
+            fDACScaleFactor = DacSection.fDACScaleFactor;
+            fDACHoldingLevel = DacSection.fDACHoldingLevel;
+            fDACCalibrationFactor = DacSection.fDACCalibrationFactor;
+            fDACCalibrationOffset = DacSection.fDACCalibrationOffset;
+            sDACChannelName = DacSection.lDACChannelNameIndex.Select(x => StringsSection.Strings[x]).ToArray();
+            sDACChannelUnits = DacSection.lDACChannelUnitsIndex.Select(x => StringsSection.Strings[x]).ToArray();
         }
     }
 }

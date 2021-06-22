@@ -453,9 +453,10 @@ namespace AbfSharp
         public string sModifierInfo;
 
         /// <summary>
-        /// Whether the comments form is enabled
+        /// Whether the comments form is enabled.
+        /// WARNING: inconsistent between file and ABFFIO (some extra logic may be requried to properly set this)
         /// </summary>
-        [Obsolete("inconsistent between file and ABFFIO")] public short nCommentsEnable;
+        public short nCommentsEnable;
 
         /// <summary>
         /// A text comment for the ABF typed in the protocol editor window
@@ -488,7 +489,11 @@ namespace AbfSharp
         /// </summary>
         public float[] fTelegraphMembraneCap;
 
-        [Obsolete("intentionaly not supported")] public float[] fTelegraphAccessResistance;
+        /// <summary>
+        /// Patch-clamp access resistance (index = ADC channel)
+        /// WARNING: values read natively are inconsistent with ABFFIO values
+        /// </summary>
+        [Obsolete("inconsistent in ABF1 files during testing")] public float[] fTelegraphAccessResistance;
 
         /// <summary>
         /// I-Clamp (0) or V-Clamp (1) mode per ADC channel.
@@ -501,8 +506,11 @@ namespace AbfSharp
         /// 1 = telegraphed
         /// 0 = not telegraphed
         /// </summary>
-        [Obsolete("inconsistent during testing")] public short[] nTelegraphDACScaleFactorEnable;
+        [Obsolete("inconsistent in ABF1 files during testing")] public short[] nTelegraphDACScaleFactorEnable;
 
+        /// <summary>
+        /// I think this is an obsolete field from ABF1 files
+        /// </summary>
         [Obsolete("intentionally not implemented")] public short nAutoAnalyseEnable;
 
         /// <summary>
@@ -538,29 +546,150 @@ namespace AbfSharp
         #endregion
 
         #region GROUP 7 - Multi-channel information
+
+        /// <summary>
+        /// Type of signal conditioner that was used
+        /// 0 = None
+        /// 1 = CyberAmp 320/380
+        /// </summary>
         public short nSignalType;
+
+        /// <summary>
+        /// ADC physical-to-logical channel map. 
+        /// The entries are in the physical order 0, 1, 2,..., 14, 15. 
+        /// If there are fewer than 16 logical channels in the system, the array is padded with -1.
+        /// All channels supported by the hardware are present, even if only a subset is used. 
+        /// For example, for the TL-2 the entries would be 7, 6, 5, 4, 3, 2, 1, 0, -1,..., -1.
+        /// </summary>
         public short[] nADCPtoLChannelMap;
+
+        /// <summary>
+        /// ADC channel sampling sequence. 
+        /// This is the order in which the physical ADC channels are sampled. 
+        /// If fewer than the maximum number of channels are sampled, pad with -1. 
+        /// For example, if two channels are sampled on the TL-2, 
+        /// this array will contain 6, 7, -1,..., -1. 
+        /// If two channels are sampled on the TL-1, this array will contain 14, 15, -1,..., -1.
+        /// </summary>
         public short[] nADCSamplingSeq;
+
+        /// <summary>
+        /// ADC programmable gain in physical channel number order (dimensionless)
+        /// </summary>
         public float[] fADCProgrammableGain;
+
+        /// <summary>
+        /// ADC channel display amplification in physical channel number order (dimensionless)
+        /// </summary>
         public float[] fADCDisplayAmplification;
+
+        /// <summary>
+        /// ADC channel display offset in physical channel number order (user units)
+        /// </summary>
         public float[] fADCDisplayOffset;
+
+        /// <summary>
+        /// Instrument scale factor in physical ADC channel number order (Volts at ADC / user unit). 
+        /// Programs would normally display this information to the user as user units / volt at ADC.
+        /// </summary>
         public float[] fInstrumentScaleFactor;
+
+        /// <summary>
+        /// Instrument offset in physical ADC channel number order (user units corresponding to 0 V at the ADC).
+        /// </summary>
         public float[] fInstrumentOffset;
+
+        /// <summary>
+        /// Signal conditioner gain in physical ADC channel number order (dimensionless).
+        /// </summary>
         public float[] fSignalGain;
+
+        /// <summary>
+        /// Signal conditioner offset in physical ADC channel number order (user units).
+        /// </summary>
         public float[] fSignalOffset;
+
+        /// <summary>
+        /// Signal-conditioner lowpass filter corner frequency in physical ADC channel number order (Hz). 
+        /// 100000 means lowpass filter is bypassed (i.e. wideband). 
+        /// Default = 100000.
+        /// </summary>
         public float[] fSignalLowpassFilter;
+
+        /// <summary>
+        /// Signal-conditioner highpass filter corner frequency in physical ADC channel number order (Hz). 
+        /// 0 means highpass filter is bypassed (i.e. DC coupled). 
+        /// -1 means inputs are grounded. 
+        /// </summary>
         public float[] fSignalHighpassFilter;
-        public string nLowpassFilterType;
-        public string nHighpassFilterType;
+
+        /// <summary>
+        /// Type of Low Pass filter for each ADC channel:
+        /// 0 = None
+        /// 1 = External
+        /// 2 = Simple RC
+        /// 3 = Bessell
+        /// 4 = Butterworth
+        /// </summary>
+        public byte[] nLowpassFilterType;
+
+        /// <summary>
+        /// Type of High Pass filter for each ADC channel:
+        /// 0 = None
+        /// 1 = External
+        /// 2 = Simple RC
+        /// 3 = Bessell
+        /// 4 = Butterworth
+        /// </summary>
+        public byte[] nHighpassFilterType;
+
+        /// <summary>
+        /// Only supported in ABF2 files
+        /// </summary>
         public byte[] bHumFilterEnable;
-        public string sADCChannelName;
-        public string sADCUnits;
+
+        /// <summary>
+        /// ADC channel name in physical channel number order
+        /// </summary>
+        public string[] sADCChannelName;
+
+        /// <summary>
+        /// The user units for ADC channels in physical channel number order
+        /// </summary>
+        public string[] sADCUnits;
+
+        /// <summary>
+        /// Determines whether fDACScaleFactor was telegraphed: 
+        /// 1 = telegraphed
+        /// 0 = not telegraphed
+        /// </summary>
         public float[] fDACScaleFactor;
+
+        /// <summary>
+        /// DAC channel holding level (user units)
+        /// </summary>
         public float[] fDACHoldingLevel;
+
+        /// <summary>
+        /// Calibration factor for each DAC
+        /// </summary>
         public float[] fDACCalibrationFactor;
+
+        /// <summary>
+        /// Calibration offset for each DAC
+        /// </summary>
         public float[] fDACCalibrationOffset;
-        public string sDACChannelName;
-        public string sDACChannelUnits;
+
+        /// <summary>
+        /// Name for each DAC channel
+        /// </summary>
+        public string[] sDACChannelName;
+
+        /// <summary>
+        /// User units for each DAC channel
+        /// </summary>
+        public string[] sDACChannelUnits;
+
         #endregion
 
         #region GROUP 9 - Epoch Waveform and Pulses
@@ -794,7 +923,7 @@ namespace AbfSharp
         {
             string[] strings = new string[stringCount];
             for (int i = 0; i < stringCount; i++)
-                strings[i] = new string(reader.ReadChars(stringSize)).Trim();
+                strings[i] = Encoding.ASCII.GetString(reader.ReadBytes(stringSize)).Replace("\u0000", "").Trim();
             return strings;
         }
 
