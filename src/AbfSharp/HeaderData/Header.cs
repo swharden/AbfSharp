@@ -13,6 +13,19 @@ namespace AbfSharp.HeaderData
         // varible names and descriptions are inspired by official documentation
         // http://mdc.custhelp.com/euf/assets/software/FSP_ABFHelp_2.03.pdf
 
+        public const int BLOCKSIZE = 512;
+
+        /// <summary>
+        /// Byte location in the ABF file where the data begins.
+        /// Note that data values are interleaved across multiple channels.
+        /// </summary>
+        public int DataPosition => lDataSectionPtr * BLOCKSIZE;
+
+        /// <summary>
+        /// Number of bytes for the entire data section in the ABF file.
+        /// </summary>
+        public int DataSize => lActualAcqLength * BytesPerValue;
+
         /// <summary>
         /// Access to low-level ABF1 header variables in memory with names that match the official documentation.
         /// Will be null if this is not an ABF1 file.
@@ -203,7 +216,8 @@ namespace AbfSharp.HeaderData
         public readonly int lSynchArraySize;
 
         /// <summary>
-        /// Start time of each sweep (fSynchTimeUnit units)
+        /// Start time of each sweep (fSynchTimeUnit units).
+        /// If fixed length sweeps this will be an empty array.
         /// </summary>
         public int[] SynchStartTimes;
 

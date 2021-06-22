@@ -54,7 +54,7 @@ namespace AbfSharpTests.RawAbf
                 Assert.IsNotNull(officialValues);
                 Assert.IsNotEmpty(officialValues);
 
-                double[] rawValues = raw.GetSweep(0, 0);
+                float[] rawValues = raw.GetSweep(0, 0);
                 Assert.IsNotNull(rawValues);
                 Assert.IsNotEmpty(rawValues);
 
@@ -80,7 +80,7 @@ namespace AbfSharpTests.RawAbf
         {
             foreach (AbfSharp.ABF official in OfficialABFs)
             {
-                var raw = new AbfSharp.RawABF(official.Path);
+                var raw = new AbfSharp.RawABF(official.Path, preloadData: true);
                 if (raw.Header.FileVersionNumber < 2)
                     continue;
                 if (raw.Header.OperationMode == AbfSharp.HeaderData.OperationMode.GapFree)
@@ -94,13 +94,13 @@ namespace AbfSharpTests.RawAbf
                 Assert.IsNotNull(officialValues);
                 Assert.IsNotEmpty(officialValues);
 
-                double[] rawValues = raw.GetSweep(0, 0);
+                float[] rawValues = raw.GetSweep(0, 0);
                 Assert.IsNotNull(rawValues);
                 Assert.IsNotEmpty(rawValues);
 
                 for (int i = 0; i < 10; i++)
                 {
-                    Assert.AreEqual(officialValues[i], rawValues[i], 1e-4);
+                    Assert.AreEqual(officialValues[i], rawValues[i], 1e-3);
                 }
             }
         }

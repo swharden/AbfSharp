@@ -14,9 +14,11 @@ namespace AbfSharp
     {
         public string Path { get; private set; }
 
-        public readonly HeaderData.Header Header;
+        private byte[] DataBytes;
 
-        public RawABF(string abfFilePath)
+        public HeaderData.Header Header { get; private set; }
+
+        public RawABF(string abfFilePath, bool preloadData = false)
         {
             // validate file path
             if (!File.Exists(abfFilePath))
@@ -24,17 +26,15 @@ namespace AbfSharp
             Path = System.IO.Path.GetFullPath(abfFilePath);
 
             // open the file and locally maintain the reader
-            BinaryReader reader = new(File.Open(Path, FileMode.Open));
+            using FileStream fs = File.Open(Path, FileMode.Open);
+            using BinaryReader reader = new(fs);
 
             // read the header into memory
             Header = new(reader);
 
-            // read the sweeps into memory
-            // TODO: read sweeps
-
-            // close the file
-            reader.Close();
-            reader.Dispose();
+            // read all sweep data into memory
+            if (preloadData)
+                LoadData(reader);
         }
 
         public override string ToString() =>
@@ -43,46 +43,54 @@ namespace AbfSharp
             $"{Header.OperationMode} mode " +
             $"with {Header.ChannelCount} channels and {Header.SweepCount} sweeps";
 
-        public double[] GetSweep(int sweepIndex, int channelIndex = 0)
+        private void LoadData(BinaryReader reader)
         {
-            // determine the location of data bytes in the file
+            reader.BaseStream.Seek(Header.DataPosition, SeekOrigin.Begin);
+            DataBytes = reader.ReadBytes(Header.DataSize * Header.BytesPerValue);
+        }
+
+        private void LoadData()
+        {
+            using FileStream fs = File.Open(Path, FileMode.Open);
+            using BinaryReader reader = new(fs);
+            LoadData(reader);
+        }
+
+        public float[] GetSweep(int sweepIndex, int channelIndex = 0)
+        {
+            if (DataBytes is null)
+                LoadData();
+
+            // determine the location of this sweep in the data byte array
             int sweepFirstByte;
             int sweepPointCount;
             if (Header.SynchStartTimes.Length > 0)
             {
-                sweepFirstByte = Header.lDataSectionPtr * 512;
+                // if start times exist, use them
+                sweepFirstByte = Header.DataPosition;
                 for (int i = 1; i < sweepIndex; i++)
                     sweepFirstByte += Header.SynchLengths[i - 1];
                 sweepPointCount = Header.SynchLengths[sweepIndex] / Header.nADCNumChannels;
             }
             else if (Header.OperationMode == HeaderData.OperationMode.Episodic)
             {
+                // if episodic mode assume fixed-length sweeps
                 int valuesPerSweep = Header.lActualAcqLength / Header.lActualEpisodes;
-                sweepFirstByte = Header.lDataSectionPtr * 512 + sweepIndex * valuesPerSweep * Header.BytesPerValue;
                 sweepPointCount = valuesPerSweep / Header.nADCNumChannels;
             }
             else
             {
-                sweepFirstByte = Header.lDataSectionPtr * 512;
+                // assume a single sweep the entire length of the file
                 sweepPointCount = Header.lActualAcqLength / Header.nADCNumChannels;
             }
 
+            float[] values = new float[sweepPointCount];
             int channelByteOffset = Header.BytesPerValue * channelIndex;
-            double[] values = new double[sweepPointCount];
-
-            // TODO: store this at the header level
-            // read data out of the file
-            BinaryReader reader = new(File.Open(Path, FileMode.Open));
-            reader.BaseStream.Seek(sweepFirstByte, SeekOrigin.Begin);
-            byte[] data = reader.ReadBytes(Header.lActualAcqLength * Header.BytesPerValue);
-            reader.Close();
-            reader.Dispose();
-
             if (Header.nDataFormat == 0)
             {
                 int adcIndex = Header.nADCSamplingSeq[channelIndex];
 
-                double gain = 1;
+                float gain = 1;
                 gain /= Header.fInstrumentScaleFactor[adcIndex];
                 gain /= Header.fSignalGain[adcIndex];
                 gain /= Header.fADCProgrammableGain[adcIndex];
@@ -91,23 +99,22 @@ namespace AbfSharp
                 if (Header.nTelegraphEnable[adcIndex] > 0)
                     gain /= Header.fTelegraphAdditGain[adcIndex];
 
-                double offset = 0;
+                float offset = 0;
                 offset += Header.fInstrumentOffset[adcIndex];
                 offset -= Header.fSignalOffset[adcIndex];
 
                 int bytesPerSample = Header.BytesPerSample;
                 for (int i = 0; i < sweepPointCount; i++)
-                    values[i] = BitConverter.ToInt16(data, i * bytesPerSample + channelByteOffset) * gain + offset;
+                    values[i] = BitConverter.ToInt16(DataBytes, i * bytesPerSample + channelByteOffset) * gain + offset;
             }
             else if (Header.nDataFormat == 1)
             {
                 int bytesPerSample = Header.BytesPerSample;
                 for (int i = 0; i < sweepPointCount; i++)
-                    values[i] = BitConverter.ToSingle(data, i * bytesPerSample + channelByteOffset);
+                    values[i] = BitConverter.ToSingle(DataBytes, i * bytesPerSample + channelByteOffset);
             }
             else
                 throw new NotImplementedException($"unsupported nDataFormat: {Header.nDataFormat}");
-
 
             return values;
         }
