@@ -17,6 +17,8 @@ namespace AbfSharp
         private TagSection TagSection;
         private DataSection DataSection;
         private SynchSection SynchSection;
+        private EpochSection EpochSection;
+        private EpochPerDacSection EpochPerDacSection;
 
         public HeaderAbf2(BinaryReader reader, string filePath)
         {
@@ -42,6 +44,8 @@ namespace AbfSharp
             TagSection = new(reader);
             DataSection = new(reader);
             SynchSection = new(reader);
+            EpochSection = new(reader);
+            EpochPerDacSection = new(reader);
 
             ReadGroup1();
             ReadGroup2();
@@ -49,6 +53,7 @@ namespace AbfSharp
             ReadGroup5();
             ReadGroup6();
             ReadGroup7();
+            ReadGroup9();
         }
 
         private void ReadGroup1()
@@ -166,7 +171,7 @@ namespace AbfSharp
             fSignalHighpassFilter = AdcSection.fSignalHighpassFilter;
             nLowpassFilterType = AdcSection.nLowpassFilterType;
             nHighpassFilterType = AdcSection.nHighpassFilterType;
-            
+
             sADCChannelName = AdcSection.lADCChannelNameIndex.Select(x => StringsSection.Strings[x]).ToArray();
             sADCUnits = AdcSection.lADCUnitsIndex.Select(x => StringsSection.Strings[x]).ToArray();
 
@@ -176,6 +181,34 @@ namespace AbfSharp
             fDACCalibrationOffset = DacSection.fDACCalibrationOffset;
             sDACChannelName = DacSection.lDACChannelNameIndex.Select(x => StringsSection.Strings[x]).ToArray();
             sDACChannelUnits = DacSection.lDACChannelUnitsIndex.Select(x => StringsSection.Strings[x]).ToArray();
+        }
+
+        private void ReadGroup9()
+        {
+            nDigitalEnable = ProtocolSection.nDigitalEnable;
+            nActiveDACChannel = ProtocolSection.nActiveDACChannel;
+            nDigitalDACChannel = ProtocolSection.nDigitalDACChannel;
+            nDigitalHolding = ProtocolSection.nDigitalHolding;
+            nDigitalInterEpisode = ProtocolSection.nDigitalInterEpisode;
+            nDigitalTrainActiveLogic = ProtocolSection.nDigitalTrainActiveLogic;
+
+            // TODO: support epoch section
+            nDigitalValue = EpochSection.nDigitalValue;
+            nDigitalTrainValue = EpochSection.nDigitalTrainValue;
+
+            nEpochType = EpochPerDacSection.nEpochType;
+            fEpochInitLevel = EpochPerDacSection.fEpochInitLevel;
+            fEpochLevelInc = EpochPerDacSection.fEpochLevelInc;
+            lEpochInitDuration = EpochPerDacSection.lEpochInitDuration;
+            lEpochDurationInc = EpochPerDacSection.lEpochDurationInc;
+
+            bEpochCompression = new byte[50];
+            bEpochCompression[0] = ProtocolSection.bEnableFileCompression;
+
+            nWaveformEnable = DacSection.nWaveformEnable;
+            nWaveformSource = DacSection.nWaveformSource;
+            nInterEpisodeLevel = DacSection.nInterEpisodeLevel;
+            
         }
     }
 }

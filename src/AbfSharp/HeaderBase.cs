@@ -693,26 +693,115 @@ namespace AbfSharp
         #endregion
 
         #region GROUP 9 - Epoch Waveform and Pulses
+
+        /// <summary>
+        /// Enable digital outputs: 
+        /// 0 = No
+        /// 1 = Yes
+        /// </summary>
         public short nDigitalEnable;
+
+        /// <summary>
+        /// Active DAC channel, i.e. the one used for waveform generation.
+        /// </summary>
         public short nActiveDACChannel;
+
+        /// <summary>
+        /// Not used in ABF1 files
+        /// </summary>
         public short nDigitalDACChannel;
+
+        /// <summary>
+        /// Holding value for digital output.
+        /// </summary>
         public short nDigitalHolding;
+
+        /// <summary>
+        /// Inter-sweep digital holding value:
+        /// 0 = Use holding value
+        /// 1 = Use last epoch value
+        /// </summary>
         public short nDigitalInterEpisode;
+
+        /// <summary>
+        /// Epoch value for digital train output in epoch order:
+        /// 0000 = Disabled
+        /// 0*000 = Generates digital train on bit 3
+        /// Train period and pulse width can be controlled by the user list.
+        /// </summary>
         public short nDigitalTrainActiveLogic;
+
+        /// <summary>
+        /// Epoch value for digital output (0...15)
+        /// </summary>
         public short[] nDigitalValue;
+
+        /// <summary>
+        /// Epoch duration increment in physical DAC channel order then epoch order (in sequence counts)
+        /// </summary>
         public short[] nDigitalTrainValue;
+
         public byte[] bEpochCompression;
+
+        /// <summary>
+        /// Analog waveform enabled (by ADC).
+        /// 0 = No
+        /// 1 = Yes
+        /// </summary>
         public short[] nWaveformEnable;
+
+        /// <summary>
+        /// Analog waveform source: 
+        /// 0 = Disable
+        /// 1 = Generate waveform from epoch definitions
+        /// 2 = Generate waveform from a DAC file.
+        /// </summary>
         public short[] nWaveformSource;
+
+        /// <summary>
+        /// Inter-sweep holding level:
+        /// 0 = Use holding level
+        /// 1 = Use last epoch amplitude
+        /// </summary>
         public short[] nInterEpisodeLevel;
+
+        /// <summary>
+        /// Epoch type (one per epoch):
+        /// 0 = Disabled
+        /// 1 = Step
+        /// 2 = Ramp
+        /// </summary>
         public short[] nEpochType;
+
+        /// <summary>
+        /// Epoch initial level (user units)
+        /// </summary>
         public float[] fEpochInitLevel;
+
+        [Obsolete("I think this is calculated, not read from file")]
         public float[] fEpochFinalLevel;
+
+        /// <summary>
+        /// Epoch level increment (user units)
+        /// </summary>
         public float[] fEpochLevelInc;
+
+        /// <summary>
+        /// Epoch initial duration (in sequence counts)
+        /// </summary>
         public int[] lEpochInitDuration;
+
+        /// <summary>
+        /// Epoch duration increment (in sequence counts)
+        /// </summary>
         public int[] lEpochDurationInc;
+
+        [Obsolete("I think this is calculated, not read from file")]
         public short[] nEpochTableRepetitions;
+
+        [Obsolete("I think this is calculated, not read from file")]
         public float[] fEpochTableStartToStartInterval;
+
         #endregion
 
         #region GROUP 10 - DAC Output File
@@ -908,6 +997,14 @@ namespace AbfSharp
             Int16[] arr = new Int16[size];
             for (int i = 0; i < size; i++)
                 arr[i] = reader.ReadInt16();
+            return arr;
+        }
+
+        protected static Int32[] ReadArrayInt32(BinaryReader reader, int size)
+        {
+            Int32[] arr = new Int32[size];
+            for (int i = 0; i < size; i++)
+                arr[i] = reader.ReadInt32();
             return arr;
         }
 

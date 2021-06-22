@@ -30,6 +30,7 @@ namespace AbfSharp
             ReadGroup5(reader);
             ReadGroup6(reader);
             ReadGroup7(reader);
+            ReadGroup9(reader);
         }
 
         private void ReadGroup1(BinaryReader reader)
@@ -224,7 +225,7 @@ namespace AbfSharp
 
             if (fFileVersionNumber < 1.6)
             {
-                for (int i=0; i<4; i++)
+                for (int i = 0; i < 4; i++)
                 {
                     fDACCalibrationFactor[i] = 1;
                     fDACCalibrationOffset[i] = 1;
@@ -234,6 +235,33 @@ namespace AbfSharp
             // ABF1 doesn't support these
             nLowpassFilterType = new byte[16];
             nHighpassFilterType = new byte[16];
+        }
+
+        public void ReadGroup9(BinaryReader reader)
+        {
+            reader.BaseStream.Seek(1436, SeekOrigin.Begin);
+            nDigitalEnable = reader.ReadInt16();
+
+            reader.BaseStream.Seek(1440, SeekOrigin.Begin);
+            nActiveDACChannel = reader.ReadInt16();
+
+            reader.BaseStream.Seek(1584, SeekOrigin.Begin);
+            nDigitalHolding = reader.ReadInt16();
+            nDigitalInterEpisode = reader.ReadInt16();
+            nDigitalValue = ReadArrayInt16(reader, 16);
+
+            reader.BaseStream.Seek(2296, SeekOrigin.Begin);
+            nWaveformEnable = ReadArrayInt16(reader, 2);
+            nWaveformSource = ReadArrayInt16(reader, 2);
+            nInterEpisodeLevel = ReadArrayInt16(reader, 2);
+            nEpochType = ReadArrayInt16(reader, 20);
+            fEpochInitLevel = ReadArraySingle(reader, 20);
+            fEpochLevelInc = ReadArraySingle(reader, 20);
+            lEpochInitDuration = ReadArrayInt32(reader, 20);
+            lEpochDurationInc = ReadArrayInt32(reader, 20);
+            nDigitalTrainValue = ReadArrayInt16(reader, 10);
+            bEpochCompression = new byte[50];
+            nDigitalTrainActiveLogic = reader.ReadInt16();
         }
     }
 }

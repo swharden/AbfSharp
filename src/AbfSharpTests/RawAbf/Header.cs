@@ -252,24 +252,9 @@ namespace AbfSharpTests.RawAbf
             }
         }
 
-        [Ignore("group not yet implemented")]
-        [Test]
-        public void Test_MatchesOfficial_Group08()
-        {
-
-            foreach (var dict in AbfHeaders)
-            {
-                AbfSharp.ABFFIO.Structs.ABFFileHeader officialHeader = dict.Key;
-                AbfSharp.HeaderBase testHeader = dict.Value;
-                Console.WriteLine($"{testHeader.AbfID} {testHeader.fFileVersionNumber}");
-            }
-        }
-
-        [Ignore("group not yet implemented")]
         [Test]
         public void Test_MatchesOfficial_Group09()
         {
-
             foreach (var dict in AbfHeaders)
             {
                 AbfSharp.ABFFIO.Structs.ABFFileHeader officialHeader = dict.Key;
@@ -282,21 +267,68 @@ namespace AbfSharpTests.RawAbf
                 Assert.AreEqual(officialHeader.nDigitalDACChannel, testHeader.nDigitalDACChannel);
                 Assert.AreEqual(officialHeader.nDigitalHolding, testHeader.nDigitalHolding);
                 Assert.AreEqual(officialHeader.nDigitalInterEpisode, testHeader.nDigitalInterEpisode);
-                Assert.AreEqual(officialHeader.nDigitalTrainActiveLogic, testHeader.nDigitalTrainActiveLogic);
-                Assert.AreEqual(officialHeader.nDigitalValue, testHeader.nDigitalValue);
-                Assert.AreEqual(officialHeader.nDigitalTrainValue, testHeader.nDigitalTrainValue);
+                Assert.AreEqual(officialHeader.nDigitalValue.Take(testHeader.nDigitalValue.Length), testHeader.nDigitalValue);
                 Assert.AreEqual(officialHeader.bEpochCompression, testHeader.bEpochCompression);
-                Assert.AreEqual(officialHeader.nWaveformEnable, testHeader.nWaveformEnable);
-                Assert.AreEqual(officialHeader.nWaveformSource, testHeader.nWaveformSource);
-                Assert.AreEqual(officialHeader.nInterEpisodeLevel, testHeader.nInterEpisodeLevel);
-                Assert.AreEqual(officialHeader.nEpochType, testHeader.nEpochType);
-                Assert.AreEqual(officialHeader.fEpochInitLevel, testHeader.fEpochInitLevel);
-                Assert.AreEqual(officialHeader.fEpochFinalLevel, testHeader.fEpochFinalLevel);
-                Assert.AreEqual(officialHeader.fEpochLevelInc, testHeader.fEpochLevelInc);
-                Assert.AreEqual(officialHeader.lEpochInitDuration, testHeader.lEpochInitDuration);
-                Assert.AreEqual(officialHeader.lEpochDurationInc, testHeader.lEpochDurationInc);
-                Assert.AreEqual(officialHeader.nEpochTableRepetitions, testHeader.nEpochTableRepetitions);
-                Assert.AreEqual(officialHeader.fEpochTableStartToStartInterval, testHeader.fEpochTableStartToStartInterval);
+
+                if (testHeader.fFileVersionNumber < 1.6)
+                    continue;
+
+                Assert.AreEqual(officialHeader.nDigitalTrainActiveLogic, testHeader.nDigitalTrainActiveLogic);
+                Assert.AreEqual(officialHeader.nDigitalTrainValue.Take(testHeader.nDigitalTrainValue.Length), testHeader.nDigitalTrainValue);
+                Assert.AreEqual(officialHeader.nInterEpisodeLevel.Take(testHeader.nInterEpisodeLevel.Length), testHeader.nInterEpisodeLevel);
+
+                // HOW TO TEST THE EPOCH TABLE?
+                // The epoch table read from disk is good.
+                // ABFFIO is rediculous - it changes these values after reading them from the file.
+                // It likes to change nEpochType
+                // It also changes waveform levels according to nTelegraphDACScaleFactorEnable and fTelegraphAdditGain
+                string[] ignoreAbfIDs =
+                {
+                    "18425108",
+                    "18425108_abf1",
+                    "18702001-biphasicTrain",
+                    "18702001-cosTrain",
+                    "18702001-pulseTrain",
+                    "18702001-ramp",
+                    "18702001-step",
+                    "18702001-triangleTrain",
+                    "19122043",
+                    "2015_09_10_0001",
+                    "2018_05_08_0028-IC-VC-pair",
+                    "2018_12_15_0000",
+                    "DM1_0000",
+                    "DM1_0001",
+                    "DM1_0002",
+                    "DM1_0003",
+                    "H19_29_150_11_21_01_0011",
+                    "pclamp11_4ch",
+                    "pclamp11_4ch_abf1",
+                    "multichannelAbf1WithTags",
+                    "File_axon_2"
+                };
+                if (ignoreAbfIDs.Contains(testHeader.AbfID))
+                    continue;
+
+                for (int i = 0; i < testHeader.nWaveformEnable.Length; i++)
+                {
+                    Assert.AreEqual(officialHeader.nWaveformEnable[i], testHeader.nWaveformEnable[i]);
+                    Assert.AreEqual(officialHeader.nWaveformSource[i], testHeader.nWaveformSource[i]);
+                }
+
+                // validate the waveform table only for episodic files
+                for (int i = 0; i < testHeader.nEpochType.Length; i++)
+                {
+                    // ABFFIO drops all types down to 2, but more complex types exist in file
+                    Assert.AreEqual(officialHeader.nEpochType[i], testHeader.nEpochType[i]);
+
+                    // I think for some ABFs this needs to be scaled by fTelegraphAdditGain
+                    // but only if nTelegraphDACScaleFactorEnable is enabled
+                    Assert.AreEqual(officialHeader.fEpochInitLevel[i], testHeader.fEpochInitLevel[i]);
+                    Assert.AreEqual(officialHeader.fEpochLevelInc[i], testHeader.fEpochLevelInc[i]);
+
+                    Assert.AreEqual(officialHeader.lEpochDurationInc[i], testHeader.lEpochDurationInc[i]);
+                    Assert.AreEqual(officialHeader.lEpochInitDuration[i], testHeader.lEpochInitDuration[i]);
+                }
             }
         }
 
