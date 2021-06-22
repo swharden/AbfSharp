@@ -107,17 +107,17 @@ fSignalGain | Single[16] | 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
 fSignalOffset | Single[16] | 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 fSignalLowpassFilter | Single[16] | 50000, 5000, 5000, 5000, 5000, 5000, 1E+15, 5000, 5000, 5000, 5000, 5000, 5000, 5000, 5E+09, 5E+09
 fSignalHighpassFilter | Single[16] | 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
-nLowpassFilterType | string (0) | ""
-nHighpassFilterType | string (0) | ""
+nLowpassFilterType | AbfSharp.ABFFIO.Structs+SixteenBytes | [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ]
+nHighpassFilterType | AbfSharp.ABFFIO.Structs+SixteenBytes | [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ]
 bHumFilterEnable | Byte[16] | 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-sADCChannelName | string (159) | "Voltage 0 Current 1 IN 2      Ext Cmd   IN 4      IN 5      I_Steps   IN 7      IN 8      IN 9      IN 10     IN 11     IN 12     IN 13     readout   exposure "
-sADCUnits | string (127) | "pA      pA       V      mV       V       V      pA       V       V       V       V       V       V       V       V       V     "
+sADCChannelName | AbfSharp.ABFFIO.Structs+CharArray10[16] | Voltage 0, Current 1, IN 2, Ext Cmd, IN 4, IN 5, I_Steps, IN 7, IN 8, IN 9, IN 10, IN 11, IN 12, IN 13, readout, exposure
+sADCUnits | AbfSharp.ABFFIO.Structs+CharArray8[16] | pA, pA, V, mV, V, V, pA, V, V, V, V, V, V, V, V, V
 fDACScaleFactor | Single[8] | 19.999998, 19.999998, 20, 20, 0, 0, 0, 0
 fDACHoldingLevel | Single[8] | -70, 0, 0, 0, 0, 0, 0, 0
 fDACCalibrationFactor | Single[8] | 1.08423, 1.08521, 1, 1, 0, 0, 0, 0
 fDACCalibrationOffset | Single[8] | -253, -260, 0, 0, 0, 0, 0, 0
-sDACChannelName | string (40) | "Cmd 0     Cmd 1     AO #2     AO #3     "
-sDACChannelUnits | string (32) | "mV      mV      mV      mV      "
+sDACChannelName | AbfSharp.ABFFIO.Structs+CharArray10[8] | Cmd 0, Cmd 1, AO #2, AO #3, , , , 
+sDACChannelUnits | AbfSharp.ABFFIO.Structs+CharArray8[8] | mV, mV, mV, mV, , , , 
 nDigitalEnable | Int16 | 1
 nActiveDACChannel | Int16 | 0
 nDigitalDACChannel | Int16 | 0

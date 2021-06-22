@@ -107,17 +107,17 @@ fSignalGain | Single[16] | 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 fSignalOffset | Single[16] | 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 fSignalLowpassFilter | Single[16] | 0, 5000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 fSignalHighpassFilter | Single[16] | 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-nLowpassFilterType | string (0) | ""
-nHighpassFilterType | string (0) | ""
+nLowpassFilterType | AbfSharp.ABFFIO.Structs+SixteenBytes | [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ]
+nHighpassFilterType | AbfSharp.ABFFIO.Structs+SixteenBytes | [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ]
 bHumFilterEnable | Byte[16] | 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-sADCChannelName | string (0) | ""
-sADCUnits | string (0) | ""
+sADCChannelName | AbfSharp.ABFFIO.Structs+CharArray10[16] | , IN 1, , , , , , , , , , , , , , 
+sADCUnits | AbfSharp.ABFFIO.Structs+CharArray8[16] | , pA, , , , , , , , , , , , , , 
 fDACScaleFactor | Single[8] | 20, 20, 20, 20, 20, 20, 20, 20
 fDACHoldingLevel | Single[8] | -80, -80, 0, 0, 0, 0, 0, 0
 fDACCalibrationFactor | Single[8] | 1.08289, 1.08807, 1, 1, 1, 1, 1, 1
 fDACCalibrationOffset | Single[8] | 1, -147, 0, 0, 0, 0, 0, 0
-sDACChannelName | string (79) | "Cmd 0     Cmd 1     AO #2     AO #3     AO #4     AO #5     AO #6     AO #7    "
-sDACChannelUnits | string (63) | "mV      mV      mV      mV      mV      mV      mV      mV     "
+sDACChannelName | AbfSharp.ABFFIO.Structs+CharArray10[8] | Cmd 0, Cmd 1, AO #2, AO #3, AO #4, AO #5, AO #6, AO #7
+sDACChannelUnits | AbfSharp.ABFFIO.Structs+CharArray8[8] | mV, mV, mV, mV, mV, mV, mV, mV
 nDigitalEnable | Int16 | 0
 nActiveDACChannel | Int16 | 1
 nDigitalDACChannel | Int16 | 0
