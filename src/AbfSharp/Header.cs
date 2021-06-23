@@ -15,9 +15,22 @@ namespace AbfSharp
         #region Helpful information with simple names and XML docs
 
         /// <summary>
-        /// Number of bytes per ABF file block
+        /// Number of ADC samples per second (Hz).
+        /// One sample may contain multiple values if multiple ADC channels are in use.
         /// </summary>
-        public const int BLOCKSIZE = 512;
+        public int SampleRate => (int)(1e6 / fADCSequenceInterval / nADCNumChannels);
+
+        /// <summary>
+        /// Time (seconds) between recorded samples.
+        /// One sample may contain multiple values if multiple ADC channels are in use.
+        /// </summary>
+        public float SamplePeriod => 1.0f / SampleRate;
+
+        /// <summary>
+        /// Time (milliseconds) between recorded samples.
+        /// One sample may contain multiple values if multiple ADC channels are in use.
+        /// </summary>
+        public float SamplePeriodMS => SamplePeriod / 1e3f;
 
         /// <summary>
         /// Number of bytes for each sample.
@@ -30,7 +43,7 @@ namespace AbfSharp
         /// Byte location in the ABF file where the data begins.
         /// Note that data values are interleaved across multiple channels.
         /// </summary>
-        public int DataPosition => lDataSectionPtr * BLOCKSIZE;
+        public int DataPosition => lDataSectionPtr * 512;
 
         /// <summary>
         /// Number of bytes for the entire data section in the ABF file.
@@ -256,6 +269,8 @@ namespace AbfSharp
         /// Number of tags in this ABF
         /// </summary>
         public int lNumTagEntries;
+
+        public Tag[] Tags { get; protected set; }
 
         /// <summary>
         /// Block number of start of the Scope Configuration Section

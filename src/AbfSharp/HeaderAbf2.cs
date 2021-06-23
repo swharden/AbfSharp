@@ -45,6 +45,7 @@ namespace AbfSharp
 
         private void Read(BinaryReader reader)
         {
+            // determine where all the sections are
             HeaderSection = new(reader);
             ProtocolSection = new(reader);
             AdcSection = new(reader);
@@ -65,6 +66,7 @@ namespace AbfSharp
             AnnotationSection = new(reader);
             StatsSection = new(reader);
 
+            // populate header values from each section
             ReadGroup1();
             ReadGroup2();
             ReadGroup3();
@@ -73,6 +75,12 @@ namespace AbfSharp
             ReadGroup7();
             ReadGroup9();
             ReadGroup10();
+
+            // use header values to put additional information in the header object
+            float tagTimeMult = (fSynchTimeUnit == 0)
+                ? SamplePeriod / ChannelCount
+                : fSynchTimeUnit / 1e6f;
+            Tags = TagSection.GetTags(tagTimeMult);
         }
 
         private void ReadGroup1()

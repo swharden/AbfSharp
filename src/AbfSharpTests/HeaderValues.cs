@@ -70,6 +70,24 @@ namespace AbfSharpTests
             Assert.AreEqual(expectedDateTime, header.StartDateTime);
         }
 
+        [TestCase("16921011-vc-memtest-tags.abf", 20_000)]
+        public void Test_SampleRate_MatchesKnownValue(string filename, int sampleRate)
+        {
+            AbfSharp.Header header = GetLoadedHeader(filename);
+            Assert.AreEqual(sampleRate, header.SampleRate);
+        }
+
+        [TestCase("16921011-vc-memtest-tags.abf", new string[] { "+TGOT", "-TGOT" }, new double[] { 399.6672, 520.8576 })]
+        public void Test_AbfsWithTags(string filename, string[] comments, double[] times)
+        {
+            AbfSharp.Header header = GetLoadedHeader(filename);
+            for (int i = 0; i < header.Tags.Length; i++)
+            {
+                Assert.AreEqual(comments[i], header.Tags[i].Comment);
+                Assert.AreEqual(times[i], header.Tags[i].Time, 1e-3);
+            }
+        }
+
         [Test]
         public void Test_MatchesOfficial_Group02()
         {
