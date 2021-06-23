@@ -13,8 +13,7 @@ namespace AbfSharpTests
     /// </summary>
     class AbfInfo
     {
-        [Ignore("FIX THIS SOON AND MAKE IT CONSISTENT WITH PYABF")]
-        private static string GetHeaderMarkdown(AbfSharp.ABFFIO.Structs.ABFFileHeader HeaderStruct)
+        string GetHeaderMarkdown(AbfSharp.ABFFIO.Structs.ABFFileHeader HeaderStruct)
         {
             StringBuilder sb = new();
             sb.AppendLine("Name | Type | Value");
