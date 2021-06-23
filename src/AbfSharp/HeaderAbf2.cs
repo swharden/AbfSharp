@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using AbfSharp.HeaderData.Abf2;
+using AbfSharp.Sections;
 
 namespace AbfSharp
 {
-    public class HeaderAbf2 : HeaderBase
+    public class HeaderAbf2 : Header
     {
         private HeaderSection HeaderSection;
         private ProtocolSection ProtocolSection;

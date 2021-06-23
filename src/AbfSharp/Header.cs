@@ -1,25 +1,16 @@
-﻿using AbfSharp.HeaderData;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
 namespace AbfSharp
 {
-    public enum ClampType { VoltageClamp, CurrentClamp };
-
-    public enum EpochType { Off, Step, Ramp, Pulse, Triangle, Cosine, Unknown7, Biphasic }
-
     /// <summary>
     /// This is a minimal ABF header that only contains important fields and helper methods.
     /// Many fields are identically named to the ABFFIO header struct and typically contain identical data.
     /// </summary>
-    public class HeaderBase
+    public abstract class Header
     {
-        /* Fields were brought in from the ABFFIO header struct.
-         * Uncomment them one by one only as they are implemented and tested.
-         */
-
         #region Helpful information with simple names and XML docs
 
         /// <summary>

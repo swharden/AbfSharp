@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 
 namespace AbfSharp
 {
-    public class HeaderAbf1 : HeaderBase
+    public class HeaderAbf1 : Header
     {
         public HeaderAbf1(BinaryReader reader, string filePath)
         {

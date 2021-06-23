@@ -4,7 +4,7 @@ using System.IO;
 using System.Text;
 using System.Linq;
 
-namespace AbfSharp.HeaderData.Abf2
+namespace AbfSharp.Sections
 {
     public class StringsSection : Section
     {

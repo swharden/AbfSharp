@@ -1,7 +1,10 @@
 ﻿using System.IO;
 
-namespace AbfSharp.HeaderData.Abf2
+namespace AbfSharp.Sections
 {
+    /// <summary>
+    /// This class describes a section of a variably-sized and variably-placed ABF2 header.
+    /// </summary>
     public class Section
     {
         /// <summary>

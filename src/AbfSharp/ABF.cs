@@ -27,7 +27,7 @@ namespace AbfSharp
         /// ABF header information with only the most important fields.
         /// Field names are commonly identical to those in the ABFFIO header.
         /// </summary>
-        public HeaderBase Header;
+        public Header Header;
 
         public ABF(string abfFilePath, bool preloadData = false)
         {
@@ -103,7 +103,7 @@ namespace AbfSharp
         /// </summary>
         private (int byteOffset, int pointCount) GetSweepLocation(int sweepIndex)
         {
-            if (Header.OperationMode == HeaderData.OperationMode.Episodic)
+            if (Header.OperationMode == OperationMode.Episodic)
             {
                 // assume a fixed-length sleep (the total length divided by the number of episodes)
                 int valuesPerSweep = Header.lActualAcqLength / Header.lActualEpisodes;
@@ -111,7 +111,7 @@ namespace AbfSharp
                 int sweepByteOffset = sweepIndex * sweepPointCount * Header.BytesPerSample;
                 return (sweepByteOffset, sweepPointCount);
             }
-            else if (Header.OperationMode == HeaderData.OperationMode.EventDriven)
+            else if (Header.OperationMode == OperationMode.EventDriven)
             {
                 // measure the length of all previous events to determine where this one starts
                 int sweepByteOffset = 0;

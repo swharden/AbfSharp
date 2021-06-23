@@ -7,7 +7,7 @@ namespace AbfSharpTests
 {
     class HeaderValues
     {
-        private readonly Dictionary<AbfSharp.ABFFIO.Structs.ABFFileHeader, AbfSharp.HeaderBase> AbfHeaders = new();
+        private readonly Dictionary<AbfSharp.ABFFIO.Structs.ABFFileHeader, AbfSharp.Header> AbfHeaders = new();
 
         [OneTimeSetUp()]
         public void LoadABFs()
@@ -21,9 +21,9 @@ namespace AbfSharpTests
             }
         }
 
-        private AbfSharp.HeaderBase GetLoadedHeader(string filename)
+        private AbfSharp.Header GetLoadedHeader(string filename)
         {
-            foreach (AbfSharp.HeaderBase header in AbfHeaders.Values)
+            foreach (AbfSharp.Header header in AbfHeaders.Values)
                 if (header.Filename == filename)
                     return header;
 
@@ -36,7 +36,7 @@ namespace AbfSharpTests
             foreach (var dict in AbfHeaders)
             {
                 AbfSharp.ABFFIO.Structs.ABFFileHeader officialHeader = dict.Key;
-                AbfSharp.HeaderBase testHeader = dict.Value;
+                AbfSharp.Header testHeader = dict.Value;
                 Console.WriteLine($"{testHeader.AbfID} {testHeader.fFileVersionNumber}");
 
                 Assert.AreEqual(officialHeader.fFileVersionNumber, testHeader.fFileVersionNumber);
@@ -45,7 +45,7 @@ namespace AbfSharpTests
                 Assert.AreEqual(officialHeader.nNumPointsIgnored, testHeader.nNumPointsIgnored);
 
                 // TODO: get this working for other operation modes
-                if (testHeader.OperationMode == AbfSharp.HeaderData.OperationMode.Episodic)
+                if (testHeader.OperationMode == AbfSharp.OperationMode.Episodic)
                     Assert.AreEqual(officialHeader.lActualEpisodes, testHeader.lActualEpisodes);
 
                 Assert.AreEqual(officialHeader.uFileStartDate, testHeader.uFileStartDate);
@@ -64,7 +64,7 @@ namespace AbfSharpTests
         [TestCase("18808025-memtest.abf", "2018-08-08 13:49:04.826000")]
         public void Test_Creation_DateTime(string filename, string expectedDateTimeString)
         {
-            AbfSharp.HeaderBase header = GetLoadedHeader(filename);
+            AbfSharp.Header header = GetLoadedHeader(filename);
             DateTime expectedDateTime = DateTime.Parse(expectedDateTimeString);
             Console.WriteLine($"{header.StartDateTime} Date={header.uFileStartDate} TimeMS={header.uFileStartTimeMS}");
             Assert.AreEqual(expectedDateTime, header.StartDateTime);
@@ -76,7 +76,7 @@ namespace AbfSharpTests
             foreach (var dict in AbfHeaders)
             {
                 AbfSharp.ABFFIO.Structs.ABFFileHeader officialHeader = dict.Key;
-                AbfSharp.HeaderBase testHeader = dict.Value;
+                AbfSharp.Header testHeader = dict.Value;
                 Console.WriteLine($"{testHeader.AbfID} {testHeader.fFileVersionNumber}");
 
                 Assert.AreEqual(officialHeader.lDataSectionPtr, testHeader.lDataSectionPtr);
@@ -114,7 +114,7 @@ namespace AbfSharpTests
             foreach (var dict in AbfHeaders)
             {
                 AbfSharp.ABFFIO.Structs.ABFFileHeader officialHeader = dict.Key;
-                AbfSharp.HeaderBase testHeader = dict.Value;
+                AbfSharp.Header testHeader = dict.Value;
                 Console.WriteLine($"{testHeader.AbfID} {testHeader.fFileVersionNumber}");
 
                 Assert.AreEqual(officialHeader.nADCNumChannels, testHeader.nADCNumChannels);
@@ -122,7 +122,7 @@ namespace AbfSharpTests
                 Assert.AreEqual(officialHeader.fSynchTimeUnit, testHeader.fSynchTimeUnit);
                 Assert.AreEqual(officialHeader.fSecondsPerRun, testHeader.fSecondsPerRun);
 
-                if (testHeader.OperationMode == AbfSharp.HeaderData.OperationMode.Episodic)
+                if (testHeader.OperationMode == AbfSharp.OperationMode.Episodic)
                     Assert.AreEqual(officialHeader.lNumSamplesPerEpisode, testHeader.lNumSamplesPerEpisode);
 
                 Assert.AreEqual(officialHeader.lPreTriggerSamples, testHeader.lPreTriggerSamples);
@@ -181,7 +181,7 @@ namespace AbfSharpTests
             foreach (var dict in AbfHeaders)
             {
                 AbfSharp.ABFFIO.Structs.ABFFileHeader officialHeader = dict.Key;
-                AbfSharp.HeaderBase testHeader = dict.Value;
+                AbfSharp.Header testHeader = dict.Value;
                 Console.WriteLine($"{testHeader.AbfID} {testHeader.fFileVersionNumber}");
 
                 Assert.AreEqual(officialHeader.fADCRange, testHeader.fADCRange);
@@ -202,7 +202,7 @@ namespace AbfSharpTests
             foreach (var dict in AbfHeaders)
             {
                 AbfSharp.ABFFIO.Structs.ABFFileHeader officialHeader = dict.Key;
-                AbfSharp.HeaderBase testHeader = dict.Value;
+                AbfSharp.Header testHeader = dict.Value;
                 Console.WriteLine($"{testHeader.AbfID} {testHeader.fFileVersionNumber}");
 
                 Assert.AreEqual(officialHeader.nExperimentType, testHeader.nExperimentType);
@@ -249,7 +249,7 @@ namespace AbfSharpTests
             foreach (var dict in AbfHeaders)
             {
                 AbfSharp.ABFFIO.Structs.ABFFileHeader officialHeader = dict.Key;
-                AbfSharp.HeaderBase testHeader = dict.Value;
+                AbfSharp.Header testHeader = dict.Value;
                 Console.WriteLine($"{testHeader.AbfID} {testHeader.fFileVersionNumber}");
 
                 //region GROUP 7 - Multi-channel information
@@ -284,7 +284,7 @@ namespace AbfSharpTests
             foreach (var dict in AbfHeaders)
             {
                 AbfSharp.ABFFIO.Structs.ABFFileHeader officialHeader = dict.Key;
-                AbfSharp.HeaderBase testHeader = dict.Value;
+                AbfSharp.Header testHeader = dict.Value;
                 Console.WriteLine($"{testHeader.AbfID} {testHeader.fFileVersionNumber}");
 
                 //region GROUP 9 - Epoch Waveform and Pulses
@@ -366,7 +366,7 @@ namespace AbfSharpTests
             foreach (var dict in AbfHeaders)
             {
                 AbfSharp.ABFFIO.Structs.ABFFileHeader officialHeader = dict.Key;
-                AbfSharp.HeaderBase testHeader = dict.Value;
+                AbfSharp.Header testHeader = dict.Value;
                 Console.WriteLine($"{testHeader.AbfID} {testHeader.fFileVersionNumber}");
 
                 //region GROUP 10 - DAC Output File
@@ -386,7 +386,7 @@ namespace AbfSharpTests
             foreach (var dict in AbfHeaders)
             {
                 AbfSharp.ABFFIO.Structs.ABFFileHeader officialHeader = dict.Key;
-                AbfSharp.HeaderBase testHeader = dict.Value;
+                AbfSharp.Header testHeader = dict.Value;
                 Console.WriteLine($"{testHeader.AbfID} {testHeader.fFileVersionNumber}");
 
                 //region GROUP 11a - Presweep (conditioning) pulse train
@@ -432,7 +432,7 @@ namespace AbfSharpTests
             foreach (var dict in AbfHeaders)
             {
                 AbfSharp.ABFFIO.Structs.ABFFileHeader officialHeader = dict.Key;
-                AbfSharp.HeaderBase testHeader = dict.Value;
+                AbfSharp.Header testHeader = dict.Value;
                 Console.WriteLine($"{testHeader.AbfID} {testHeader.fFileVersionNumber}");
 
                 //region GROUP 12 - Variable parameter user list
@@ -451,7 +451,7 @@ namespace AbfSharpTests
             foreach (var dict in AbfHeaders)
             {
                 AbfSharp.ABFFIO.Structs.ABFFileHeader officialHeader = dict.Key;
-                AbfSharp.HeaderBase testHeader = dict.Value;
+                AbfSharp.Header testHeader = dict.Value;
                 Console.WriteLine($"{testHeader.AbfID} {testHeader.fFileVersionNumber}");
 
                 //region GROUP 13 - Statistics measurements
@@ -486,7 +486,7 @@ namespace AbfSharpTests
             foreach (var dict in AbfHeaders)
             {
                 AbfSharp.ABFFIO.Structs.ABFFileHeader officialHeader = dict.Key;
-                AbfSharp.HeaderBase testHeader = dict.Value;
+                AbfSharp.Header testHeader = dict.Value;
                 Console.WriteLine($"{testHeader.AbfID} {testHeader.fFileVersionNumber}");
 
                 //region GROUP 14 - Channel Arithmetic
@@ -515,7 +515,7 @@ namespace AbfSharpTests
             foreach (var dict in AbfHeaders)
             {
                 AbfSharp.ABFFIO.Structs.ABFFileHeader officialHeader = dict.Key;
-                AbfSharp.HeaderBase testHeader = dict.Value;
+                AbfSharp.Header testHeader = dict.Value;
                 Console.WriteLine($"{testHeader.AbfID} {testHeader.fFileVersionNumber}");
 
                 //region GROUP 15 - Leak subtraction
@@ -539,7 +539,7 @@ namespace AbfSharpTests
             foreach (var dict in AbfHeaders)
             {
                 AbfSharp.ABFFIO.Structs.ABFFileHeader officialHeader = dict.Key;
-                AbfSharp.HeaderBase testHeader = dict.Value;
+                AbfSharp.Header testHeader = dict.Value;
                 Console.WriteLine($"{testHeader.AbfID} {testHeader.fFileVersionNumber}");
 
                 //region GROUP 16 - Miscellaneous variables
@@ -566,7 +566,7 @@ namespace AbfSharpTests
             foreach (var dict in AbfHeaders)
             {
                 AbfSharp.ABFFIO.Structs.ABFFileHeader officialHeader = dict.Key;
-                AbfSharp.HeaderBase testHeader = dict.Value;
+                AbfSharp.Header testHeader = dict.Value;
                 Console.WriteLine($"{testHeader.AbfID} {testHeader.fFileVersionNumber}");
 
                 //region GROUP 17 - Trains parameters
@@ -583,7 +583,7 @@ namespace AbfSharpTests
             foreach (var dict in AbfHeaders)
             {
                 AbfSharp.ABFFIO.Structs.ABFFileHeader officialHeader = dict.Key;
-                AbfSharp.HeaderBase testHeader = dict.Value;
+                AbfSharp.Header testHeader = dict.Value;
                 Console.WriteLine($"{testHeader.AbfID} {testHeader.fFileVersionNumber}");
 
                 //region GROUP 18 - Application version data
@@ -606,7 +606,7 @@ namespace AbfSharpTests
             foreach (var dict in AbfHeaders)
             {
                 AbfSharp.ABFFIO.Structs.ABFFileHeader officialHeader = dict.Key;
-                AbfSharp.HeaderBase testHeader = dict.Value;
+                AbfSharp.Header testHeader = dict.Value;
                 Console.WriteLine($"{testHeader.AbfID} {testHeader.fFileVersionNumber}");
 
                 //region GROUP 19 - LTP protocol
@@ -624,7 +624,7 @@ namespace AbfSharpTests
             foreach (var dict in AbfHeaders)
             {
                 AbfSharp.ABFFIO.Structs.ABFFileHeader officialHeader = dict.Key;
-                AbfSharp.HeaderBase testHeader = dict.Value;
+                AbfSharp.Header testHeader = dict.Value;
                 Console.WriteLine($"{testHeader.AbfID} {testHeader.fFileVersionNumber}");
 
                 //region GROUP 20 - Digidata 132x Trigger out flag
@@ -640,7 +640,7 @@ namespace AbfSharpTests
             foreach (var dict in AbfHeaders)
             {
                 AbfSharp.ABFFIO.Structs.ABFFileHeader officialHeader = dict.Key;
-                AbfSharp.HeaderBase testHeader = dict.Value;
+                AbfSharp.Header testHeader = dict.Value;
                 Console.WriteLine($"{testHeader.AbfID} {testHeader.fFileVersionNumber}");
 
                 //region GROUP 21 - Epoch resistance
@@ -657,7 +657,7 @@ namespace AbfSharpTests
             foreach (var dict in AbfHeaders)
             {
                 AbfSharp.ABFFIO.Structs.ABFFileHeader officialHeader = dict.Key;
-                AbfSharp.HeaderBase testHeader = dict.Value;
+                AbfSharp.Header testHeader = dict.Value;
                 Console.WriteLine($"{testHeader.AbfID} {testHeader.fFileVersionNumber}");
 
                 //region GROUP 22 - Alternating episodic mode
@@ -675,7 +675,7 @@ namespace AbfSharpTests
             foreach (var dict in AbfHeaders)
             {
                 AbfSharp.ABFFIO.Structs.ABFFileHeader officialHeader = dict.Key;
-                AbfSharp.HeaderBase testHeader = dict.Value;
+                AbfSharp.Header testHeader = dict.Value;
                 Console.WriteLine($"{testHeader.AbfID} {testHeader.fFileVersionNumber}");
 
                 //region GROUP 23 - Post-processing actions
@@ -691,7 +691,7 @@ namespace AbfSharpTests
             foreach (var dict in AbfHeaders)
             {
                 AbfSharp.ABFFIO.Structs.ABFFileHeader officialHeader = dict.Key;
-                AbfSharp.HeaderBase testHeader = dict.Value;
+                AbfSharp.Header testHeader = dict.Value;
                 Console.WriteLine($"{testHeader.AbfID} {testHeader.fFileVersionNumber}");
 
                 //region GROUP 24 - Legacy gear shift info
@@ -709,7 +709,7 @@ namespace AbfSharpTests
             foreach (var dict in AbfHeaders)
             {
                 AbfSharp.ABFFIO.Structs.ABFFileHeader officialHeader = dict.Key;
-                AbfSharp.HeaderBase testHeader = dict.Value;
+                AbfSharp.Header testHeader = dict.Value;
                 Console.WriteLine($"{testHeader.AbfID} {testHeader.fFileVersionNumber}");
 
                 //region GROUP 25 - Gap-Free Config

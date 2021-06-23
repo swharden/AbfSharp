@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace AbfSharp.HeaderData.Abf2
+namespace AbfSharp.Sections
 {
     public class ProtocolSection : Section
     {

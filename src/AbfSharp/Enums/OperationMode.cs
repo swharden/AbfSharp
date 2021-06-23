@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace AbfSharp.HeaderData
+﻿namespace AbfSharp
 {
+    /// <summary>
+    /// OperationMode describes how experiments are performed and data is recorded.
+    /// I think episodic mode and gap-free are the most common modes.
+    /// </summary>
     public enum OperationMode
     {
         /// <summary>
