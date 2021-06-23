@@ -1,134 +1,177 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
+using System.IO;
 using System.Text;
 
 namespace AbfSharp
 {
+    /// <summary>
+    /// This ABF reader uses native .NET code (not the ABFFIO.DLL) so it can be used on other platforms
+    /// like 64-bit Windows, Linux, MacOS, etc. It is more performant than ABFFIO.DLL for many operations,
+    /// but not all features are supported.
+    /// </summary>
     public class ABF
     {
         /// <summary>
-        /// Additional information about this ABF
+        /// Full path to this ABF file on disk
         /// </summary>
-        public readonly AbfHeader Header;
+        public string Path { get; private set; }
 
         /// <summary>
-        /// Number of sweeps in the ABF.
-        /// Gap-free files are considered to have one long sweep.
+        /// This array stores the entire DataSection of the ABF in memory.
+        /// This is used to generate sweeps later without requiring the file to be re-opened (or kept open).
         /// </summary>
-        public int SweepCount => Header.sweepCount;
+        private byte[] DataBytes;
 
         /// <summary>
-        /// Number of channels in the ABF.
+        /// ABF header information with only the most important fields.
+        /// Field names are commonly identical to those in the ABFFIO header.
         /// </summary>
-        public int ChannelCount => Header.channelCount;
+        public HeaderBase Header;
 
-        /// <summary>
-        /// Array of ABF tags (e.g., comment tags).
-        /// Empty if this ABF has no tags.
-        /// </summary>
-        public Tag[] Tags => Header.tags;
-
-        /// <summary>
-        /// True if the ABF has at least 1 tag
-        /// </summary>
-        public bool HasTags => Tags.Length > 0;
-
-        /// <summary>
-        /// Full path to this ABF file.
-        /// </summary>
-        public readonly string FilePath;
-
-        /// <summary>
-        /// The original filename without the .abf extension.
-        /// This identifier is useful for plots titles and base names of analysis files.
-        /// </summary>
-        public string AbfID => System.IO.Path.GetFileNameWithoutExtension(FilePath);
-
-        /// <summary>
-        /// The ABF class reads and ABF file and exposes its data values and header information.
-        /// </summary>
-        /// <param name="filePath">path to the ABF file</param>
-        /// <param name="preload">which sweeps to load upon instantiation</param>
-        public ABF(string filePath, Preload preload = Preload.AllSweeps)
+        public ABF(string abfFilePath, bool preloadData = false)
         {
-            FilePath = filePath;
+            if (!File.Exists(abfFilePath))
+                throw new FileNotFoundException($"file does not exist: {abfFilePath}");
+            Path = System.IO.Path.GetFullPath(abfFilePath);
 
-            using ABFFIO.AbfInterface abffio = new(filePath);
-            Header = new AbfHeader(filePath, abffio);
+            using FileStream fs = File.Open(Path, FileMode.Open);
+            using BinaryReader reader = new(fs);
+
+            string signature = Encoding.ASCII.GetString(reader.ReadBytes(4));
+            if (signature == "ABF ")
+                Header = new HeaderAbf1(reader, Path);
+            else if (signature == "ABF2")
+                Header = new HeaderAbf2(reader, Path);
+            else
+                throw new FormatException($"unknown file signature: {signature}");
+
+            if (preloadData)
+                LoadData(reader);
         }
 
-        public override string ToString() => $"ABF {Header.fileName} ({Header.sweepCount} sweeps)";
+        public override string ToString() =>
+            $"{System.IO.Path.GetFileName(Path)} " +
+            $"ABF (version {Header.FileVersionNumber}) " +
+            $"{Header.OperationMode} mode " +
+            $"with {Header.ChannelCount} channels and {Header.SweepCount} sweeps";
 
         /// <summary>
-        /// Return a single sweep
+        /// Load ADC data into memory as a byte array.
+        /// This overload reads data using an already-open file reader. 
         /// </summary>
-        /// <param name="sweepIndex">sweep (starting at 0)</param>
-        /// <param name="channelIndex">channel (starting at 0)</param>
-        /// <returns>Sweep class (with ADC data in Values)</returns>
-        public Sweep GetSweep(int sweepIndex, int channelIndex = 0)
+        private void LoadData(BinaryReader reader)
         {
-            using ABFFIO.AbfInterface abffio = new(FilePath);
-            abffio.ReadChannel(sweepIndex + 1, channelIndex);
-
-            double[] values = new double[abffio.buffer.Length];
-            Array.Copy(abffio.buffer, 0, values, 0, abffio.buffer.Length);
-
-            return new Sweep(values, Header.sampleRate);
+            reader.BaseStream.Seek(Header.DataPosition, SeekOrigin.Begin);
+            DataBytes = reader.ReadBytes(Header.DataSize * Header.BytesPerValue);
         }
 
         /// <summary>
-        /// Return an array of epochs details for the given channel.
-        /// Core epochs (A, B, C, etc.) are flanked by 2 extra epochs which describe the sweep outside the epoch range.
+        /// Load ADC data into memory as a byte array.
+        /// This overload opens the file, reads the data, and closes the file. 
         /// </summary>
-        /// <param name="channel">channel index (starts at 0)</param>
-        public Epoch[] GetEpochs(int channel = 0)
+        private void LoadData()
         {
-            List<Epoch> Epochs = new();
+            using FileStream fs = File.Open(Path, FileMode.Open);
+            using BinaryReader reader = new(fs);
+            LoadData(reader);
+        }
 
-            var header = Header.HeaderStruct;
+        /// <summary>
+        /// ADC values for a single sweep/channel
+        /// </summary>
+        /// <param name="sweepIndex">sweep index (starts at 0)</param>
+        /// <param name="channelIndex">channel index (starts at 0)</param>
+        /// <returns></returns>
+        public float[] GetSweep(int sweepIndex, int channelIndex = 0)
+        {
+            if (DataBytes is null)
+                LoadData();
 
-            // add the pre-epoch period as an epoch
-            int preEpochPointCount = header.lNumSamplesPerEpisode / ABFFIO.Structs.ABFH_HOLDINGFRACTION;
-            preEpochPointCount -= preEpochPointCount % header.nADCNumChannels;
-            if (preEpochPointCount < header.nADCNumChannels)
-                preEpochPointCount = header.nADCNumChannels;
-            Epochs.Add(new Epoch()
+            (int sweepFirstByte, int sweepSampleCount) = GetSweepLocation(sweepIndex);
+
+            return Header.nDataFormat switch
             {
-                Name = "PRE",
-                Type = EpochType.Step,
-                Level = header.fDACHoldingLevel[channel],
-                Duration = preEpochPointCount,
-                IndexFirst = 0,
-            });
+                0 => GetSweepInt16(channelIndex, sweepFirstByte, sweepSampleCount),
+                1 => GetSweepValues_FloatingPoint(channelIndex, sweepFirstByte, sweepSampleCount),
+                _ => throw new NotImplementedException($"unsupported nDataFormat: {Header.nDataFormat}")
+            };
+        }
 
-            // add each epoch in the table
-            for (int i = 0; i < ABFFIO.Structs.ABF_EPOCHCOUNT; i++)
+        /// <summary>
+        /// Return the location in memory for a given sweep
+        /// </summary>
+        private (int byteOffset, int pointCount) GetSweepLocation(int sweepIndex)
+        {
+            if (Header.OperationMode == HeaderData.OperationMode.Episodic)
             {
-                int offset = ABFFIO.Structs.ABF_EPOCHCOUNT * channel;
-                Epochs.Add(new Epoch()
-                {
-                    Name = ((char)(i + 'A')).ToString(),
-                    Type = (EpochType)header.nEpochType[i + offset],
-                    Level = header.fEpochInitLevel[i + offset],
-                    Duration = header.lEpochInitDuration[i + offset],
-                    IndexFirst = Epochs.Last().IndexFirst + Epochs.Last().Duration
-                });
+                // assume a fixed-length sleep (the total length divided by the number of episodes)
+                int valuesPerSweep = Header.lActualAcqLength / Header.lActualEpisodes;
+                int sweepPointCount = valuesPerSweep / Header.nADCNumChannels;
+                int sweepByteOffset = sweepIndex * sweepPointCount * Header.BytesPerSample;
+                return (sweepByteOffset, sweepPointCount);
             }
-
-            // add the post-epoch period as an epoch
-            int sweepPointCount = header.lNumSamplesPerEpisode / header.nADCNumChannels;
-            Epochs.Add(new Epoch()
+            else if (Header.OperationMode == HeaderData.OperationMode.EventDriven)
             {
-                Name = "POST",
-                Type = EpochType.Step,
-                Level = header.fDACHoldingLevel[channel],
-                Duration = sweepPointCount - Epochs.Sum(x => x.Duration),
-                IndexFirst = Epochs.Last().IndexFirst + Epochs.Last().Duration
-            });
+                // measure the length of all previous events to determine where this one starts
+                int sweepByteOffset = 0;
+                for (int i = 0; i < sweepIndex; i++)
+                    sweepByteOffset += Header.SynchLengths[i] * Header.BytesPerSample;
+                int sweepPointCount = Header.SynchLengths[sweepIndex] / Header.nADCNumChannels;
+                return (sweepByteOffset, sweepPointCount);
+            }
+            else
+            {
+                // treat other types (gap-free, oscilloscope, etc.) as one large sweep the entire length of the file
+                int sweepPointCount = Header.lActualAcqLength / Header.nADCNumChannels;
+                int sweepByteOffset = 0;
+                return (sweepByteOffset, sweepPointCount);
+            }
+        }
 
-            return Epochs.ToArray();
+        /// <summary>
+        /// Return an array of sweep values from data stored in Int16 format.
+        /// This method uses scaling information stored in the header to perform the conversion.
+        /// </summary>
+        private float[] GetSweepInt16(int channelIndex, int sweepByteOffset, int sweepPointCount)
+        {
+            float[] values = new float[sweepPointCount];
+            int adcIndex = Header.nADCSamplingSeq[channelIndex];
+            int channelByteOffset = Header.BytesPerValue * channelIndex;
+
+            float gain = 1;
+            gain /= Header.fInstrumentScaleFactor[adcIndex];
+            gain /= Header.fSignalGain[adcIndex];
+            gain /= Header.fADCProgrammableGain[adcIndex];
+            gain *= Header.fADCRange;
+            gain /= Header.lADCResolution;
+            if (Header.nTelegraphEnable[adcIndex] > 0)
+                gain /= Header.fTelegraphAdditGain[adcIndex];
+
+            float offset = 0;
+            offset += Header.fInstrumentOffset[adcIndex];
+            offset -= Header.fSignalOffset[adcIndex];
+
+            int bytesPerSample = Header.BytesPerSample;
+            for (int i = 0; i < sweepPointCount; i++)
+                values[i] = BitConverter.ToInt16(DataBytes, sweepByteOffset + i * bytesPerSample + channelByteOffset) * gain + offset;
+
+            return values;
+        }
+
+        /// <summary>
+        /// Return an array of sweep values from data stored using floating-point format.
+        /// </summary>
+        private float[] GetSweepValues_FloatingPoint(int channelIndex, int sweepByteOffset, int sweepPointCount)
+        {
+            int bytesPerSample = Header.BytesPerSample;
+            int offset = Header.BytesPerValue * channelIndex + sweepByteOffset;
+
+            float[] values = new float[sweepPointCount];
+            for (int i = 0; i < sweepPointCount; i++)
+                values[i] = BitConverter.ToSingle(DataBytes, i * bytesPerSample + offset);
+
+            return values;
         }
     }
 }

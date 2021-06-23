@@ -8,13 +8,91 @@ namespace AbfSharp
 {
     public enum ClampType { VoltageClamp, CurrentClamp };
 
+    public enum EpochType { Off, Step, Ramp, Pulse, Triangle, Cosine, Unknown7, Biphasic }
+
+    /// <summary>
+    /// This is a minimal ABF header that only contains important fields and helper methods.
+    /// Many fields are identically named to the ABFFIO header struct and typically contain identical data.
+    /// </summary>
     public class HeaderBase
     {
         /* Fields were brought in from the ABFFIO header struct.
          * Uncomment them one by one only as they are implemented and tested.
          */
 
-        #region constants
+        #region Helpful information with simple names and XML docs
+
+        /// <summary>
+        /// Number of bytes per ABF file block
+        /// </summary>
+        public const int BLOCKSIZE = 512;
+
+        /// <summary>
+        /// Number of bytes for each sample.
+        /// Each sample has one data point for each channel.
+        /// </summary>
+        /// 
+        public int BytesPerSample => BytesPerValue * ChannelCount;
+
+        /// <summary>
+        /// Byte location in the ABF file where the data begins.
+        /// Note that data values are interleaved across multiple channels.
+        /// </summary>
+        public int DataPosition => lDataSectionPtr * BLOCKSIZE;
+
+        /// <summary>
+        /// Number of bytes for the entire data section in the ABF file.
+        /// </summary>
+        public int DataSize => lActualAcqLength * BytesPerValue;
+
+        /// <summary>
+        /// File format version stored in the data file during acquisition
+        /// </summary>
+        public readonly float FileVersionNumber;
+
+        /// <summary>
+        /// Number of sweeps (episodes)
+        /// </summary>
+        public int SweepCount => lActualEpisodes;
+
+        /// <summary>
+        /// Total number of ADC channels
+        /// </summary>
+        public int ChannelCount => nADCNumChannels;
+
+        /// <summary>
+        /// Date and time the ABF recording was initiated
+        /// </summary>
+        public DateTime StartDateTime
+        {
+            get
+            {
+                int datecode = (int)uFileStartDate;
+
+                int day = datecode % 100;
+                datecode /= 100;
+
+                int month = datecode % 100;
+                datecode /= 100;
+
+                int year = datecode;
+
+                try
+                {
+                    if (year < 1980 || year >= 2080)
+                        throw new InvalidOperationException("unexpected creation date year in header");
+                    return new DateTime(year, month, day).AddMilliseconds(uFileStartTimeMS);
+                }
+                catch
+                {
+                    return new DateTime(0);
+                }
+            }
+        }
+
+        #endregion
+
+        #region ABFFIO constants
         public const int ABF_ADCCOUNT = 16; // number of ADC channels supported.
         public const int ABF_DACCOUNT = 8; // number of DAC channels supported.
         public const int ABF_EPOCHCOUNT = 50; // number of waveform epochs supported.
@@ -228,6 +306,17 @@ namespace AbfSharp
         public int lSynchArraySize;
 
         /// <summary>
+        /// Start time of each sweep (fSynchTimeUnit units).
+        /// If fixed length sweeps this will be an empty array.
+        /// </summary>
+        public int[] SynchStartTimes;
+
+        /// <summary>
+        /// Length of each sweep (time points * channel count)
+        /// </summary>
+        public int[] SynchLengths;
+
+        /// <summary>
         /// Format of data points in memory:
         /// 0 = 2-byte integer
         /// 1 = IEEE 4 byte float
@@ -286,11 +375,6 @@ namespace AbfSharp
         /// Number of ADC input channels recorded.
         /// </summary>
         public short nADCNumChannels;
-
-        /// <summary>
-        /// Number of ADC input channels recorded.
-        /// </summary>
-        public int ChannelCount => nADCNumChannels;
 
         /// <summary>
         /// Number of microseconds between samples (divided by number of channels).
@@ -979,6 +1063,8 @@ namespace AbfSharp
         public short nGapFreeEpochStart;
         #endregion
 
+        #region helper functions to convert data to/from weird ABF formats
+
         protected string VersionString(int a, int b, int c, int d)
         {
             int[] p = { a, b, c, d };
@@ -991,6 +1077,10 @@ namespace AbfSharp
             }
             return $"{p[0]}.{p[1]}.{p[2]}.{p[3]}";
         }
+
+        #endregion
+
+        #region Helper funtions to read arrays from data streams
 
         protected static Int16[] ReadArrayInt16(BinaryReader reader, int size)
         {
@@ -1030,5 +1120,7 @@ namespace AbfSharp
             string path = System.Text.Encoding.ASCII.GetString(bytes).Trim();
             return path.StartsWith("?") ? "" : path;
         }
+
+        #endregion
     }
 }

@@ -2,12 +2,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace AbfSharpTests.RawAbf
+namespace AbfSharpTests
 {
-    class Header
+    class HeaderValues
     {
         private readonly Dictionary<AbfSharp.ABFFIO.Structs.ABFFileHeader, AbfSharp.HeaderBase> AbfHeaders = new();
 
@@ -16,11 +14,20 @@ namespace AbfSharpTests.RawAbf
         {
             foreach (string abfPath in SampleData.GetAllAbfPaths())
             {
-                var officialHeader = new AbfSharp.ABF(abfPath).Header.HeaderStruct;
+                var officialHeader = new AbfSharp.ABFFIO.ABF(abfPath).Header;
                 AbfHeaders[officialHeader] = (officialHeader.fFileVersionNumber < 2)
                     ? new AbfSharp.HeaderAbf1(abfPath)
                     : AbfHeaders[officialHeader] = new AbfSharp.HeaderAbf2(abfPath);
             }
+        }
+
+        private AbfSharp.HeaderBase GetLoadedHeader(string filename)
+        {
+            foreach (AbfSharp.HeaderBase header in AbfHeaders.Values)
+                if (header.Filename == filename)
+                    return header;
+
+            throw new ArgumentException($"ABF file not loaded: {filename}");
         }
 
         [Test]
@@ -48,6 +55,19 @@ namespace AbfSharpTests.RawAbf
                 if (testHeader.nFileType > 0)
                     Assert.AreEqual(officialHeader.nFileType, testHeader.nFileType);
             }
+        }
+
+        [TestCase("16921011-vc-memtest-tags.abf", "2016-09-21 14:43:46.434000")]
+        [TestCase("17n16012-vc-steps.abf", "2017-11-16 14:05:01.627000")]
+        [TestCase("17n16016-ic-ramp.abf", "2017-11-16 14:07:11.016000")]
+        [TestCase("17n16016-ic-steps.abf", "2017-11-16 14:08:10.748000")]
+        [TestCase("18808025-memtest.abf", "2018-08-08 13:49:04.826000")]
+        public void Test_Creation_DateTime(string filename, string expectedDateTimeString)
+        {
+            AbfSharp.HeaderBase header = GetLoadedHeader(filename);
+            DateTime expectedDateTime = DateTime.Parse(expectedDateTimeString);
+            Console.WriteLine($"{header.StartDateTime} Date={header.uFileStartDate} TimeMS={header.uFileStartTimeMS}");
+            Assert.AreEqual(expectedDateTime, header.StartDateTime);
         }
 
         [Test]
@@ -80,6 +100,12 @@ namespace AbfSharpTests.RawAbf
                 //Assert.AreEqual(officialHeader.lAnnotationSectionPtr, testHeader.lAnnotationSectionPtr);
                 //Assert.AreEqual(officialHeader.lNumAnnotations, testHeader.lNumAnnotations);
             }
+        }
+
+        [Ignore("Reminder to implement all sections (previous function)")]
+        [Test]
+        public void Test_MatchesOfficial_Group02_FULL()
+        {
         }
 
         [Test]
