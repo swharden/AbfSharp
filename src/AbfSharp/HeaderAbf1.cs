@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Text;
 
 namespace AbfSharp
 {
@@ -29,6 +30,7 @@ namespace AbfSharp
             ReadGroup6(reader);
             ReadGroup7(reader);
             ReadGroup9(reader);
+            ReadGroup10(reader);
         }
 
         private void ReadGroup1(BinaryReader reader)
@@ -127,7 +129,7 @@ namespace AbfSharp
             fRunStartToStart = reader.ReadSingle();
             fTrialStartToStart = reader.ReadSingle();
             lAverageCount = reader.ReadInt32();
-            lLegacyClockChange = reader.ReadInt32();
+            int lLegacyClockChange = reader.ReadInt32();
             nAutoTriggerStrategy = reader.ReadInt16();
         }
 
@@ -260,6 +262,16 @@ namespace AbfSharp
             nDigitalTrainValue = ReadArrayInt16(reader, 10);
             bEpochCompression = new byte[50];
             nDigitalTrainActiveLogic = reader.ReadInt16();
+        }
+
+        public void ReadGroup10(BinaryReader reader)
+        {
+            reader.BaseStream.Seek(2708, SeekOrigin.Begin);
+            fDACFileScale = ReadArraySingle(reader, 2);
+            fDACFileOffset = ReadArraySingle(reader, 2);
+            lDACFileEpisodeNum = ReadArrayInt32(reader, 2);
+            nDACFileADCNum = ReadArrayInt16(reader, 2);
+            sDACFilePath = Encoding.ASCII.GetString(reader.ReadBytes(412).Where(x => x != 0).ToArray());
         }
     }
 }

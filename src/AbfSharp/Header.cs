@@ -6,8 +6,9 @@ using System.Text;
 namespace AbfSharp
 {
     /// <summary>
-    /// This is a minimal ABF header that only contains important fields and helper methods.
-    /// Many fields are identically named to the ABFFIO header struct and typically contain identical data.
+    /// This class contains information about the ABF as well as public fields for all original ABFFIO header structure variables.
+    /// Most of the important fields are fully implemented, tested, and documented. However, numerous obscure or legacy fields are not. 
+    /// It's a safe bet that fields with XML documentation are fully supported.
     /// </summary>
     public abstract class Header
     {
@@ -566,9 +567,9 @@ namespace AbfSharp
 
         /// <summary>
         /// Patch-clamp access resistance (index = ADC channel)
-        /// WARNING: values read natively are inconsistent with ABFFIO values
+        /// WARNING: values read from file are inconsistent with ABFFIO values
         /// </summary>
-        [Obsolete("inconsistent in ABF1 files during testing")] public float[] fTelegraphAccessResistance;
+        public float[] fTelegraphAccessResistance;
 
         /// <summary>
         /// I-Clamp (0) or V-Clamp (1) mode per ADC channel.
@@ -580,8 +581,9 @@ namespace AbfSharp
         /// Determines whether fDACScaleFactor was telegraphed: 
         /// 1 = telegraphed
         /// 0 = not telegraphed
+        /// WARNING: values read from file are inconsistent with ABFFIO values
         /// </summary>
-        [Obsolete("inconsistent in ABF1 files during testing")] public short[] nTelegraphDACScaleFactorEnable;
+        public short[] nTelegraphDACScaleFactorEnable;
 
         /// <summary>
         /// I think this is an obsolete field from ABF1 files
@@ -615,8 +617,15 @@ namespace AbfSharp
         /// </summary>
         public float[] fInstrumentHoldingLevel;
 
+        /// <summary>
+        /// WARNING: this is calcualted, not read from file
+        /// </summary>
         public uint ulFileCRC;
-        [Obsolete("intentionally not implemented")] public short nCRCEnable;
+
+        /// <summary>
+        /// WARNING: values read from file are inconsistent with ABFFIO values
+        /// </summary>
+        public short nCRCEnable;
 
         #endregion
 
@@ -1071,7 +1080,7 @@ namespace AbfSharp
 
         #endregion
 
-        #region Helper funtions to read arrays from data streams
+        #region funtions to read arrays from data streams
 
         protected static Int16[] ReadArrayInt16(BinaryReader reader, int size)
         {

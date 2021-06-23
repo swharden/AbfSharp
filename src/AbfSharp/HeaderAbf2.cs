@@ -9,16 +9,25 @@ namespace AbfSharp
 {
     public class HeaderAbf2 : Header
     {
-        private HeaderSection HeaderSection;
         private ProtocolSection ProtocolSection;
         private AdcSection AdcSection;
         private DacSection DacSection;
-        private StringsSection StringsSection;
-        private TagSection TagSection;
-        private DataSection DataSection;
-        private SynchSection SynchSection;
         private EpochSection EpochSection;
+        private AdcPerDacSection AdcPerDacSection;
         private EpochPerDacSection EpochPerDacSection;
+        private UserListSection UserListSection;
+        private StatsRegionSection StatsRegionSection;
+        private MathSection MathSection;
+        private StringsSection StringsSection;
+        private DataSection DataSection;
+        private TagSection TagSection;
+        private ScopeSection ScopeSection;
+        private HeaderSection HeaderSection;
+        private DeltaSection DeltaSection;
+        private VoiceTagSection VoiceTagSection;
+        private SynchArraySection SynchArraySection;
+        private AnnotationSection AnnotationSection;
+        private StatsSection StatsSection;
 
         public HeaderAbf2(BinaryReader reader, string filePath)
         {
@@ -43,9 +52,18 @@ namespace AbfSharp
             StringsSection = new(reader);
             TagSection = new(reader);
             DataSection = new(reader);
-            SynchSection = new(reader);
+            SynchArraySection = new(reader);
             EpochSection = new(reader);
             EpochPerDacSection = new(reader);
+            AdcPerDacSection = new(reader);
+            UserListSection = new(reader);
+            StatsRegionSection = new(reader);
+            MathSection = new(reader);
+            ScopeSection = new(reader);
+            DeltaSection = new(reader);
+            VoiceTagSection = new(reader);
+            AnnotationSection = new(reader);
+            StatsSection = new(reader);
 
             ReadGroup1();
             ReadGroup2();
@@ -54,6 +72,7 @@ namespace AbfSharp
             ReadGroup6();
             ReadGroup7();
             ReadGroup9();
+            ReadGroup10();
         }
 
         private void ReadGroup1()
@@ -74,18 +93,12 @@ namespace AbfSharp
             lDataSectionPtr = (int)DataSection.SectionBlock;
             lTagSectionPtr = (int)TagSection.SectionBlock;
             lNumTagEntries = (int)TagSection.SectionCount;
-            lSynchArrayPtr = (int)SynchSection.SectionBlock;
-            lSynchArraySize = (int)SynchSection.SectionCount;
+            lSynchArrayPtr = (int)SynchArraySection.SectionBlock;
+            lSynchArraySize = (int)SynchArraySection.SectionCount;
             nDataFormat = (short)HeaderSection.nDataFormat;
             nSimultaneousScan = (short)HeaderSection.nSimultaneousScan;
             lDACFilePtr = DacSection.lDACFilePtr;
             lDACFileNumEpisodes = DacSection.lDACFileNumEpisodes;
-
-            // TODO: scope section
-            // TODO: delta array section
-            // TODO: voice tag section
-            // TODO: statistics section
-            // TODO: annotations section
         }
 
         private void ReadGroup3()
@@ -192,7 +205,6 @@ namespace AbfSharp
             nDigitalInterEpisode = ProtocolSection.nDigitalInterEpisode;
             nDigitalTrainActiveLogic = ProtocolSection.nDigitalTrainActiveLogic;
 
-            // TODO: support epoch section
             nDigitalValue = EpochSection.nDigitalValue;
             nDigitalTrainValue = EpochSection.nDigitalTrainValue;
 
@@ -208,7 +220,15 @@ namespace AbfSharp
             nWaveformEnable = DacSection.nWaveformEnable;
             nWaveformSource = DacSection.nWaveformSource;
             nInterEpisodeLevel = DacSection.nInterEpisodeLevel;
-            
+        }
+
+        private void ReadGroup10()
+        {
+            fDACFileScale = DacSection.fDACFileScale;
+            fDACFileOffset = DacSection.fDACFileOffset;
+            lDACFileEpisodeNum = DacSection.lDACFileEpisodeNum;
+            nDACFileADCNum = DacSection.nDACFileADCNum;
+            sDACFilePath = StringsSection.Strings[DacSection.lDACFilePathIndex[0]];
         }
     }
 }

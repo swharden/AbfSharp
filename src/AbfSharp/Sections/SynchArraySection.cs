@@ -5,7 +5,7 @@ using System.Text;
 
 namespace AbfSharp.Sections
 {
-    public class SynchSection : Section
+    public class SynchArraySection : Section
     {
         /// <summary>
         /// Start time of sweep in fSynchTimeUnit units.
@@ -17,7 +17,7 @@ namespace AbfSharp.Sections
         /// </summary>
         public readonly Int32[] lLength;
 
-        public SynchSection(BinaryReader reader) : base(reader, 316)
+        public SynchArraySection(BinaryReader reader) : base(reader, 316)
         {
             lStart = new Int32[SectionCount];
             lLength = new Int32[SectionCount];
