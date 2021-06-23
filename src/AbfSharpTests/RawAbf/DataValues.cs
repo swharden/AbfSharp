@@ -22,8 +22,8 @@ namespace AbfSharpTests.RawAbf
         {
             foreach (AbfSharp.ABF official in OfficialABFs)
             {
-                Console.WriteLine($"v={official.Header.HeaderStruct.fFileVersionNumber:0.0} {System.IO.Path.GetFileName(official.Path)}");
-                var raw = new AbfSharp.RawABF(official.Path);
+                Console.WriteLine($"v={official.Header.HeaderStruct.fFileVersionNumber:0.0} {System.IO.Path.GetFileName(official.FilePath)}");
+                var raw = new AbfSharp.RawABF(official.FilePath);
 
                 for (int i = 0; i < 8; i++)
                 {
@@ -46,7 +46,7 @@ namespace AbfSharpTests.RawAbf
         {
             foreach (AbfSharp.ABF official in OfficialABFs)
             {
-                var raw = new AbfSharp.RawABF(official.Path);
+                var raw = new AbfSharp.RawABF(official.FilePath);
 
                 Console.WriteLine(raw);
 
@@ -80,21 +80,25 @@ namespace AbfSharpTests.RawAbf
         {
             foreach (AbfSharp.ABF official in OfficialABFs)
             {
-                var raw = new AbfSharp.RawABF(official.Path, preloadData: true);
+                var raw = new AbfSharp.RawABF(official.FilePath, preloadData: true);
                 if (raw.Header.FileVersionNumber < 2)
                     continue;
                 if (raw.Header.OperationMode == AbfSharp.HeaderData.OperationMode.GapFree)
+                    continue;
+                if (raw.Header.OperationMode == AbfSharp.HeaderData.OperationMode.EventDriven)
                     continue;
                 if (raw.Path.Contains("_modified"))
                     continue;
 
                 Console.WriteLine(raw);
+                int channelIndex = raw.Header.ChannelCount - 1;
+                int sweepIndex = raw.Header.SweepCount - 1;
 
-                double[] officialValues = official.GetSweep(0, 0).Values;
+                double[] officialValues = official.GetSweep(sweepIndex, channelIndex).Values;
                 Assert.IsNotNull(officialValues);
                 Assert.IsNotEmpty(officialValues);
 
-                float[] rawValues = raw.GetSweep(0, 0);
+                float[] rawValues = raw.GetSweep(sweepIndex, channelIndex);
                 Assert.IsNotNull(rawValues);
                 Assert.IsNotEmpty(rawValues);
 

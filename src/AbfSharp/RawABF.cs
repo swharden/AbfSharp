@@ -62,26 +62,30 @@ namespace AbfSharp
                 LoadData();
 
             // determine the location of this sweep in the data byte array
-            int sweepFirstByte;
+            int sweepByteOffset;
             int sweepPointCount;
-            if (Header.SynchStartTimes.Length > 0)
+            if (Header.OperationMode == HeaderData.OperationMode.Episodic)
             {
-                // if start times exist, use them
-                sweepFirstByte = Header.DataPosition;
-                for (int i = 1; i < sweepIndex; i++)
-                    sweepFirstByte += Header.SynchLengths[i - 1];
-                sweepPointCount = Header.SynchLengths[sweepIndex] / Header.nADCNumChannels;
-            }
-            else if (Header.OperationMode == HeaderData.OperationMode.Episodic)
-            {
-                // if episodic mode assume fixed-length sweeps
                 int valuesPerSweep = Header.lActualAcqLength / Header.lActualEpisodes;
                 sweepPointCount = valuesPerSweep / Header.nADCNumChannels;
+                sweepByteOffset = sweepIndex * sweepPointCount * Header.BytesPerSample;
+            }
+            else if (Header.OperationMode == HeaderData.OperationMode.EventDriven)
+            {
+                sweepByteOffset = 0;
+                for (int i = 0; i < sweepIndex; i++)
+                    sweepByteOffset += Header.SynchLengths[i] * Header.BytesPerSample;
+                sweepPointCount = Header.SynchLengths[sweepIndex] / Header.nADCNumChannels;
+                Console.WriteLine("EventDriven");
+                Console.WriteLine(string.Join(",", Header.SynchLengths));
+                Console.WriteLine($"Sweep {sweepIndex} offset: {sweepByteOffset}");
             }
             else
             {
                 // assume a single sweep the entire length of the file
+                Console.WriteLine("SINGLESWEEP");
                 sweepPointCount = Header.lActualAcqLength / Header.nADCNumChannels;
+                sweepByteOffset = 0;
             }
 
             float[] values = new float[sweepPointCount];
@@ -105,13 +109,13 @@ namespace AbfSharp
 
                 int bytesPerSample = Header.BytesPerSample;
                 for (int i = 0; i < sweepPointCount; i++)
-                    values[i] = BitConverter.ToInt16(DataBytes, i * bytesPerSample + channelByteOffset) * gain + offset;
+                    values[i] = BitConverter.ToInt16(DataBytes, sweepByteOffset + i * bytesPerSample + channelByteOffset) * gain + offset;
             }
             else if (Header.nDataFormat == 1)
             {
                 int bytesPerSample = Header.BytesPerSample;
                 for (int i = 0; i < sweepPointCount; i++)
-                    values[i] = BitConverter.ToSingle(DataBytes, i * bytesPerSample + channelByteOffset);
+                    values[i] = BitConverter.ToSingle(DataBytes, sweepByteOffset + i * bytesPerSample + channelByteOffset);
             }
             else
                 throw new NotImplementedException($"unsupported nDataFormat: {Header.nDataFormat}");

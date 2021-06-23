@@ -47,8 +47,8 @@ namespace AbfSharpTests
                 using var insertAbfCommand = new SqliteCommand("INSERT INTO Abfs " +
                     "(Folder, Filename, Date, Time) " +
                     "VALUES (@folder, @filename, @date, @time)", conn);
-                insertAbfCommand.Parameters.AddWithValue("folder", System.IO.Path.GetDirectoryName(abf.Path));
-                insertAbfCommand.Parameters.AddWithValue("filename", System.IO.Path.GetFileName(abf.Path));
+                insertAbfCommand.Parameters.AddWithValue("folder", System.IO.Path.GetDirectoryName(abf.FilePath));
+                insertAbfCommand.Parameters.AddWithValue("filename", System.IO.Path.GetFileName(abf.FilePath));
                 insertAbfCommand.Parameters.AddWithValue("date", abf.Header.StartDateTime.ToString("yyyy-MM-dd"));
                 insertAbfCommand.Parameters.AddWithValue("time", abf.Header.StartDateTime.ToString("HH:mm:ss.fff"));
                 insertAbfCommand.ExecuteNonQuery();

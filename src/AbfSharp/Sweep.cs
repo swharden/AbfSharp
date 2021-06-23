@@ -69,7 +69,7 @@ namespace AbfSharp
         /// </summary>
         public string DacUnits => throw new NotImplementedException();
 
-        public Sweep(double[] values, double sampleRate, double offset)
+        public Sweep(double[] values, double sampleRate, double offset = double.NaN)
         {
             Values = values;
             SampleRate = sampleRate;
