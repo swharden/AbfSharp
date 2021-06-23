@@ -5,6 +5,15 @@
     <PlatformTarget>x86</PlatformTarget>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>latest</LangVersion>
+    <Version>0.1.0</Version>
+    <Authors>Scott Harden</Authors>
+    <Company>Harden Technologies, LLC</Company>
+    <Description>AbfSharp is a .NET Standard library for reading electrophysiology data from Axon Binary Format (ABF) files</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/swharden/ABFsharp</PackageProjectUrl>
+    <PackageTags>electrophysiology, ABF, neuroscience, physiology</PackageTags>
+    <PackageReleaseNotes>See quickstart on project page</PackageReleaseNotes>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>

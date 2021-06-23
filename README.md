@@ -1,7 +1,11 @@
 # AbfSharp
 [![](https://img.shields.io/azure-devops/build/swharden/swharden/5?label=Build&logo=azure%20pipelines)](https://dev.azure.com/swharden/swharden/_build/latest?definitionId=5&branchName=master)
 
-**AbfSharp is a .NET Standard library for reading electrophysiology data from Axon Binary Format (ABF) files.** AbfSharp wraps ABFFIO.DLL (the official closed-source library) and provides a simple .NET interface, handling low-level calls and memory management so you can focus on writing ABF analysis code.
+**AbfSharp is a .NET Standard library for reading electrophysiology data from Axon Binary Format (ABF) files.** 
+
+`AbfSharp.ABF` is a .NET native ABF file reader written entirely in C# so it can be used in 32-bit or 64-bit projects in any environment (including Linux and MacOS).
+
+`AbfSharp.ABFFIO.ABF` has the same API but works by wrapping ABFFIO.DLL (the official closed-source ABF file reading library). Although this DLL can only be used in 32-bit projects that target Windows, this module makes it easy to access to "official" ABF header and sweep data values in .NET environments.
 
 <div align="center">
   <img src="dev/graphics/Test_Plot_3D.png" width="70%" />
@@ -11,9 +15,9 @@
 
 **⚠️ AbfSharp is pre-release** (version < 1.0.0) meaning it is functional, but its API is not guaranteed to be stable across future versions.
 
-## Requirements
+## DLL Requirements
 
-* AbfSharp targets .NET Standard 2.0 so it can be used in .NET Framework and .NET Core applications.
+Although the `AbfSharp.ABF` module can read ABF files on any platform that supports .NET, using the official file reader (ABFFIO.DLL) to extract header and sample data from ABF files with `AbfSharp.ABFFIO.ABF` requires some extra considerations:
 
 * **Your system must have dependencies installed:** The easiest way to ensure you have the DLLs that ABFFIO.DLL depends on is to [**download and install pClamp**]([pCLAMP](https://support.moleculardevices.com/s/article/Axon-pCLAMP-11-Electrophysiology-Data-Acquisition-Analysis-Software-Download-Page)). Attempting to use AbfSharp without these dependencies will produce a runtime error: `Unable to load DLL (Module could not be found HRESULT: 0x8007007E)`
 
@@ -25,8 +29,8 @@
 
 ### Read ABF Files with C#
 ```cs
-var abf = AbfSharp.ABF("17n16016-ic-steps.abf");
-var sweep = abf.GetSweep(0);
+var abf = AbfSharp.ABF("demo.abf");
+var sweep = abf.GetSweep(42);
 for (int i = 0; i < 5; i++)
     Console.Write($"{sweep.Values[i]}, ");
 ```
@@ -40,7 +44,7 @@ for (int i = 0; i < 5; i++)
 [ScottPlot](https://swharden.com/scottplot) can be used to graph sweep data:
 
 ```cs
-var abf = new AbfSharp.ABF("17n16016-ic-steps.abf");
+var abf = new AbfSharp.ABF("demo.abf");
 var plot = new ScottPlot.Plot(600, 300);
 
 // plot a few specific sweeps
