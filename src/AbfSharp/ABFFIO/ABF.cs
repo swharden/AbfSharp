@@ -22,6 +22,12 @@ namespace AbfSharp.ABFFIO
             Header = abffio.header;
         }
 
+        public override string ToString() =>
+            $"{System.IO.Path.GetFileName(FilePath)} " +
+            $"ABF (version {Header.fFileVersionNumber}) " +
+            $"{(OperationMode)Header.nOperationMode} mode " +
+            $"with {Header.nADCNumChannels} channels and {Header.lActualEpisodes} sweeps";
+
         public double[] GetSweep(int sweepIndex, int channelIndex = 0)
         {
             using Wrapper abffio = new(FilePath);
