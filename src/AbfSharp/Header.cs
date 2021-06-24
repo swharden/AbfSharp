@@ -53,7 +53,7 @@ namespace AbfSharp
         /// <summary>
         /// File format version stored in the data file during acquisition
         /// </summary>
-        public readonly float FileVersionNumber;
+        public float Version => fFileVersionNumber;
 
         /// <summary>
         /// Number of sweeps (episodes)
