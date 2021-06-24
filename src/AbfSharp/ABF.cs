@@ -44,7 +44,7 @@ namespace AbfSharp
             else if (signature == "ABF2")
                 Header = new HeaderAbf2(reader, Path);
             else
-                throw new FormatException($"unknown file signature: {signature}");
+                throw new FormatException($"unknown file signature '{signature}': {Path}");
 
             if (preloadData)
                 LoadData(reader);
@@ -52,7 +52,7 @@ namespace AbfSharp
 
         public override string ToString() =>
             $"{System.IO.Path.GetFileName(Path)} " +
-            $"ABF (version {Header.FileVersionNumber}) " +
+            $"ABF (version {Header.Version}) " +
             $"{Header.OperationMode} mode " +
             $"with {Header.ChannelCount} channels and {Header.SweepCount} sweeps";
 
