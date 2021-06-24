@@ -51,7 +51,7 @@ namespace AbfSharpTests
                 var raw = new AbfSharp.ABF(official.FilePath, preloadData: true);
 
                 // Don't compare ABF1 GapFree ABFs because ABFFIO freaks out
-                if (raw.Header.OperationMode == AbfSharp.OperationMode.GapFree && raw.Header.FileVersionNumber < 2)
+                if (raw.Header.OperationMode == AbfSharp.OperationMode.GapFree && raw.Header.Version < 2)
                     continue;
 
                 // Don't compare EventDriven sweeps because ABFFIO returns fixed-length sweeps
