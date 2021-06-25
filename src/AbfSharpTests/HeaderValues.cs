@@ -390,5 +390,22 @@ namespace AbfSharpTests
                 Assert.AreEqual(officialHeader.sDACFilePath.Take(testHeader.sDACFilePath.Length), testHeader.sDACFilePath);
             }
         }
+
+        [Test]
+        public void Test_MatchesOfficial_Group12()
+        {
+            foreach (var dict in AbfHeaders)
+            {
+                AbfSharp.ABFFIO.Structs.ABFFileHeader officialHeader = dict.Key;
+                AbfSharp.Header testHeader = dict.Value;
+                Console.WriteLine($"{testHeader.AbfID} {testHeader.fFileVersionNumber}");
+
+                //region GROUP 12 - User List
+                Assert.AreEqual(officialHeader.nULEnable, testHeader.nULEnable);
+                Assert.AreEqual(officialHeader.nULParamToVary, testHeader.nULParamToVary);
+                Assert.AreEqual(officialHeader.nULRepeat, testHeader.nULRepeat);
+                Assert.AreEqual(officialHeader.sULParamValueList.Trim(), testHeader.sULParamValueList);
+            }
+        }
     }
 }

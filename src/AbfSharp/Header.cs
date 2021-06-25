@@ -948,10 +948,33 @@ namespace AbfSharp
         #endregion
 
         #region GROUP 12 - Variable parameter user list
-        public short[] nULEnable;
-        public short[] nULParamToVary;
-        public short[] nULRepeat;
-        public string sULParamValueList;
+
+        /// <summary>
+        /// Parameter list activation status: 
+        /// 0 = Disable
+        /// 1 = Enable
+        /// </summary>
+        public short[] nULEnable = new short[8];
+
+        /// <summary>
+        /// Holds the index of the parameter that varies from sweep to sweep in one run.
+        /// </summary>
+        public short[] nULParamToVary = new short[8]; // https://github.com/swharden/AbfSharp/blob/5b79204068aec7258be6f3c02bd2ca6c125bab5c/dev/ABFFIO/axon32/AxAbfFio32/abfoldnx.h#L112-L217
+
+        /// <summary>
+        /// Repeat the list when the current sweep exceeds the number of entries in the list.
+        /// 0 = Disable
+        /// 1 = Repeat the list
+        /// </summary>
+        public short[] nULRepeat = new short[8];
+
+        /// <summary>
+        /// Comma-separated list of values in string format.
+        /// If there are fewer values in the list than sweeps, the last value is reused.
+        /// If there are more values in the list than sweeps, excess values are ignored.
+        /// </summary>
+        public string sULParamValueList = "";
+
         #endregion
 
         #region GROUP 13 - Statistics measurements
@@ -1097,43 +1120,45 @@ namespace AbfSharp
 
         #region funtions to read arrays from data streams
 
-        protected static Int16[] ReadArrayInt16(BinaryReader reader, int size)
+        protected static Int16[] ReadArrayInt16(BinaryReader reader, int size, int outputSize = 0)
         {
-            Int16[] arr = new Int16[size];
+            outputSize = Math.Max(outputSize, size);
+            Int16[] arr = new Int16[outputSize];
             for (int i = 0; i < size; i++)
                 arr[i] = reader.ReadInt16();
             return arr;
         }
 
-        protected static Int32[] ReadArrayInt32(BinaryReader reader, int size)
+        protected static Int32[] ReadArrayInt32(BinaryReader reader, int size, int outputSize = 0)
         {
-            Int32[] arr = new Int32[size];
+            outputSize = Math.Max(outputSize, size);
+            Int32[] arr = new Int32[outputSize];
             for (int i = 0; i < size; i++)
                 arr[i] = reader.ReadInt32();
             return arr;
         }
 
-        protected static Single[] ReadArraySingle(BinaryReader reader, int size)
+        protected static Single[] ReadArraySingle(BinaryReader reader, int size, int outputSize = 0)
         {
-            Single[] arr = new Single[size];
+            outputSize = Math.Max(outputSize, size);
+            Single[] arr = new Single[outputSize];
             for (int i = 0; i < size; i++)
                 arr[i] = reader.ReadSingle();
             return arr;
         }
 
-        protected static string[] ReadArrayStrings(BinaryReader reader, int stringCount, int stringSize)
+        protected static string[] ReadArrayStrings(BinaryReader reader, int stringCount, int stringSize, int outputSize = 0)
         {
-            string[] strings = new string[stringCount];
+            outputSize = Math.Max(outputSize, stringCount);
+            string[] strings = new string[outputSize];
             for (int i = 0; i < stringCount; i++)
                 strings[i] = Encoding.ASCII.GetString(reader.ReadBytes(stringSize)).Replace("\u0000", "").Trim();
             return strings;
         }
 
-        protected static string ReadString(BinaryReader reader, int length)
+        protected static string ReadString(BinaryReader reader, int stringSize)
         {
-            byte[] bytes = reader.ReadBytes(length);
-            string path = System.Text.Encoding.ASCII.GetString(bytes).Trim();
-            return path.StartsWith("?") ? "" : path;
+            return Encoding.ASCII.GetString(reader.ReadBytes(stringSize)).Replace("\u0000", "").Trim();
         }
 
         #endregion

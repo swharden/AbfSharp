@@ -31,6 +31,7 @@ namespace AbfSharp
             ReadGroup7(reader);
             ReadGroup9(reader);
             ReadGroup10(reader);
+            ReadGroup12(reader);
         }
 
         private void ReadGroup1(BinaryReader reader)
@@ -272,6 +273,18 @@ namespace AbfSharp
             lDACFileEpisodeNum = ReadArrayInt32(reader, 2);
             nDACFileADCNum = ReadArrayInt16(reader, 2);
             sDACFilePath = Encoding.ASCII.GetString(reader.ReadBytes(412).Where(x => x != 0).ToArray());
+        }
+
+        public void ReadGroup12(BinaryReader reader)
+        {
+            if (fFileVersionNumber >= 1.6)
+            {
+                reader.BaseStream.Seek(3360, SeekOrigin.Begin);
+                nULEnable = ReadArrayInt16(reader, 4, 8);
+                nULParamToVary = ReadArrayInt16(reader, 4, 8);
+                sULParamValueList = ReadString(reader, 1024);
+                nULRepeat = ReadArrayInt16(reader, 4, 8);
+            }
         }
     }
 }

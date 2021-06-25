@@ -75,6 +75,7 @@ namespace AbfSharp
             ReadGroup7();
             ReadGroup9();
             ReadGroup10();
+            ReadGroup12();
 
             // use header values to put additional information in the header object
             float tagTimeMult = (fSynchTimeUnit == 0)
@@ -237,6 +238,14 @@ namespace AbfSharp
             lDACFileEpisodeNum = DacSection.lDACFileEpisodeNum;
             nDACFileADCNum = DacSection.nDACFileADCNum;
             sDACFilePath = StringsSection.Strings[DacSection.lDACFilePathIndex[0]];
+        }
+
+        private void ReadGroup12()
+        {
+            nULEnable = UserListSection.nULEnable;
+            nULParamToVary = UserListSection.nULParamToVary;
+            nULRepeat = UserListSection.nULRepeat;
+            sULParamValueList = StringsSection.Strings[UserListSection.nStringIndex[0]].Trim();
         }
     }
 }
