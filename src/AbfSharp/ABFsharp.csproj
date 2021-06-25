@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <PlatformTarget>x86</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>latest</LangVersion>
     <Version>0.2.0</Version>
@@ -21,7 +21,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="$(PackageIconFullPath)" Pack="true" PackagePath="\"/>
+    <None Include="$(PackageIconFullPath)" Pack="true" PackagePath="\" />
     <None Update="ABFFIO.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
