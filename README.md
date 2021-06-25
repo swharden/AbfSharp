@@ -13,9 +13,7 @@
   <img src="dev/graphics/Test_Plot_3D.png" width="70%" />
 </div>
 
-### Project Status
-
-**⚠️ AbfSharp is pre-release** (version < 1.0.0) meaning it is functional, but its API is not guaranteed to be stable across future versions.
+Consistent with the [Semantic Versioning Specification](https://semver.org), AbfSharp's major version number is zero meaning its API may change as this project continues to evolve.
 
 ## DLL Requirements
 
