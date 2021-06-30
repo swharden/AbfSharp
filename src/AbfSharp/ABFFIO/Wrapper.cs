@@ -144,13 +144,28 @@ namespace AbfSharp.ABFFIO
             Int32 fileHandle = 0;
             Int32 pnError = 0;
             ABF_GetWaveform(fileHandle, ref Header, channelIndex, sweepNumber, ref SweepBuffer[0], ref pnError);
-            
+
+            // shift the waveform forward in time by 1/64th of the sweep length
             float[] values = new float[SweepBuffer.Length];
             Int32 numSamples = Header.lNumSamplesPerEpisode / Header.nADCNumChannels;
             int offset = numSamples / Constants.ABFH_HOLDINGFRACTION;
             Array.Copy(SweepBuffer, 0, values, offset, values.Length - offset);
-            for (int i = 0; i < offset; i++)
-                values[i] = Header.fDACHoldingLevel[channelIndex];
+
+            if (Header.nInterEpisodeLevel[0] == 0 || sweepNumber == 1)
+            {
+                // fill the pre-waveform period with the holding command values
+                for (int i = 0; i < offset; i++)
+                    values[i] = Header.fDACHoldingLevel[channelIndex];
+            }
+            else
+            {
+                // fill the pre-waveform period with the holding command values from the previous sweep
+                ABF_GetWaveform(fileHandle, ref Header, channelIndex, sweepNumber - 1, ref SweepBuffer[0], ref pnError);
+                float lastValueOfPreviousSweep = SweepBuffer[SweepBuffer.Length - 1];
+                for (int i = 0; i < offset; i++)
+                    values[i] = lastValueOfPreviousSweep;
+            }
+
             return values;
         }
     }

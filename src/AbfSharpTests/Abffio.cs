@@ -52,17 +52,36 @@ namespace AbfSharpTests
 
                 if (abf.OperationMode != AbfSharp.OperationMode.EventDriven)
                     Assert.AreEqual(adc.Length, dac.Length);
+            }
+        }
 
-                bool plotToo = false;
-                if (plotToo)
+        [Ignore("this is very slow (~40 seconds)")]
+        [Test]
+        public void Test_GetStimulusWaveform_Plot()
+        {
+            string saveFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, "test_figures");
+            if (!Directory.Exists(saveFolder))
+                Directory.CreateDirectory(saveFolder);
+
+            foreach (string abfPath in SampleData.GetAllAbfPaths())
+            {
+                var abf = new AbfSharp.ABFFIO.ABF(abfPath);
+                Console.WriteLine($"\n{abf}");
+
+                ScottPlot.MultiPlot mp = new(800, 800, 2, 1);
+                for (int i=0; i<abf.Header.lActualEpisodes; i++)
                 {
-                    string saveAs = Path.Combine(Path.GetDirectoryName(abf.FilePath), Path.GetFileNameWithoutExtension(abf.FilePath) + ".png");
-                    ScottPlot.MultiPlot mp = new(600, 400, 2, 1);
-                    mp.subplots[0].AddSignal(ToDoubles(adc));
-                    mp.subplots[1].AddSignal(ToDoubles(dac));
-                    mp.SaveFig(saveAs);
-                    Console.WriteLine($"SAVED: {saveAs}");
+                    float[] adc = abf.GetSweep(i);
+                    float[] dac = abf.GetStimulusWaveform(i);
+                    mp.subplots[0].AddSignal(ToDoubles(adc), color: System.Drawing.Color.Blue);
+                    mp.subplots[1].AddSignal(ToDoubles(dac), color: System.Drawing.Color.Red);
                 }
+
+                string saveAs = Path.Combine(saveFolder, Path.GetFileNameWithoutExtension(abf.FilePath) + ".png");
+                mp.subplots[0].Layout(left: 75, right: 10);
+                mp.subplots[1].Layout(left: 75, right: 10);
+                mp.SaveFig(saveAs);
+                Console.WriteLine($"SAVED: {saveAs}");
             }
         }
 
