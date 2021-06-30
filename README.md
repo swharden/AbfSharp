@@ -77,6 +77,4 @@ plot.SaveFig("quickstart-plot.png");
 * [pyABF](https://swharden.com/pyabf) - a pure-Python interface for ABF files
 * [phpABF](https://github.com/swharden/phpABF) - a pure-PHP interface for reading header data from ABF files
 * [The ABF File Format](https://swharden.com/pyabf/abf2-file-format/) - extensive documentation about the format of data in binary ABF files
-* [Axon Binary File Format](http://mdc.custhelp.com/euf/assets/software/FSP_ABFHelp_2.03.pdf) - official user guide
-* [Axon Multiclamp SDK](http://mdc.custhelp.com/euf/assets/images/Multiclamp_SDK.zip) - now hosted by [Molecular Devices](https://support.moleculardevices.com/s/article/Axon-Conventional-Electrophysiology-Suite-of-Products-Knowledge-Base)
-* ABFFIO.DLL can be independently obtained from the latest [pCLAMP](https://support.moleculardevices.com/s/article/Axon-pCLAMP-11-Electrophysiology-Data-Acquisition-Analysis-Software-Download-Page) distribution
+* [ABF-SDK on GitHub](https://github.com/swharden/ABF-SDK) - a collection of code and resources for working with ABF files

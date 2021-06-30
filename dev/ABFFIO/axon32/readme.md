@@ -1,1 +1,0 @@
-Files in this folder came frrom the PyME GitHub page: https://github.com/carandraug/PyME
