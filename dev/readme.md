@@ -1,4 +1,5 @@
 ## Resources
+* [ABF SDK on GitHub](https://github.com/swharden/ABF-SDK)
 * [pyABF: sample data](https://github.com/swharden/pyABF/tree/master/data)
 * [pyABF: abf.py](https://github.com/swharden/pyABF/blob/master/src/pyabf/abf.py)
 * [pyABF: abfHeader.py](https://github.com/swharden/pyABF/blob/master/src/pyabf/abfHeader.py)
