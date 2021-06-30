@@ -20,14 +20,14 @@ Consistent with the [Semantic Versioning Specification](https://semver.org), Abf
 ### Read ABF Files with C#
 
 ```cs
-var abf = new AbfSharp.ABFFIO.ABF("demo.abf");
-float[] values = abf.GetSweep(42);
+var abf = new AbfSharp.ABFFIO.ABF("File_axon_5.abf");
+float[] sweep = abf.GetSweep(0);
 for (int i = 0; i < 5; i++)
-    Console.Write($"{values[i]}, ");
+    Console.Write($"{sweep[i]}, ");
 ```
 
 ```
--62.469, -62.317, -62.439, -62.439, -62.317,
+-71.05103, -71.05714, -71.05103, -71.06324, -71.06934,
 ```
 
 ### Plot Sweep Data with C#
