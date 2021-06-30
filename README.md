@@ -17,17 +17,26 @@ Consistent with the [Semantic Versioning Specification](https://semver.org), Abf
 
 ## Quickstart
 
-### Read ABF Files with C#
+```cs
+// Read an ABF using the AbfSharp's native reader
+var abf = new AbfSharp.ABF("File_axon_5.abf");
+float[] sweep = abf.GetSweep(0);
+for (int i = 0; i < 5; i++)
+    Console.Write($"{sweep[i]:0.000}, ");
+```
+
+```
+-71.051, -71.057, -71.051, -71.063, -71.069,
+```
+
+If you are on Windows, target x86, and have ABFFIO.DLL in your output folder, you can read ABFs using the official ABFFIO library. The API is effectively identical and the output is the same:
 
 ```cs
+// Read an ABF using the official ABFFIO.DLL reader
 var abf = new AbfSharp.ABFFIO.ABF("File_axon_5.abf");
 float[] sweep = abf.GetSweep(0);
 for (int i = 0; i < 5; i++)
-    Console.Write($"{sweep[i]}, ");
-```
-
-```
--71.05103, -71.05714, -71.05103, -71.06324, -71.06934,
+    Console.Write($"{sweep[i]:0.000}, ");
 ```
 
 ### Plot Sweep Data with C#
