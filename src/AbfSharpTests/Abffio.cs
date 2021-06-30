@@ -58,7 +58,14 @@ namespace AbfSharpTests
         public void Test_Tag_Summaries(string abfFileName, string expectedCommentSummary)
         {
             AbfSharp.ABFFIO.ABF abf = new(SampleData.GetAbfPath(abfFileName));
-            Assert.AreEqual(abf.Tags.ToString(), expectedCommentSummary);
+            Assert.AreEqual(expectedCommentSummary, abf.Tags.ToString());
+        }
+
+        [TestCase("File_axon_4.abf", "DEF0C2D9-9817-42F7-B139-526A4AA9397A")]
+        public void Test_Guid_MatchesExpected(string abfFileName, string expectedGuid)
+        {
+            AbfSharp.ABFFIO.ABF abf = new(SampleData.GetAbfPath(abfFileName));
+            Assert.AreEqual(expectedGuid, abf.Header.FileGUID.ToString().ToUpper());
         }
     }
 }
