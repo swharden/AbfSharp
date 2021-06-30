@@ -15,6 +15,13 @@ namespace AbfSharp.ABFFIO
         public readonly Tags Tags;
         public readonly string FilePath;
         public OperationMode OperationMode => (OperationMode)Header.nOperationMode;
+        public string[] DacNames => Header.sDACChannelName.Select(x => x.ToString()).ToArray();
+        public string[] DacUnits => Header.sDACChannelUnits.Select(x => x.ToString()).ToArray();
+        public string[] AdcNames => Header.sADCChannelName.Select(x => x.ToString()).ToArray();
+        public string[] AdcUnits => Header.sADCUnits.Select(x => x.ToString()).ToArray();
+        public float SampleRate => 1e6f / Header.fADCSequenceInterval / Header.nADCNumChannels;
+        public float SamplePeriod => 1.0f / SampleRate;
+        public float SamplePeriodMS => SamplePeriod * 1e3f;
 
         public ABF(string filePath)
         {
@@ -41,7 +48,7 @@ namespace AbfSharp.ABFFIO
         public float[] GetStimulusWaveform(int sweepIndex, int channelIndex = 0)
         {
             //if (OperationMode != OperationMode.Episodic)
-                //throw new InvalidOperationException("stimulus waveform only supported for episodic files");
+            //throw new InvalidOperationException("stimulus waveform only supported for episodic files");
 
             // TODO: THIS IS VERY SLOW! PRE-LOAD DATA!
             using Wrapper abffio = new(FilePath);

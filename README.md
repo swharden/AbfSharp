@@ -15,6 +15,27 @@
 
 Consistent with the [Semantic Versioning Specification](https://semver.org), AbfSharp's major version number is zero meaning its API may change as this project continues to evolve.
 
+## Quickstart
+
+### Read ABF Files with C#
+
+```cs
+var abf = new AbfSharp.ABFFIO.ABF("demo.abf");
+float[] values = abf.GetSweep(42);
+for (int i = 0; i < 5; i++)
+    Console.Write($"{values[i]}, ");
+```
+
+```
+-62.469, -62.317, -62.439, -62.439, -62.317,
+```
+
+### Plot Sweep Data with C#
+
+[ScottPlot](https://swharden.com/scottplot) can be used to graph sweep data (and stimulus waveforms). See sample source code in the tests folder for a demonstration of how to create plots like this using the latest API:
+
+![](dev/abfs/File_axon_5.png)
+
 ## DLL Requirements
 
 Although the `AbfSharp.ABF` module can read ABF files on any platform that supports .NET, using the official file reader (ABFFIO.DLL) to extract header and sample data from ABF files with `AbfSharp.ABFFIO.ABF` requires some extra considerations:
@@ -22,56 +43,6 @@ Although the `AbfSharp.ABF` module can read ABF files on any platform that suppo
 * **Your system must have dependencies installed:** The easiest way to ensure you have the DLLs that ABFFIO.DLL depends on is to [**download and install pClamp**]([pCLAMP](https://support.moleculardevices.com/s/article/Axon-pCLAMP-11-Electrophysiology-Data-Acquisition-Analysis-Software-Download-Page)). Attempting to use AbfSharp without these dependencies will produce a runtime error: `Unable to load DLL (Module could not be found HRESULT: 0x8007007E)`
 
 * **Your project must target x86:** ABFFIO.DLL is only available as a 32-bit binary for Windows, and a 64-bit application cannot directly use resources in a 32-bit DLL. Using AbfSharp in an executable built targeting another platform will produce a runtime error: `System.BadImageFormatException: Could not load file or assembly 'AbfSharp, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null'. An attempt was made to load a program with an incorrect format.`
-
-
-## Quickstart
-
-
-### Read ABF Files with C#
-```cs
-var abf = AbfSharp.ABF("demo.abf");
-var sweep = abf.GetSweep(42);
-for (int i = 0; i < 5; i++)
-    Console.Write($"{sweep.Values[i]}, ");
-```
-
-```
--62.469, -62.317, -62.439, -62.439, -62.317
-```
-
-### Plot ABF Files with C#
-
-[ScottPlot](https://swharden.com/scottplot) can be used to graph sweep data:
-
-```cs
-var abf = new AbfSharp.ABF("demo.abf");
-var plot = new ScottPlot.Plot(600, 300);
-
-// plot a few specific sweeps
-int[] sweepIndexes = new int[] { 0, 4, 8, 12 };
-foreach (int sweepIndex in sweepIndexes)
-{
-    var sweep = abf.GetSweep(sweepIndex);
-    double[] times = sweep.GetSweepTimes();
-    double[] voltages = sweep.Values;
-    plot.AddScatterLines(times, voltages, label: $"sweep {sweepIndex + 1}");
-    plot.AddScatterLines(
-        xs: sweep.Times, 
-        ys: sweep.Values, 
-        label: $"sweep {sweepIndex + 1}");
-}
-
-// customize the plot before saving
-plot.AxisAuto(horizontalMargin: 0);
-plot.XLabel("Time (seconds)");
-plot.YLabel("Potential (mV)");
-plot.Legend(true, ScottPlot.Alignment.UpperRight);
-plot.SaveFig("quickstart-plot.png");
-```
-
-<div align="center">
-  <img src="dev/graphics/quickstart-plot.png" />
-</div>
 
 ## Resources
 * [pyABF](https://swharden.com/pyabf) - a pure-Python interface for ABF files

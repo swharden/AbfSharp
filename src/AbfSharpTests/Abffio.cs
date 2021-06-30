@@ -85,6 +85,40 @@ namespace AbfSharpTests
             }
         }
 
+        [TestCase("File_axon_5.abf")]
+        public void Test_Plot_SignalAndStimulus(string abfFilename)
+        {
+            string abfFilePath = SampleData.GetAbfPath(abfFilename);
+            string abfFolder = Path.GetDirectoryName(abfFilePath);
+
+            var abf = new AbfSharp.ABFFIO.ABF(abfFilePath);
+            Console.WriteLine($"\n{abf}");
+
+            ScottPlot.MultiPlot mp = new(800, 600, 2, 1);
+            for (int i = 0; i < abf.Header.lActualEpisodes; i++)
+            {
+                float[] adc = abf.GetSweep(i);
+                float[] dac = abf.GetStimulusWaveform(i);
+                mp.subplots[0].AddSignal(ToDoubles(adc), abf.SampleRate, color: System.Drawing.Color.Blue);
+                mp.subplots[1].AddSignal(ToDoubles(dac), abf.SampleRate, color: System.Drawing.Color.Red);
+            }
+
+            mp.subplots[0].Layout(left: 75, right: 10);
+            mp.subplots[0].AxisAuto(horizontalMargin: 0);
+            mp.subplots[0].Title(abfFilename);
+            mp.subplots[0].YLabel($"{abf.AdcNames[0]} ({abf.AdcUnits[0]})");
+            mp.subplots[0].XLabel("Sweep Time (seconds)");
+
+            mp.subplots[1].Layout(left: 75, right: 10);
+            mp.subplots[1].AxisAuto(horizontalMargin: 0);
+            mp.subplots[1].YLabel($"{abf.DacNames[0]} ({abf.DacUnits[0]})");
+            mp.subplots[1].XLabel("Sweep Time (seconds)");
+
+            string saveAs = Path.Combine(abfFolder, Path.GetFileNameWithoutExtension(abf.FilePath) + ".png");
+            mp.SaveFig(saveAs);
+            Console.WriteLine($"SAVED: {saveAs}");
+        }
+
         [Test]
         public void Test_NonAbf_ThrowsOnLoad()
         {
