@@ -33,10 +33,14 @@ namespace AbfSharpTests
             {
                 var abf = new AbfSharp.ABFFIO.ABF(abfPath);
                 Console.WriteLine(abf);
-
-                //if (abf.Header.lNumTagEntries > 0)
-                    //Console.WriteLine("TAGS: " + string.Join(",", abf.Tags.Select(x => x.sComment.Trim())));
             }
+        }
+
+        [Test]
+        public void Test_NonAbf_ThrowsOnLoad()
+        {
+            string nonAbfPath = Path.GetFullPath("ABFFIO.DLL");
+            Assert.Throws<InvalidOperationException>(() => { var abf = new AbfSharp.ABFFIO.ABF(nonAbfPath); });
         }
     }
 }

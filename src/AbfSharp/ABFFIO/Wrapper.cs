@@ -35,14 +35,15 @@ namespace AbfSharp.ABFFIO
             Int32 errorCode = 0;
             ABF_IsABFFile(abfFilePath, ref dataFormat, ref errorCode);
             if (errorCode != 0)
-                throw new ArgumentException($"ABFFIO says not an ABF file: {abfFilePath}");
+                throw new InvalidOperationException($"ABF_IsABFFile() returned error {errorCode} ({(Error)errorCode})");
 
             // open the file and read its header
             if (hideDebugMessages) Debug.WriteLine($"OPENING: {abfFilePath}");
             Int32 fileHandle = 0;
             uint loadFlags = 0;
             ABF_ReadOpen(abfFilePath, ref fileHandle, loadFlags, ref header, ref SweepPointCount, ref SweepCount, ref errorCode);
-            AbfError.AssertSuccess(errorCode);
+            if (errorCode != 0)
+                throw new InvalidOperationException($"ABF_ReadOpen() returned error {errorCode} ({(Error)errorCode})");
 
             // create the sweep buffer in memory
             buffer = new float[SweepPointCount];
@@ -56,7 +57,8 @@ namespace AbfSharp.ABFFIO
             Int32 fileHandle = 0;
             Int32 errorCode = 0;
             ABF_Close(fileHandle, ref errorCode);
-            AbfError.AssertSuccess(errorCode);
+            if (errorCode != 0)
+                throw new InvalidOperationException($"ABF_Close() returned error {errorCode} ({(Error)errorCode})");
             Debug.WriteLine($"{System.IO.Path.GetFileName(FilePath)} closed");
         }
 
@@ -71,7 +73,8 @@ namespace AbfSharp.ABFFIO
             for (uint i = 0; i < abfTags.Length; i++)
             {
                 ABF_ReadTags(fileHandle, ref header, i, ref abfTags[i], 1, ref errorCode);
-                AbfError.AssertSuccess(errorCode);
+                if (errorCode != 0)
+                    throw new InvalidOperationException($"ABF_ReadTags() returned error {errorCode} ({(Error)errorCode})");
             }
             return abfTags;
         }
@@ -86,7 +89,8 @@ namespace AbfSharp.ABFFIO
             Int32 fileHandle = 0;
             int physicalChannel = header.nADCSamplingSeq[channelNumber];
             ABF_ReadChannel(fileHandle, ref header, physicalChannel, sweepNumber, ref buffer[0], ref SweepPointCount, ref errorCode);
-            AbfError.AssertSuccess(errorCode);
+            if (errorCode != 0)
+                throw new InvalidOperationException($"ABF_ReadChannel() returned error {errorCode} ({(Error)errorCode})");
         }
 
         [DllImport("ABFFIO.dll", CharSet = CharSet.Ansi)]
