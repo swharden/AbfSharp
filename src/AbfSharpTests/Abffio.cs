@@ -26,15 +26,43 @@ namespace AbfSharpTests
             Assert.AreEqual("08ddd0757f32ed733f958526693ccd66", GetMD5Hash("ABFFIO.dll"));
         }
 
+        private static double[] ToDoubles(float[] f)
+        {
+            double[] d = new double[f.Length];
+            for (int i = 0; i < f.Length; i++)
+                d[i] = f[i];
+            return d;
+        }
+
         [Test]
         public void Test_AllABfs_Load()
         {
             foreach (string abfPath in SampleData.GetAllAbfPaths())
             {
                 var abf = new AbfSharp.ABFFIO.ABF(abfPath);
-                Console.WriteLine(abf);
+                Console.WriteLine($"\n{abf}");
                 if (abf.Tags.Count > 0)
                     Console.WriteLine($"TAGS: {abf.Tags}");
+
+                float[] adc = abf.GetSweep(0);
+                Console.WriteLine("SWEEP: " + string.Join(", ", adc.Take(10).Select(x => x.ToString())));
+
+                float[] dac = abf.GetStimulusWaveform(0);
+                Console.WriteLine("STIM: " + string.Join(", ", dac.Take(10).Select(x => x.ToString())));
+
+                if (abf.OperationMode != AbfSharp.OperationMode.EventDriven)
+                    Assert.AreEqual(adc.Length, dac.Length);
+
+                bool plotToo = false;
+                if (plotToo)
+                {
+                    string saveAs = Path.Combine(Path.GetDirectoryName(abf.FilePath), Path.GetFileNameWithoutExtension(abf.FilePath) + ".png");
+                    ScottPlot.MultiPlot mp = new(600, 400, 2, 1);
+                    mp.subplots[0].AddSignal(ToDoubles(adc));
+                    mp.subplots[1].AddSignal(ToDoubles(dac));
+                    mp.SaveFig(saveAs);
+                    Console.WriteLine($"SAVED: {saveAs}");
+                }
             }
         }
 

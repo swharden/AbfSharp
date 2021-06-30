@@ -9,7 +9,6 @@ namespace AbfSharp.ABFFIO
     /// </summary>
     public class Wrapper : IDisposable
     {
-        private readonly UInt32 MaxSweepLength;
         private readonly UInt32 EpisodeCount;
         public readonly string FilePath;
         private readonly float[] SweepBuffer;
@@ -31,13 +30,14 @@ namespace AbfSharp.ABFFIO
 
             // open the file and read its header
             Int32 fileHandle = 0;
+            UInt32 maxSweepLength = 0;
             uint loadFlags = 0;
-            ABF_ReadOpen(abfFilePath, ref fileHandle, loadFlags, ref Header, ref MaxSweepLength, ref EpisodeCount, ref errorCode);
+            ABF_ReadOpen(abfFilePath, ref fileHandle, loadFlags, ref Header, ref maxSweepLength, ref EpisodeCount, ref errorCode);
             if (errorCode != 0)
                 throw new InvalidOperationException($"ABF_ReadOpen() returned error {errorCode} ({(Error)errorCode})");
 
             // create the sweep buffer in memory
-            SweepBuffer = new float[MaxSweepLength];
+            SweepBuffer = new float[maxSweepLength];
         }
 
         public void Dispose()
@@ -135,6 +135,23 @@ namespace AbfSharp.ABFFIO
                 ref puEpochStart, ref puEpochEnd, ref pnError);
 
             return (valid, (int)puEpochStart, (int)puEpochEnd);
+        }
+
+        [DllImport("ABFFIO.dll", CharSet = CharSet.Ansi)]
+        private static extern float ABF_GetWaveform(Int32 fileHandle, ref AbfFileHeader pFH, Int32 nChannel, Int32 sweep, ref float pfBuffer, ref Int32 pnError);
+        public float[] GetStimulusWaveform(int sweepNumber, int channelIndex)
+        {
+            Int32 fileHandle = 0;
+            Int32 pnError = 0;
+            ABF_GetWaveform(fileHandle, ref Header, channelIndex, sweepNumber, ref SweepBuffer[0], ref pnError);
+            
+            float[] values = new float[SweepBuffer.Length];
+            Int32 numSamples = Header.lNumSamplesPerEpisode / Header.nADCNumChannels;
+            int offset = numSamples / Constants.ABFH_HOLDINGFRACTION;
+            Array.Copy(SweepBuffer, 0, values, offset, values.Length - offset);
+            for (int i = 0; i < offset; i++)
+                values[i] = Header.fDACHoldingLevel[channelIndex];
+            return values;
         }
     }
 }
