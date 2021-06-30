@@ -9,11 +9,11 @@ namespace AbfSharp.ABFFIO
     /// <summary>
     /// This class provides a simple .NET interface to ABF file header and sweep data provided by ABFFIO.DLL
     /// </summary>
-    public class ABF
+    public class ABF : IABF
     {
         public readonly AbfFileHeader Header;
-        public readonly Tags Tags;
-        public readonly string FilePath;
+        public Tags Tags { get; private set; }
+        public string FilePath { get; private set; }
         public OperationMode OperationMode => (OperationMode)Header.nOperationMode;
         public string[] DacNames => Header.sDACChannelName.Select(x => x.ToString()).ToArray();
         public string[] DacUnits => Header.sDACChannelUnits.Select(x => x.ToString()).ToArray();
@@ -22,6 +22,9 @@ namespace AbfSharp.ABFFIO
         public float SampleRate => 1e6f / Header.fADCSequenceInterval / Header.nADCNumChannels;
         public float SamplePeriod => 1.0f / SampleRate;
         public float SamplePeriodMS => SamplePeriod * 1e3f;
+        public float FileVersion => Header.fFileVersionNumber;
+        public int SweepCount => Math.Max(1, Header.lActualEpisodes);
+        public int ChannelCount => Header.nADCNumChannels;
 
         public ABF(string filePath)
         {

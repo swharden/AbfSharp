@@ -69,7 +69,7 @@ namespace AbfSharpTests
                 Console.WriteLine($"\n{abf}");
 
                 ScottPlot.MultiPlot mp = new(800, 800, 2, 1);
-                for (int i=0; i<abf.Header.lActualEpisodes; i++)
+                for (int i=0; i<abf.SweepCount; i++)
                 {
                     float[] adc = abf.GetSweep(i);
                     float[] dac = abf.GetStimulusWaveform(i);
@@ -95,7 +95,7 @@ namespace AbfSharpTests
             Console.WriteLine($"\n{abf}");
 
             ScottPlot.MultiPlot mp = new(800, 600, 2, 1);
-            for (int i = 0; i < abf.Header.lActualEpisodes; i++)
+            for (int i = 0; i < abf.SweepCount; i++)
             {
                 float[] adc = abf.GetSweep(i);
                 float[] dac = abf.GetStimulusWaveform(i);
