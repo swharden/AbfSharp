@@ -12,6 +12,11 @@ namespace AbfSharp
         public readonly short nVoiceTagNumber;
 
         /// <summary>
+        /// Describes what type of tag this is
+        /// </summary>
+        public TagType Type => (TagType)nTagType;
+
+        /// <summary>
         /// Tag time (seconds)
         /// </summary>
         public readonly float Time;
@@ -25,6 +30,27 @@ namespace AbfSharp
         /// Tag comment (or empty string if no comment)
         /// </summary>
         public string Comment => sComment.Trim();
+
+        /// <summary>
+        /// Description
+        /// </summary>
+        public string Summary
+        {
+            get
+            {
+                string description = Type == TagType.Comment ? $"'{Comment}'" : Type.ToString();
+                return $"{description} @ {TimeMin:0.00} min";
+            }
+        }
+
+        public Tag(ABFFIO.TagStruct tagStruct, float tagTimeMult)
+        {
+            lTagTime = tagStruct.lTagTime;
+            sComment = tagStruct.sComment;
+            nTagType = tagStruct.nTagType;
+            nVoiceTagNumber = tagStruct.nVoiceTagNumber;
+            Time = lTagTime * tagTimeMult;
+        }
 
         public Tag(long lTagTime, string sComment, short nTagType, short nVoiceTagNumber, float tagTimeMult)
         {

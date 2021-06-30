@@ -12,6 +12,7 @@ namespace AbfSharp.ABFFIO
     public class ABF
     {
         public readonly AbfFileHeader Header;
+        public readonly Tags Tags;
 
         public readonly string FilePath;
 
@@ -20,6 +21,7 @@ namespace AbfSharp.ABFFIO
             FilePath = System.IO.Path.GetFullPath(filePath);
             using Wrapper abffio = new(filePath);
             Header = abffio.header;
+            Tags = new Tags(abffio.ReadTags(), abffio.header);
         }
 
         public override string ToString() =>
