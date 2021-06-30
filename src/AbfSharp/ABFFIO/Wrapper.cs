@@ -15,13 +15,13 @@ namespace AbfSharp.ABFFIO
 
         public readonly float[] buffer;
 
-        public Structs.ABFFileHeader header;
+        public AbfFileHeader header;
 
         [DllImport("ABFFIO.dll", CharSet = CharSet.Ansi)]
         private static extern bool ABF_IsABFFile(String szFileName, ref Int32 pnDataFormat, ref Int32 pnError);
 
         [DllImport("ABFFIO.dll", CharSet = CharSet.Ansi)]
-        private static extern bool ABF_ReadOpen(String szFileName, ref Int32 phFile, UInt32 fFlags, ref Structs.ABFFileHeader pFH, ref UInt32 puMaxSamples, ref UInt32 pdwMaxEpi, ref Int32 pnError);
+        private static extern bool ABF_ReadOpen(String szFileName, ref Int32 phFile, UInt32 fFlags, ref AbfFileHeader pFH, ref UInt32 puMaxSamples, ref UInt32 pdwMaxEpi, ref Int32 pnError);
 
         public Wrapper(string abfFilePath, bool hideDebugMessages = true)
         {
@@ -61,13 +61,13 @@ namespace AbfSharp.ABFFIO
         }
 
         [DllImport("ABFFIO.dll", CharSet = CharSet.Ansi)]
-        private static extern bool ABF_ReadTags(Int32 nFile, ref Structs.ABFFileHeader pFH, UInt32 dwFirstTag, ref Structs.ABFTag pTagArray, UInt32 uNumTags, ref Int32 pnError);
+        private static extern bool ABF_ReadTags(Int32 nFile, ref AbfFileHeader pFH, UInt32 dwFirstTag, ref TagStruct pTagArray, UInt32 uNumTags, ref Int32 pnError);
 
-        public Structs.ABFTag[] ReadTags()
+        public TagStruct[] ReadTags()
         {
             Int32 fileHandle = 0;
             Int32 errorCode = 0;
-            Structs.ABFTag[] abfTags = new Structs.ABFTag[(UInt32)header.lNumTagEntries];
+            TagStruct[] abfTags = new TagStruct[(UInt32)header.lNumTagEntries];
             for (uint i = 0; i < abfTags.Length; i++)
             {
                 ABF_ReadTags(fileHandle, ref header, i, ref abfTags[i], 1, ref errorCode);
@@ -77,7 +77,7 @@ namespace AbfSharp.ABFFIO
         }
 
         [DllImport("ABFFIO.dll", CharSet = CharSet.Ansi)]
-        private static extern bool ABF_ReadChannel(Int32 nFile, ref Structs.ABFFileHeader pFH, Int32 nChannel, Int32 dwEpisode, ref float pfBuffer, ref UInt32 puNumSamples, ref Int32 pnError);
+        private static extern bool ABF_ReadChannel(Int32 nFile, ref AbfFileHeader pFH, Int32 nChannel, Int32 dwEpisode, ref float pfBuffer, ref UInt32 puNumSamples, ref Int32 pnError);
 
         public void ReadChannel(int sweepNumber, int channelNumber)
         {
@@ -90,14 +90,14 @@ namespace AbfSharp.ABFFIO
         }
 
         [DllImport("ABFFIO.dll", CharSet = CharSet.Ansi)]
-        private static extern int ABFH_GetEpochDuration(ref Structs.ABFFileHeader pFH, Int32 nChannel, Int32 dwEpisode, Int32 nEpoch);
+        private static extern int ABFH_GetEpochDuration(ref AbfFileHeader pFH, Int32 nChannel, Int32 dwEpisode, Int32 nEpoch);
         public int GetEpochDuration(int channelNumber, int sweepNumber, int epochNumber)
         {
             return ABFH_GetEpochDuration(ref header, channelNumber, sweepNumber, epochNumber);
         }
 
         [DllImport("ABFFIO.dll", CharSet = CharSet.Ansi)]
-        private static extern float ABFH_GetEpochLevel(ref Structs.ABFFileHeader pFH, Int32 nChannel, Int32 dwEpisode, Int32 nEpoch);
+        private static extern float ABFH_GetEpochLevel(ref AbfFileHeader pFH, Int32 nChannel, Int32 dwEpisode, Int32 nEpoch);
         public float GetEpochLevel(int channelNumber, int sweepNumber, int epochNumber)
         {
             return ABFH_GetEpochLevel(ref header, channelNumber, sweepNumber, epochNumber);
@@ -108,7 +108,7 @@ namespace AbfSharp.ABFFIO
         /// Values returned are ZERO relative (not relative to start of sweep)
         /// </summary>
         [DllImport("ABFFIO.dll", CharSet = CharSet.Ansi)]
-        private static extern bool ABFH_GetEpochLimits(ref Structs.ABFFileHeader pFH,
+        private static extern bool ABFH_GetEpochLimits(ref AbfFileHeader pFH,
             Int32 nADCChannel, Int32 uDACChannel, Int32 dwEpisode, Int32 nEpoch,
             ref UInt32 puEpochStart, ref UInt32 puEpochEnd, ref Int32 pnError);
         public (bool valid, int start, int end) GetEpochLimits(int channelNumber, int sweepNumber, int epochNumber)

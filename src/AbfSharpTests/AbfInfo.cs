@@ -13,7 +13,7 @@ namespace AbfSharpTests
     /// </summary>
     class AbfInfo
     {
-        string GetHeaderMarkdown(AbfSharp.ABFFIO.Structs.ABFFileHeader HeaderStruct)
+        string GetHeaderMarkdown(AbfSharp.ABFFIO.AbfFileHeader HeaderStruct)
         {
             StringBuilder sb = new();
             sb.AppendLine("Name | Type | Value");

@@ -11,7 +11,7 @@ namespace AbfSharp.ABFFIO
     /// </summary>
     public class ABF
     {
-        public readonly Structs.ABFFileHeader Header;
+        public readonly AbfFileHeader Header;
 
         public readonly string FilePath;
 

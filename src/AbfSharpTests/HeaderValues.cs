@@ -7,7 +7,7 @@ namespace AbfSharpTests
 {
     class HeaderValues
     {
-        private readonly Dictionary<AbfSharp.ABFFIO.Structs.ABFFileHeader, AbfSharp.Header> AbfHeaders = new();
+        private readonly Dictionary<AbfSharp.ABFFIO.AbfFileHeader, AbfSharp.Header> AbfHeaders = new();
 
         [OneTimeSetUp()]
         public void LoadABFs()
@@ -35,7 +35,7 @@ namespace AbfSharpTests
         {
             foreach (var dict in AbfHeaders)
             {
-                AbfSharp.ABFFIO.Structs.ABFFileHeader officialHeader = dict.Key;
+                AbfSharp.ABFFIO.AbfFileHeader officialHeader = dict.Key;
                 AbfSharp.Header testHeader = dict.Value;
                 Console.WriteLine($"{testHeader.AbfID} {testHeader.fFileVersionNumber}");
 
@@ -93,7 +93,7 @@ namespace AbfSharpTests
         {
             foreach (var dict in AbfHeaders)
             {
-                AbfSharp.ABFFIO.Structs.ABFFileHeader officialHeader = dict.Key;
+                AbfSharp.ABFFIO.AbfFileHeader officialHeader = dict.Key;
                 AbfSharp.Header testHeader = dict.Value;
                 Console.WriteLine($"{testHeader.AbfID} {testHeader.fFileVersionNumber}");
 
@@ -125,7 +125,7 @@ namespace AbfSharpTests
         {
             foreach (var dict in AbfHeaders)
             {
-                AbfSharp.ABFFIO.Structs.ABFFileHeader officialHeader = dict.Key;
+                AbfSharp.ABFFIO.AbfFileHeader officialHeader = dict.Key;
                 AbfSharp.Header testHeader = dict.Value;
                 Console.WriteLine($"{testHeader.AbfID} {testHeader.fFileVersionNumber}");
 
@@ -170,7 +170,7 @@ namespace AbfSharpTests
             /*
             foreach (var dict in AbfHeaders)
             {
-                AbfSharp.ABFFIO.Structs.ABFFileHeader officialHeader = dict.Key;
+                AbfSharp.ABFFIO.ABFFileHeader officialHeader = dict.Key;
                 AbfSharp.HeaderBase testHeader = dict.Value;
                 Console.WriteLine($"{testHeader.AbfID} {testHeader.fFileVersionNumber}");
 
@@ -192,7 +192,7 @@ namespace AbfSharpTests
         {
             foreach (var dict in AbfHeaders)
             {
-                AbfSharp.ABFFIO.Structs.ABFFileHeader officialHeader = dict.Key;
+                AbfSharp.ABFFIO.AbfFileHeader officialHeader = dict.Key;
                 AbfSharp.Header testHeader = dict.Value;
                 Console.WriteLine($"{testHeader.AbfID} {testHeader.fFileVersionNumber}");
 
@@ -213,7 +213,7 @@ namespace AbfSharpTests
         {
             foreach (var dict in AbfHeaders)
             {
-                AbfSharp.ABFFIO.Structs.ABFFileHeader officialHeader = dict.Key;
+                AbfSharp.ABFFIO.AbfFileHeader officialHeader = dict.Key;
                 AbfSharp.Header testHeader = dict.Value;
                 Console.WriteLine($"{testHeader.AbfID} {testHeader.fFileVersionNumber}");
 
@@ -260,7 +260,7 @@ namespace AbfSharpTests
         {
             foreach (var dict in AbfHeaders)
             {
-                AbfSharp.ABFFIO.Structs.ABFFileHeader officialHeader = dict.Key;
+                AbfSharp.ABFFIO.AbfFileHeader officialHeader = dict.Key;
                 AbfSharp.Header testHeader = dict.Value;
                 Console.WriteLine($"{testHeader.AbfID} {testHeader.fFileVersionNumber}");
 
@@ -295,7 +295,7 @@ namespace AbfSharpTests
         {
             foreach (var dict in AbfHeaders)
             {
-                AbfSharp.ABFFIO.Structs.ABFFileHeader officialHeader = dict.Key;
+                AbfSharp.ABFFIO.AbfFileHeader officialHeader = dict.Key;
                 AbfSharp.Header testHeader = dict.Value;
                 Console.WriteLine($"{testHeader.AbfID} {testHeader.fFileVersionNumber}");
 
@@ -375,7 +375,7 @@ namespace AbfSharpTests
         {
             foreach (var dict in AbfHeaders)
             {
-                AbfSharp.ABFFIO.Structs.ABFFileHeader officialHeader = dict.Key;
+                AbfSharp.ABFFIO.AbfFileHeader officialHeader = dict.Key;
                 AbfSharp.Header testHeader = dict.Value;
                 Console.WriteLine($"{testHeader.AbfID} {testHeader.fFileVersionNumber}");
 
@@ -396,7 +396,7 @@ namespace AbfSharpTests
         {
             foreach (var dict in AbfHeaders)
             {
-                AbfSharp.ABFFIO.Structs.ABFFileHeader officialHeader = dict.Key;
+                AbfSharp.ABFFIO.AbfFileHeader officialHeader = dict.Key;
                 AbfSharp.Header testHeader = dict.Value;
                 Console.WriteLine($"{testHeader.AbfID} {testHeader.fFileVersionNumber}");
 

@@ -25,5 +25,18 @@ namespace AbfSharpTests
             // tested on ABFFIO.dll in the ABF FileSupportPack distributed with pCLAMP11.2
             Assert.AreEqual("08ddd0757f32ed733f958526693ccd66", GetMD5Hash("ABFFIO.dll"));
         }
+
+        [Test]
+        public void Test_AllABfs_Load()
+        {
+            foreach (string abfPath in SampleData.GetAllAbfPaths())
+            {
+                var abf = new AbfSharp.ABFFIO.ABF(abfPath);
+                Console.WriteLine(abf);
+
+                //if (abf.Header.lNumTagEntries > 0)
+                    //Console.WriteLine("TAGS: " + string.Join(",", abf.Tags.Select(x => x.sComment.Trim())));
+            }
+        }
     }
 }
