@@ -17,5 +17,4 @@ pause
 :: and have your API key stored on your systeminfo
 :: nuget SetApiKey 123456789
 nuget push ..\..\src\AbfSharp\bin\Release\*.nupkg -Source https://api.nuget.org/v3/index.json
-nuget push ..\..\src\AbfSharp\bin\Release\*.snupkg -Source https://api.nuget.org/v3/index.json
 pause
