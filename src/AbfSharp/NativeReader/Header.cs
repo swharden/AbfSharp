@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace AbfSharp
+namespace AbfSharp.NativeReader
 {
     /// <summary>
     /// This class contains information about the ABF as well as public fields for all original ABFFIO header structure variables.

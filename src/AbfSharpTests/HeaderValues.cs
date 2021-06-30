@@ -7,7 +7,7 @@ namespace AbfSharpTests
 {
     class HeaderValues
     {
-        private readonly Dictionary<AbfSharp.ABFFIO.AbfFileHeader, AbfSharp.Header> AbfHeaders = new();
+        private readonly Dictionary<AbfSharp.ABFFIO.AbfFileHeader, AbfSharp.NativeReader.Header> AbfHeaders = new();
 
         [OneTimeSetUp()]
         public void LoadABFs()
@@ -16,14 +16,14 @@ namespace AbfSharpTests
             {
                 var officialHeader = new AbfSharp.ABFFIO.ABF(abfPath).Header;
                 AbfHeaders[officialHeader] = (officialHeader.fFileVersionNumber < 2)
-                    ? new AbfSharp.HeaderAbf1(abfPath)
-                    : AbfHeaders[officialHeader] = new AbfSharp.HeaderAbf2(abfPath);
+                    ? new AbfSharp.NativeReader.HeaderAbf1(abfPath)
+                    : AbfHeaders[officialHeader] = new AbfSharp.NativeReader.HeaderAbf2(abfPath);
             }
         }
 
-        private AbfSharp.Header GetLoadedHeader(string filename)
+        private AbfSharp.NativeReader.Header GetLoadedHeader(string filename)
         {
-            foreach (AbfSharp.Header header in AbfHeaders.Values)
+            foreach (AbfSharp.NativeReader.Header header in AbfHeaders.Values)
                 if (header.Filename == filename)
                     return header;
 
@@ -36,7 +36,7 @@ namespace AbfSharpTests
             foreach (var dict in AbfHeaders)
             {
                 AbfSharp.ABFFIO.AbfFileHeader officialHeader = dict.Key;
-                AbfSharp.Header testHeader = dict.Value;
+                AbfSharp.NativeReader.Header testHeader = dict.Value;
                 Console.WriteLine($"{testHeader.AbfID} {testHeader.fFileVersionNumber}");
 
                 Assert.AreEqual(officialHeader.fFileVersionNumber, testHeader.fFileVersionNumber);
@@ -64,7 +64,7 @@ namespace AbfSharpTests
         [TestCase("18808025-memtest.abf", "2018-08-08 13:49:04.826000")]
         public void Test_Creation_DateTime(string filename, string expectedDateTimeString)
         {
-            AbfSharp.Header header = GetLoadedHeader(filename);
+            AbfSharp.NativeReader.Header header = GetLoadedHeader(filename);
             DateTime expectedDateTime = DateTime.Parse(expectedDateTimeString);
             Console.WriteLine($"{header.StartDateTime} Date={header.uFileStartDate} TimeMS={header.uFileStartTimeMS}");
             Assert.AreEqual(expectedDateTime, header.StartDateTime);
@@ -73,14 +73,14 @@ namespace AbfSharpTests
         [TestCase("16921011-vc-memtest-tags.abf", 20_000)]
         public void Test_SampleRate_MatchesKnownValue(string filename, int sampleRate)
         {
-            AbfSharp.Header header = GetLoadedHeader(filename);
+            AbfSharp.NativeReader.Header header = GetLoadedHeader(filename);
             Assert.AreEqual(sampleRate, header.SampleRate);
         }
 
         [TestCase("16921011-vc-memtest-tags.abf", new string[] { "+TGOT", "-TGOT" }, new double[] { 399.6672, 520.8576 })]
         public void Test_AbfsWithTags(string filename, string[] comments, double[] times)
         {
-            AbfSharp.Header header = GetLoadedHeader(filename);
+            AbfSharp.NativeReader.Header header = GetLoadedHeader(filename);
             for (int i = 0; i < header.Tags.Length; i++)
             {
                 Assert.AreEqual(comments[i], header.Tags[i].Comment);
@@ -94,7 +94,7 @@ namespace AbfSharpTests
             foreach (var dict in AbfHeaders)
             {
                 AbfSharp.ABFFIO.AbfFileHeader officialHeader = dict.Key;
-                AbfSharp.Header testHeader = dict.Value;
+                AbfSharp.NativeReader.Header testHeader = dict.Value;
                 Console.WriteLine($"{testHeader.AbfID} {testHeader.fFileVersionNumber}");
 
                 Assert.AreEqual(officialHeader.lDataSectionPtr, testHeader.lDataSectionPtr);
@@ -126,7 +126,7 @@ namespace AbfSharpTests
             foreach (var dict in AbfHeaders)
             {
                 AbfSharp.ABFFIO.AbfFileHeader officialHeader = dict.Key;
-                AbfSharp.Header testHeader = dict.Value;
+                AbfSharp.NativeReader.Header testHeader = dict.Value;
                 Console.WriteLine($"{testHeader.AbfID} {testHeader.fFileVersionNumber}");
 
                 Assert.AreEqual(officialHeader.nADCNumChannels, testHeader.nADCNumChannels);
@@ -171,7 +171,7 @@ namespace AbfSharpTests
             foreach (var dict in AbfHeaders)
             {
                 AbfSharp.ABFFIO.ABFFileHeader officialHeader = dict.Key;
-                AbfSharp.HeaderBase testHeader = dict.Value;
+                AbfSharp.NativeReader.HeaderBase testHeader = dict.Value;
                 Console.WriteLine($"{testHeader.AbfID} {testHeader.fFileVersionNumber}");
 
                 //region GROUP 4 - Display Parameters
@@ -193,7 +193,7 @@ namespace AbfSharpTests
             foreach (var dict in AbfHeaders)
             {
                 AbfSharp.ABFFIO.AbfFileHeader officialHeader = dict.Key;
-                AbfSharp.Header testHeader = dict.Value;
+                AbfSharp.NativeReader.Header testHeader = dict.Value;
                 Console.WriteLine($"{testHeader.AbfID} {testHeader.fFileVersionNumber}");
 
                 Assert.AreEqual(officialHeader.fADCRange, testHeader.fADCRange);
@@ -214,7 +214,7 @@ namespace AbfSharpTests
             foreach (var dict in AbfHeaders)
             {
                 AbfSharp.ABFFIO.AbfFileHeader officialHeader = dict.Key;
-                AbfSharp.Header testHeader = dict.Value;
+                AbfSharp.NativeReader.Header testHeader = dict.Value;
                 Console.WriteLine($"{testHeader.AbfID} {testHeader.fFileVersionNumber}");
 
                 Assert.AreEqual(officialHeader.nExperimentType, testHeader.nExperimentType);
@@ -261,7 +261,7 @@ namespace AbfSharpTests
             foreach (var dict in AbfHeaders)
             {
                 AbfSharp.ABFFIO.AbfFileHeader officialHeader = dict.Key;
-                AbfSharp.Header testHeader = dict.Value;
+                AbfSharp.NativeReader.Header testHeader = dict.Value;
                 Console.WriteLine($"{testHeader.AbfID} {testHeader.fFileVersionNumber}");
 
                 //region GROUP 7 - Multi-channel information
@@ -296,7 +296,7 @@ namespace AbfSharpTests
             foreach (var dict in AbfHeaders)
             {
                 AbfSharp.ABFFIO.AbfFileHeader officialHeader = dict.Key;
-                AbfSharp.Header testHeader = dict.Value;
+                AbfSharp.NativeReader.Header testHeader = dict.Value;
                 Console.WriteLine($"{testHeader.AbfID} {testHeader.fFileVersionNumber}");
 
                 //region GROUP 9 - Epoch Waveform and Pulses
@@ -376,7 +376,7 @@ namespace AbfSharpTests
             foreach (var dict in AbfHeaders)
             {
                 AbfSharp.ABFFIO.AbfFileHeader officialHeader = dict.Key;
-                AbfSharp.Header testHeader = dict.Value;
+                AbfSharp.NativeReader.Header testHeader = dict.Value;
                 Console.WriteLine($"{testHeader.AbfID} {testHeader.fFileVersionNumber}");
 
                 if (testHeader.fFileVersionNumber < 1.6)
@@ -397,7 +397,7 @@ namespace AbfSharpTests
             foreach (var dict in AbfHeaders)
             {
                 AbfSharp.ABFFIO.AbfFileHeader officialHeader = dict.Key;
-                AbfSharp.Header testHeader = dict.Value;
+                AbfSharp.NativeReader.Header testHeader = dict.Value;
                 Console.WriteLine($"{testHeader.AbfID} {testHeader.fFileVersionNumber}");
 
                 //region GROUP 12 - User List

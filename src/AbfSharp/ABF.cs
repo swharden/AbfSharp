@@ -27,7 +27,7 @@ namespace AbfSharp
         /// ABF header information with only the most important fields.
         /// Field names are commonly identical to those in the ABFFIO header.
         /// </summary>
-        public Header Header;
+        public NativeReader.Header Header;
 
         public ABF(string abfFilePath, bool preloadData = false)
         {
@@ -40,9 +40,9 @@ namespace AbfSharp
 
             string signature = Encoding.ASCII.GetString(reader.ReadBytes(4));
             if (signature == "ABF ")
-                Header = new HeaderAbf1(reader, Path);
+                Header = new NativeReader.HeaderAbf1(reader, Path);
             else if (signature == "ABF2")
-                Header = new HeaderAbf2(reader, Path);
+                Header = new NativeReader.HeaderAbf2(reader, Path);
             else
                 throw new FormatException($"unknown file signature '{signature}': {Path}");
 

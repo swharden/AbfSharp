@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace AbfSharp
+namespace AbfSharp.NativeReader
 {
     public class HeaderAbf1 : Header
     {

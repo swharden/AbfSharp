@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using AbfSharp.Sections;
 
-namespace AbfSharp
+namespace AbfSharp.NativeReader
 {
     public class HeaderAbf2 : Header
     {
