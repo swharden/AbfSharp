@@ -5,7 +5,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>latest</LangVersion>
-    <Version>0.2.0</Version>
+    <Version>0.3.0</Version>
     <Authors>Scott Harden</Authors>
     <Company>Harden Technologies, LLC</Company>
     <Description>AbfSharp is a .NET Standard library for reading electrophysiology data from Axon Binary Format (ABF) files</Description>
