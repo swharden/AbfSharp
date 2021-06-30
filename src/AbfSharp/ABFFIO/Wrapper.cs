@@ -9,21 +9,13 @@ namespace AbfSharp.ABFFIO
     /// </summary>
     public class Wrapper : IDisposable
     {
-        private UInt32 SweepPointCount;
-        private readonly UInt32 SweepCount;
-        private readonly string FilePath;
+        private readonly UInt32 MaxSweepLength;
+        private readonly UInt32 EpisodeCount;
+        public readonly string FilePath;
+        private readonly float[] SweepBuffer;
+        private AbfFileHeader Header;
 
-        public readonly float[] buffer;
-
-        public AbfFileHeader header;
-
-        [DllImport("ABFFIO.dll", CharSet = CharSet.Ansi)]
-        private static extern bool ABF_IsABFFile(String szFileName, ref Int32 pnDataFormat, ref Int32 pnError);
-
-        [DllImport("ABFFIO.dll", CharSet = CharSet.Ansi)]
-        private static extern bool ABF_ReadOpen(String szFileName, ref Int32 phFile, UInt32 fFlags, ref AbfFileHeader pFH, ref UInt32 puMaxSamples, ref UInt32 pdwMaxEpi, ref Int32 pnError);
-
-        public Wrapper(string abfFilePath, bool hideDebugMessages = true)
+        public Wrapper(string abfFilePath)
         {
             if (!System.IO.File.Exists(abfFilePath))
                 throw new ArgumentException($"file does not exist: {abfFilePath}");
@@ -38,19 +30,15 @@ namespace AbfSharp.ABFFIO
                 throw new InvalidOperationException($"ABF_IsABFFile() returned error {errorCode} ({(Error)errorCode})");
 
             // open the file and read its header
-            if (hideDebugMessages) Debug.WriteLine($"OPENING: {abfFilePath}");
             Int32 fileHandle = 0;
             uint loadFlags = 0;
-            ABF_ReadOpen(abfFilePath, ref fileHandle, loadFlags, ref header, ref SweepPointCount, ref SweepCount, ref errorCode);
+            ABF_ReadOpen(abfFilePath, ref fileHandle, loadFlags, ref Header, ref MaxSweepLength, ref EpisodeCount, ref errorCode);
             if (errorCode != 0)
                 throw new InvalidOperationException($"ABF_ReadOpen() returned error {errorCode} ({(Error)errorCode})");
 
             // create the sweep buffer in memory
-            buffer = new float[SweepPointCount];
+            SweepBuffer = new float[MaxSweepLength];
         }
-
-        [DllImport("ABFFIO.dll", CharSet = CharSet.Ansi)]
-        private static extern bool ABF_Close(Int32 nFile, ref Int32 pnError);
 
         public void Dispose()
         {
@@ -59,20 +47,33 @@ namespace AbfSharp.ABFFIO
             ABF_Close(fileHandle, ref errorCode);
             if (errorCode != 0)
                 throw new InvalidOperationException($"ABF_Close() returned error {errorCode} ({(Error)errorCode})");
-            Debug.WriteLine($"{System.IO.Path.GetFileName(FilePath)} closed");
         }
+
+        public AbfFileHeader GetHeader() => Header;
+
+        [DllImport("ABFFIO.dll", CharSet = CharSet.Ansi)]
+        private static extern bool ABF_IsABFFile(String szFileName, ref Int32 pnDataFormat, ref Int32 pnError);
+
+        [DllImport("ABFFIO.dll", CharSet = CharSet.Ansi)]
+        private static extern bool ABF_ReadOpen(String szFileName, ref Int32 phFile, UInt32 fFlags, ref AbfFileHeader pFH, ref UInt32 puMaxSamples, ref UInt32 pdwMaxEpi, ref Int32 pnError);
+
+        [DllImport("ABFFIO.dll", CharSet = CharSet.Ansi)]
+        private static extern bool ABF_Close(Int32 nFile, ref Int32 pnError);
 
         [DllImport("ABFFIO.dll", CharSet = CharSet.Ansi)]
         private static extern bool ABF_ReadTags(Int32 nFile, ref AbfFileHeader pFH, UInt32 dwFirstTag, ref TagStruct pTagArray, UInt32 uNumTags, ref Int32 pnError);
 
+        /// <summary>
+        /// Return tags in the ABF (or an empty array)
+        /// </summary>
         public TagStruct[] ReadTags()
         {
             Int32 fileHandle = 0;
             Int32 errorCode = 0;
-            TagStruct[] abfTags = new TagStruct[(UInt32)header.lNumTagEntries];
+            TagStruct[] abfTags = new TagStruct[(UInt32)Header.lNumTagEntries];
             for (uint i = 0; i < abfTags.Length; i++)
             {
-                ABF_ReadTags(fileHandle, ref header, i, ref abfTags[i], 1, ref errorCode);
+                ABF_ReadTags(fileHandle, ref Header, i, ref abfTags[i], 1, ref errorCode);
                 if (errorCode != 0)
                     throw new InvalidOperationException($"ABF_ReadTags() returned error {errorCode} ({(Error)errorCode})");
             }
@@ -82,33 +83,42 @@ namespace AbfSharp.ABFFIO
         [DllImport("ABFFIO.dll", CharSet = CharSet.Ansi)]
         private static extern bool ABF_ReadChannel(Int32 nFile, ref AbfFileHeader pFH, Int32 nChannel, Int32 dwEpisode, ref float pfBuffer, ref UInt32 puNumSamples, ref Int32 pnError);
 
-        public void ReadChannel(int sweepNumber, int channelNumber)
+        /// <summary>
+        /// Return a new array filled with values from the given sweep and channel
+        /// </summary>
+        /// <param name="sweep">sweep number (starts at 1)</param>
+        /// <param name="channel">channel index (starts at 0)</param>
+        /// <returns></returns>
+        public float[] ReadChannel(int sweep, int channel)
         {
-            Debug.WriteLine($"{System.IO.Path.GetFileName(FilePath)} reading Ch{channelNumber} Sw{sweepNumber}");
-            Int32 errorCode = 0;
             Int32 fileHandle = 0;
-            int physicalChannel = header.nADCSamplingSeq[channelNumber];
-            ABF_ReadChannel(fileHandle, ref header, physicalChannel, sweepNumber, ref buffer[0], ref SweepPointCount, ref errorCode);
+            Int32 errorCode = 0;
+            UInt32 pointsRead = 0;
+            Int32 physicalChannel = Header.nADCSamplingSeq[channel];
+            ABF_ReadChannel(fileHandle, ref Header, physicalChannel, sweep, ref SweepBuffer[0], ref pointsRead, ref errorCode);
             if (errorCode != 0)
                 throw new InvalidOperationException($"ABF_ReadChannel() returned error {errorCode} ({(Error)errorCode})");
+            float[] readValues = new float[pointsRead];
+            Array.Copy(SweepBuffer, 0, readValues, 0, pointsRead);
+            return readValues;
         }
 
         [DllImport("ABFFIO.dll", CharSet = CharSet.Ansi)]
         private static extern int ABFH_GetEpochDuration(ref AbfFileHeader pFH, Int32 nChannel, Int32 dwEpisode, Int32 nEpoch);
         public int GetEpochDuration(int channelNumber, int sweepNumber, int epochNumber)
         {
-            return ABFH_GetEpochDuration(ref header, channelNumber, sweepNumber, epochNumber);
+            return ABFH_GetEpochDuration(ref Header, channelNumber, sweepNumber, epochNumber);
         }
 
         [DllImport("ABFFIO.dll", CharSet = CharSet.Ansi)]
         private static extern float ABFH_GetEpochLevel(ref AbfFileHeader pFH, Int32 nChannel, Int32 dwEpisode, Int32 nEpoch);
         public float GetEpochLevel(int channelNumber, int sweepNumber, int epochNumber)
         {
-            return ABFH_GetEpochLevel(ref header, channelNumber, sweepNumber, epochNumber);
+            return ABFH_GetEpochLevel(ref Header, channelNumber, sweepNumber, epochNumber);
         }
 
         /// <summary>
-        /// Return the bounds of a given epoch in a given episode. 
+        /// Return the bounds (sweep point index) of an epoch in a specific episode. 
         /// Values returned are ZERO relative (not relative to start of sweep)
         /// </summary>
         [DllImport("ABFFIO.dll", CharSet = CharSet.Ansi)]
@@ -120,7 +130,7 @@ namespace AbfSharp.ABFFIO
             UInt32 puEpochStart = 0;
             UInt32 puEpochEnd = 0;
             Int32 pnError = 0;
-            bool valid = ABFH_GetEpochLimits(ref header,
+            bool valid = ABFH_GetEpochLimits(ref Header,
                 channelNumber, channelNumber, sweepNumber, epochNumber,
                 ref puEpochStart, ref puEpochEnd, ref pnError);
 

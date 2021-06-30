@@ -13,15 +13,14 @@ namespace AbfSharp.ABFFIO
     {
         public readonly AbfFileHeader Header;
         public readonly Tags Tags;
-
         public readonly string FilePath;
 
         public ABF(string filePath)
         {
             FilePath = System.IO.Path.GetFullPath(filePath);
             using Wrapper abffio = new(filePath);
-            Header = abffio.header;
-            Tags = new Tags(abffio.ReadTags(), abffio.header);
+            Header = abffio.GetHeader();
+            Tags = new Tags(abffio.ReadTags(), Header);
         }
 
         public override string ToString() =>
@@ -30,12 +29,11 @@ namespace AbfSharp.ABFFIO
             $"{(OperationMode)Header.nOperationMode} mode " +
             $"with {Header.nADCNumChannels} channels and {Header.lActualEpisodes} sweeps";
 
-        public double[] GetSweep(int sweepIndex, int channelIndex = 0)
+        public float[] GetSweep(int sweepIndex, int channelIndex = 0)
         {
+            // TODO: THIS IS VERY SLOW! PRE-LOAD DATA!
             using Wrapper abffio = new(FilePath);
-            abffio.ReadChannel(sweepIndex + 1, channelIndex);
-            double[] values = new double[abffio.buffer.Length];
-            Array.Copy(abffio.buffer, 0, values, 0, abffio.buffer.Length);
+            float[] values = abffio.ReadChannel(sweepIndex + 1, channelIndex);
             return values;
         }
     }

@@ -66,7 +66,7 @@ namespace AbfSharpTests
                 if (raw.Header.OperationMode == AbfSharp.OperationMode.GapFree)
                     sweepIndex = 0;
 
-                double[] officialValues = official.GetSweep(sweepIndex, channelIndex);
+                float[] officialValues = official.GetSweep(sweepIndex, channelIndex);
                 Assert.IsNotNull(officialValues);
                 Assert.IsNotEmpty(officialValues);
 
