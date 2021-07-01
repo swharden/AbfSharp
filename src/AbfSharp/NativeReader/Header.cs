@@ -603,7 +603,7 @@ namespace AbfSharp.NativeReader
         /// <summary>
         /// I think this is an obsolete field from ABF1 files
         /// </summary>
-        [Obsolete("intentionally not implemented")] public short nAutoAnalyseEnable;
+        public short nAutoAnalyseEnable;
 
         /// <summary>
         /// A GUID which isn't actually GU :-P
