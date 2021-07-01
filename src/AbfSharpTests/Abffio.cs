@@ -39,7 +39,7 @@ namespace AbfSharpTests
         {
             foreach (string abfPath in SampleData.GetAllAbfPaths())
             {
-                var abf = new AbfSharp.ABFFIO.ABF(abfPath);
+                var abf = new AbfSharp.ABFFIO.ABF(abfPath, preloadSweepData: false);
                 Console.WriteLine($"\n{abf}");
                 if (abf.Tags.Count > 0)
                     Console.WriteLine($"TAGS: {abf.Tags}");
