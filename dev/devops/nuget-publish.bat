@@ -7,6 +7,10 @@ del ..\..\src\AbfSharp\bin\Release\*.snupkg
 
 dotnet build --configuration Release ..\..\src\AbfSharp
 
+pause
+
+dotnet test  --configuration Release ..\..\src
+
 echo press ENTER 3 times to publish this package on NuGet...
 pause
 pause
