@@ -1,0 +1,29 @@
+name: Deploy NuGet Packages
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: 🚀 Publish Packages
+    runs-on: windows-latest
+    steps:
+      - name: 🛒 Checkout
+        uses: actions/checkout@v3
+
+      - name: ✨ Setup .NET 6
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: "6.0.x"
+
+      - name: 🛠️ Setup NuGet
+        uses: nuget/setup-nuget@v1
+        with:
+          nuget-api-key: ${{ secrets.NUGET_API_KEY }}
+
+      - name: 🚀 Publish AbfSharp
+        run: |
+          dotnet restore src/AbfSharp/ABFsharp.csproj
+          dotnet build src/AbfSharp/ABFsharp.csproj --configuration Release
+          dotnet pack src/AbfSharp/ABFsharp.csproj --configuration Release
+          nuget push "src\AbfSharp\bin\Release\*.nupkg" -SkipDuplicate -Source https://api.nuget.org/v3/index.json
