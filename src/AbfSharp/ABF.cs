@@ -99,6 +99,38 @@ namespace AbfSharp
         }
 
         /// <summary>
+        /// Return all ADC values for the given channel
+        /// </summary>
+        public float[] GetAllData(int channelIndex = 0)
+        {
+            const int fixedLengthEventDrivenMode = 2;
+            const int gapFreeMode = 3;
+            const int highSpeedOscilloscopeMode = 4;
+            const int episodicStimulationMode = 5;
+
+            if (Header.nOperationMode == gapFreeMode || Header.nOperationMode == highSpeedOscilloscopeMode)
+            {
+                return GetSweep(0, channelIndex);
+            }
+            else if (Header.nOperationMode == fixedLengthEventDrivenMode || Header.nOperationMode == episodicStimulationMode)
+            {
+                int pointCount = Header.SweepCount * Header.lNumSamplesPerEpisode;
+                float[] values = new float[pointCount];
+                for (int i = 0; i < Header.SweepCount; i++)
+                {
+                    float[] episodeValues = GetSweep(i, channelIndex);
+                    int offset = i * Header.lNumSamplesPerEpisode;
+                    Array.Copy(episodeValues, 0, values, offset, episodeValues.Length);
+                }
+                return values;
+            }
+            else
+            {
+                throw new NotSupportedException($"nOperationMode: {Header.nOperationMode}");
+            }
+        }
+
+        /// <summary>
         /// Return the location in memory for a given sweep
         /// </summary>
         private (int byteOffset, int pointCount) GetSweepLocation(int sweepIndex)

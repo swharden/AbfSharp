@@ -18,6 +18,7 @@ namespace AbfSharpTests
             for (int i = 0; i < 5; i++)
                 Console.Write($"{sweep[i]:0.000}, ");
         }
+
         [Test]
         public void Test_Quickstart_Native()
         {
@@ -26,6 +27,16 @@ namespace AbfSharpTests
             float[] sweep = abf.GetSweep(0);
             for (int i = 0; i < 5; i++)
                 Console.Write($"{sweep[i]:0.000}, ");
+        }
+
+        [Test]
+        public void Test_Quickstart_Full()
+        {
+            string abfPath = SampleData.GetAbfPath("File_axon_5.abf");
+            AbfSharp.ABF abf = new(abfPath);
+            float[] values = abf.GetAllData(0);
+            for (int i = 0; i < 5; i++)
+                Console.Write($"{values[i]:0.000}, ");
         }
     }
 }
