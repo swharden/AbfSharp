@@ -48,7 +48,24 @@ namespace AbfSharpTests
         {
             foreach (AbfSharp.ABFFIO.ABF official in OfficialABFs)
             {
-                var raw = new AbfSharp.ABF(official.FilePath, preloadData: true);
+                AbfSharp.ABF raw = null;
+
+                for (int i = 0; i < 3; i++)
+                {
+                    try
+                    {
+                        raw = new AbfSharp.ABF(official.FilePath, preloadData: true);
+                    }
+                    catch (System.IO.IOException)
+                    {
+                        System.Threading.Thread.Sleep(200);
+                    }
+                }
+
+                if (raw is null)
+                {
+                    raw = new AbfSharp.ABF(official.FilePath, preloadData: true);
+                }
 
                 // Don't compare ABF1 GapFree ABFs because ABFFIO freaks out
                 if (raw.Header.OperationMode == AbfSharp.OperationMode.GapFree && raw.Header.Version < 2)
