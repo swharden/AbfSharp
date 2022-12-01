@@ -1,6 +1,6 @@
 # <img src="dev/icon/icon.ico" height="24" width="24"> AbfSharp
-[![](https://img.shields.io/azure-devops/build/swharden/swharden/5?label=Build&logo=azure%20pipelines)](https://dev.azure.com/swharden/swharden/_build/latest?definitionId=5&branchName=master)
-[![](https://img.shields.io/nuget/vpre/abfsharp?color=%23004880&label=NuGet&logo=nuget)](https://www.nuget.org/packages/AbfSharp/)
+[![CI](https://github.com/swharden/AbfSharp/actions/workflows/ci.yaml/badge.svg)](https://github.com/swharden/AbfSharp/actions/workflows/ci.yaml)
+[![NuGet](https://img.shields.io/nuget/vpre/abfsharp?color=%23004880&label=NuGet&logo=nuget)](https://www.nuget.org/packages/AbfSharp/)
 [![GitHub](https://img.shields.io/github/license/swharden/abfsharp?color=%231281c0)](LICENSE)
 
 **AbfSharp is a .NET Standard library for reading electrophysiology data from Axon Binary Format (ABF) files.** 
