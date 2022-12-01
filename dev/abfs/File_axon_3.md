@@ -77,11 +77,11 @@ nManualInfoStrategy | Int16 | 0
 fCellID1 | Single | 0
 fCellID2 | Single | 0
 fCellID3 | Single | 0
-sProtocolPath | string (255) | "C:\Axon\rk400\0.1G\Cc_stim ONL.pro                                                                                                                                                                                                                             "
-sCreatorInfo | string (15) | "Clampex        "
-sModifierInfo | string (15) | "               "
+sProtocolPath | string (256) | "C:\Axon\rk400\0.1G\Cc_stim ONL.pro                                                                                                                                                                                                                              "
+sCreatorInfo | string (16) | "Clampex         "
+sModifierInfo | string (16) | "                "
 nCommentsEnable | Int16 | 0
-sFileComment | string (127) | "                                                                                                                               "
+sFileComment | string (128) | "                                                                                                                                "
 nTelegraphEnable | Int16[16] | 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 nTelegraphInstrument | Int16[16] | 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 fTelegraphAdditGain | Single[16] | 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
@@ -202,8 +202,8 @@ fArithmeticK3 | Single | 0
 fArithmeticK4 | Single | 0
 fArithmeticK5 | Single | 0
 fArithmeticK6 | Single | 0
-sArithmeticOperator | string (1) | "+"
-sArithmeticUnits | string (7) | "       "
+sArithmeticOperator | string (2) | "+ "
+sArithmeticUnits | string (8) | "        "
 nPNPosition | Int16 | 0
 nPNNumPulses | Int16 | 1
 nPNPolarity | Int16 | 0

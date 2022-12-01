@@ -77,11 +77,11 @@ nManualInfoStrategy | Int16 | 0
 fCellID1 | Single | 0
 fCellID2 | Single | 0
 fCellID3 | Single | 0
-sProtocolPath | string (255) | "C:\Data Second Wind\Vamsee\Protocols\fret_fv_2s.pro                                                                                                                                                                                                            "
-sCreatorInfo | string (15) | "Clampex        "
-sModifierInfo | string (15) | "               "
+sProtocolPath | string (256) | "C:\Data Second Wind\Vamsee\Protocols\fret_fv_2s.pro                                                                                                                                                                                                             "
+sCreatorInfo | string (16) | "Clampex         "
+sModifierInfo | string (16) | "                "
 nCommentsEnable | Int16 | 0
-sFileComment | string (127) | "                                                                                                                               "
+sFileComment | string (128) | "                                                                                                                                "
 nTelegraphEnable | Int16[16] | 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 nTelegraphInstrument | Int16[16] | 23, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 fTelegraphAdditGain | Single[16] | 0.05, 0.05, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0

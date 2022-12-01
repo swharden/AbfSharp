@@ -77,11 +77,11 @@ nManualInfoStrategy | Int16 | 1
 fCellID1 | Single | 0
 fCellID2 | Single | 0
 fCellID3 | Single | 0
-sProtocolPath | string (255) | "X:\Protocols\Scott\SWHlab\paired\pair-MTIV.pro                                                                                                                                                                                                                 "
-sCreatorInfo | string (15) | "Clampex        "
-sModifierInfo | string (15) | "               "
+sProtocolPath | string (256) | "X:\Protocols\Scott\SWHlab\paired\pair-MTIV.pro                                                                                                                                                                                                                  "
+sCreatorInfo | string (16) | "Clampex         "
+sModifierInfo | string (16) | "                "
 nCommentsEnable | Int16 | 1
-sFileComment | string (127) | "SWH[MTIV]                                                                                                                      "
+sFileComment | string (128) | "SWH[MTIV]                                                                                                                       "
 nTelegraphEnable | Int16[16] | 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 nTelegraphInstrument | Int16[16] | 24, 24, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 fTelegraphAdditGain | Single[16] | 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0

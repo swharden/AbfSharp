@@ -77,11 +77,11 @@ nManualInfoStrategy | Int16 | 0
 fCellID1 | Single | 0
 fCellID2 | Single | 0
 fCellID3 | Single | 0
-sProtocolPath | string (255) | "(untitled)                                                                                                                                                                                                                                                     "
-sCreatorInfo | string (15) | "clampex        "
-sModifierInfo | string (15) | "clampfit       "
+sProtocolPath | string (256) | "(untitled)                                                                                                                                                                                                                                                      "
+sCreatorInfo | string (16) | "clampex         "
+sModifierInfo | string (16) | "clampfit        "
 nCommentsEnable | Int16 | 0
-sFileComment | string (127) | "                                                                                                                               "
+sFileComment | string (128) | "                                                                                                                                "
 nTelegraphEnable | Int16[16] | 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 nTelegraphInstrument | Int16[16] | 24, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 fTelegraphAdditGain | Single[16] | 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0

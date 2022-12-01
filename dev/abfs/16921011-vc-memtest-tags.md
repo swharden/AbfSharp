@@ -77,11 +77,11 @@ nManualInfoStrategy | Int16 | 1
 fCellID1 | Single | 0
 fCellID2 | Single | 0
 fCellID3 | Single | 0
-sProtocolPath | string (255) | "S:\Protocols\permanent\0401 VC 2s MT-70.pro                                                                                                                                                                                                                    "
-sCreatorInfo | string (15) | "Clampex        "
-sModifierInfo | string (15) | "               "
+sProtocolPath | string (256) | "S:\Protocols\permanent\0401 VC 2s MT-70.pro                                                                                                                                                                                                                     "
+sCreatorInfo | string (16) | "Clampex         "
+sModifierInfo | string (16) | "                "
 nCommentsEnable | Int16 | 1
-sFileComment | string (127) | "SWHLab5[0401]                                                                                                                  "
+sFileComment | string (128) | "SWHLab5[0401]                                                                                                                   "
 nTelegraphEnable | Int16[16] | 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 nTelegraphInstrument | Int16[16] | 24, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 fTelegraphAdditGain | Single[16] | 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0

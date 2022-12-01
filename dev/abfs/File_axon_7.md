@@ -77,11 +77,11 @@ nManualInfoStrategy | Int16 | 0
 fCellID1 | Single | 0
 fCellID2 | Single | 0
 fCellID3 | Single | 0
-sProtocolPath | string (255) | "C:\Axon\Params\neuromodulacion\Gustavo\Ach\Apl NMDA 2 s -80mV cada 2ms esp 10 2480us.pro                                                                                                                                                                       "
-sCreatorInfo | string (15) | "AXENGN 2.0.2.2 "
-sModifierInfo | string (15) | "Clampfit       "
+sProtocolPath | string (256) | "C:\Axon\Params\neuromodulacion\Gustavo\Ach\Apl NMDA 2 s -80mV cada 2ms esp 10 2480us.pro                                                                                                                                                                        "
+sCreatorInfo | string (16) | "AXENGN 2.0.2.2  "
+sModifierInfo | string (16) | "Clampfit        "
 nCommentsEnable | Int16 | 0
-sFileComment | string (127) | "                                                                                                                               "
+sFileComment | string (128) | "                                                                                                                                "
 nTelegraphEnable | Int16[16] | 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 nTelegraphInstrument | Int16[16] | 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 fTelegraphAdditGain | Single[16] | 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
@@ -142,7 +142,7 @@ fDACFileScale | Single[8] | 1, 1, 1, 1, 1, 1, 1, 1
 fDACFileOffset | Single[8] | 0, 0, 0, 0, 0, 0, 0, 0
 lDACFileEpisodeNum | Int32[8] | 0, 0, 0, 0, 0, 0, 0, 0
 nDACFileADCNum | Int16[8] | 0, 0, 0, 0, 0, 0, 0, 0
-sDACFilePath | string (2047) | "                                                                                                                                                                                                                                                                C:\Documents and Settings\Equipo2\Escritorio\ruidos\ruidoDrBraniff\puroruido1.abf                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              "
+sDACFilePath | string (2048) | "                                                                                                                                                                                                                                                                C:\Documents and Settings\Equipo2\Escritorio\ruidos\ruidoDrBraniff\puroruido1.abf                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               "
 nConditEnable | Int16[8] | 0, 0, 0, 0, 0, 0, 0, 0
 lConditNumPulses | Int32[8] | 1, 1, 0, 0, 0, 0, 0, 0
 fBaselineDuration | Single[8] | 1, 1, 0, 0, 0, 0, 0, 0
@@ -238,7 +238,7 @@ nLTPType | Int16 | 0
 nLTPUsageOfDAC | Int16[8] | 0, 0, 0, 0, 0, 0, 0, 0
 nLTPPresynapticPulses | Int16[8] | 0, 0, 0, 0, 0, 0, 0, 0
 nScopeTriggerOut | Int16 | 0
-sEpochResistanceSignalName | string (79) | "                                                                               "
+sEpochResistanceSignalName | string (80) | "                                                                                "
 nEpochResistanceState | Int16[8] | 0, 0, 0, 0, 0, 0, 0, 0
 nAlternateDACOutputState | Int16 | 0
 nAlternateDigitalOutputState | Int16 | 0

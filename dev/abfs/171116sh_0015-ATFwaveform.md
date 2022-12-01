@@ -77,11 +77,11 @@ nManualInfoStrategy | Int16 | 1
 fCellID1 | Single | 0
 fCellID2 | Single | 0
 fCellID3 | Single | 0
-sProtocolPath | string (255) | "L:\Protocols\permanent\0221 VC sine sweep 70 +- 5 mV.pro                                                                                                                                                                                                       "
-sCreatorInfo | string (15) | "Clampex        "
-sModifierInfo | string (15) | "               "
+sProtocolPath | string (256) | "L:\Protocols\permanent\0221 VC sine sweep 70 +- 5 mV.pro                                                                                                                                                                                                        "
+sCreatorInfo | string (16) | "Clampex         "
+sModifierInfo | string (16) | "                "
 nCommentsEnable | Int16 | 1
-sFileComment | string (127) | "SWHLab5[0102]                                                                                                                  "
+sFileComment | string (128) | "SWHLab5[0102]                                                                                                                   "
 nTelegraphEnable | Int16[16] | 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 nTelegraphInstrument | Int16[16] | 24, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 fTelegraphAdditGain | Single[16] | 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
@@ -142,7 +142,7 @@ fDACFileScale | Single[8] | 0.25, 1, 1, 1, 1, 1, 1, 1
 fDACFileOffset | Single[8] | -70, 0, 0, 0, 0, 0, 0, 0
 lDACFileEpisodeNum | Int32[8] | 0, 0, 0, 0, 0, 0, 0, 0
 nDACFileADCNum | Int16[8] | 0, 0, 0, 0, 0, 0, 0, 0
-sDACFilePath | string (2047) | "L:\Protocols\permanent\waveform stimulus\sine sweep magnitude 20.atf                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           "
+sDACFilePath | string (2048) | "L:\Protocols\permanent\waveform stimulus\sine sweep magnitude 20.atf                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            "
 nConditEnable | Int16[8] | 0, 0, 0, 0, 0, 0, 0, 0
 lConditNumPulses | Int32[8] | 1, 0, 0, 0, 0, 0, 0, 0
 fBaselineDuration | Single[8] | 1, 1, 1, 1, 0, 0, 0, 0
@@ -238,7 +238,7 @@ nLTPType | Int16 | 0
 nLTPUsageOfDAC | Int16[8] | 0, 0, 0, 0, 0, 0, 0, 0
 nLTPPresynapticPulses | Int16[8] | 0, 0, 0, 0, 0, 0, 0, 0
 nScopeTriggerOut | Int16 | 0
-sEpochResistanceSignalName | string (79) | "                                                                               "
+sEpochResistanceSignalName | string (80) | "                                                                                "
 nEpochResistanceState | Int16[8] | 0, 0, 0, 0, 0, 0, 0, 0
 nAlternateDACOutputState | Int16 | 0
 nAlternateDigitalOutputState | Int16 | 0
