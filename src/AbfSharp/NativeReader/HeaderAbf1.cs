@@ -155,7 +155,7 @@ namespace AbfSharp.NativeReader
             fCellID3 = reader.ReadSingle();
 
             reader.BaseStream.Seek(294, SeekOrigin.Begin);
-            sCreatorInfo = new string(reader.ReadChars(15)).Replace("\0", "").Trim();
+            sCreatorInfo = new string(reader.ReadChars(16)).Replace("\0", "").Trim();
 
             reader.BaseStream.Seek(4512, SeekOrigin.Begin);
             nTelegraphEnable = ReadArrayInt16(reader, 16);
