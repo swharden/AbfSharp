@@ -1,8 +1,7 @@
-﻿namespace AbfSharp
+﻿namespace AbfSharp;
+
+public enum ClampType
 {
-    public enum ClampType
-    {
-        VoltageClamp = 0,
-        CurrentClamp = 1
-    };
-}
+    VoltageClamp,
+    CurrentClamp
+};

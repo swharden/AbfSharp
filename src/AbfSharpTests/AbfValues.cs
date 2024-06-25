@@ -1,9 +1,6 @@
-﻿using FluentAssertions;
-using NUnit.Framework;
+﻿namespace AbfSharpTests;
 
-namespace AbfSharpTests;
-
-class DataValues
+class AbfValues
 {
     // values obtained from Python and pyABF (script in dev folder)
     [TestCase("16921011-vc-memtest-tags.abf", new double[] { -7.202148, -6.7138667, -5.737304, -4.15039, -3.4179685 })]
@@ -19,5 +16,32 @@ class DataValues
 
         for (int i = 0; i < expectedFirstValues.Length; i++)
             sweepValues[i].Should().BeApproximately((float)expectedFirstValues[i], (float)1e-3);
+    }
+
+    [TestCase("File_axon_5.abf")]
+    public void Test_Plot_SignalAndStimulus(string abfFilename)
+    {
+        string abfFilePath = SampleData.GetAbfPath(abfFilename);
+        string saveFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, "test_figures");
+        if (!Directory.Exists(saveFolder))
+            Directory.CreateDirectory(saveFolder);
+
+        var abf = new AbfSharp.ABF(abfFilePath);
+        Console.WriteLine($"\n{abf}");
+
+        ScottPlot.Plot plot1 = new();
+        ScottPlot.Plot plot2 = new();
+        for (int i = 0; i < abf.SweepCount; i++)
+        {
+            float[] adc = abf.GetSweep(i);
+            plot1.Add.Signal(adc);
+
+            float[] dac = abf.GetStimulusWaveform(i);
+            plot2.Add.Signal(dac);
+        }
+
+        string saveAsBase = Path.Combine(saveFolder, Path.GetFileNameWithoutExtension(abf.FilePath));
+        plot1.SavePng(saveAsBase + "_ADC.png", 600, 400);
+        plot2.SavePng(saveAsBase + "_DAC.png", 600, 400);
     }
 }

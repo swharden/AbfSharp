@@ -1,10 +1,9 @@
-﻿namespace AbfSharp
+﻿namespace AbfSharp;
+
+public enum TagType
 {
-    public enum TagType
-    {
-        Time = 0,
-        Comment = 1,
-        External = 2,
-        Voice = 3
-    }
+    Time,
+    Comment,
+    External,
+    Voice
 }

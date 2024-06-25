@@ -1,8 +1,4 @@
-﻿using AbfSharp;
-using NUnit.Framework;
-using System;
-
-namespace AbfSharpTests;
+﻿namespace AbfSharpTests;
 
 public class Quickstart
 {
