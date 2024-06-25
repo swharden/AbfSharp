@@ -14,7 +14,7 @@ class DataValues
     public void Test_FirstSweep_FirstChannel_FirstFiveValues(string filename, double[] expectedFirstValues)
     {
         string abfPath = SampleData.GetAbfPath(filename);
-        var abf = new AbfSharp.ABFFIO.ABF(abfPath);
+        var abf = new AbfSharp.ABF(abfPath);
         float[] sweepValues = abf.GetSweep(0);
 
         for (int i = 0; i < expectedFirstValues.Length; i++)

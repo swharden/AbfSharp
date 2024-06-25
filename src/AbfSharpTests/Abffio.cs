@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using AbfSharp;
+using FluentAssertions;
 using NUnit.Framework;
 using System;
 using System.IO;
@@ -27,7 +28,7 @@ class Abffio
     {
         foreach (string abfPath in SampleData.GetAllAbfPaths())
         {
-            var abf = new AbfSharp.ABFFIO.ABF(abfPath, preloadSweepData: false);
+            var abf = new ABF(abfPath, preloadSweepData: false);
             Console.WriteLine($"\n{abf}");
             if (abf.Tags.Count > 0)
                 Console.WriteLine($"TAGS: {abf.Tags}");
@@ -38,7 +39,7 @@ class Abffio
             float[] dac = abf.GetStimulusWaveform(0);
             Console.WriteLine("STIM: " + string.Join(", ", dac.Take(10).Select(x => x.ToString())));
 
-            if (abf.OperationMode != AbfSharp.OperationMode.EventDriven)
+            if (abf.OperationMode != OperationMode.EventDriven)
                 adc.Should().HaveSameCount(dac);
         }
     }
@@ -51,7 +52,7 @@ class Abffio
         if (!Directory.Exists(saveFolder))
             Directory.CreateDirectory(saveFolder);
 
-        var abf = new AbfSharp.ABFFIO.ABF(abfFilePath);
+        var abf = new ABF(abfFilePath);
         Console.WriteLine($"\n{abf}");
 
         ScottPlot.Plot plot1 = new();
@@ -82,14 +83,14 @@ class Abffio
     [TestCase("File_axon_3.abf", "no tags")]
     public void Test_Tag_MatchesKnown(string abfFileName, string expectedCommentSummary)
     {
-        AbfSharp.ABFFIO.ABF abf = new(SampleData.GetAbfPath(abfFileName));
+        ABF abf = new(SampleData.GetAbfPath(abfFileName));
         abf.Tags.ToString().Should().Be(expectedCommentSummary);
     }
 
     [TestCase("File_axon_4.abf", "DEF0C2D9-9817-42F7-B139-526A4AA9397A")]
     public void Test_Guid_MatchesKnown(string abfFileName, string expectedGuid)
     {
-        AbfSharp.ABFFIO.ABF abf = new(SampleData.GetAbfPath(abfFileName));
+        ABF abf = new(SampleData.GetAbfPath(abfFileName));
         abf.Header.FileGUID.ToString().ToUpper().Should().Be(expectedGuid);
     }
 }

@@ -10,13 +10,14 @@ public class AbfInfo
     {
         foreach (string abfFilePath in SampleData.GetAllAbfPaths())
         {
-            var abf = new AbfSharp.ABFFIO.ABF(abfFilePath);
-            string md = AbfSharp.Reports.AbfHeaderReport.GetMarkdown(abf.Header);
+            AbfSharp.Reports.AbfHeaderReport report = new(abfFilePath);
 
             string abfFolder = System.IO.Path.GetDirectoryName(abfFilePath);
             string abfID = System.IO.Path.GetFileNameWithoutExtension(abfFilePath);
             string mdPath = System.IO.Path.Combine(abfFolder, $"{abfID}.md");
-            System.IO.File.WriteAllText(mdPath, md);
+            string htmlPath = System.IO.Path.Combine(abfFolder, $"{abfID}.html");
+            System.IO.File.WriteAllText(mdPath, report.GetMarkdown());
+            System.IO.File.WriteAllText(htmlPath, report.GetHtml());
 
             Console.WriteLine(mdPath);
         }

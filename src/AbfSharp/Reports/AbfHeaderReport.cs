@@ -6,43 +6,115 @@ using System.Text;
 
 namespace AbfSharp.Reports;
 
-public static class AbfHeaderReport
+public class AbfHeaderReport
 {
-    public static string GetMarkdown(ABFFIO.AbfFileHeader HeaderStruct)
+    readonly Item[] Items;
+
+    struct Item
+    {
+        public string Name;
+        public string Type;
+        public string Value;
+    }
+
+    public AbfHeaderReport(string abfFilePath)
+    {
+        ABF abf = new(abfFilePath, preloadSweepData: false);
+
+        List<Item> items = [];
+
+        FieldInfo[] fields = abf.Header.GetType().GetFields();
+        foreach (FieldInfo fi in fields)
+        {
+            object structElementValue = abf.Header.GetType().GetField(fi.Name).GetValue(abf.Header);
+            if (structElementValue.GetType().IsArray)
+            {
+                List<string> values = new();
+                int length = ((Array)structElementValue).Length;
+                foreach (object arrayValue in (Array)structElementValue)
+                    values.Add(arrayValue.ToString());
+                if (values.Count > 20)
+                {
+                    values = values.Take(20).ToList();
+                    values.Add("...");
+                }
+                string typeName = structElementValue.GetType().ToString().Replace("[]", $"[{length}]").Replace("System.", "");
+
+                Item item = new()
+                {
+                    Name = fi.Name,
+                    Type = typeName,
+                    Value = string.Join(", ", values)
+                };
+
+                items.Add(item);
+            }
+            else if (structElementValue.GetType() == typeof(string))
+            {
+                string s = structElementValue.ToString();
+
+                Item item = new()
+                {
+                    Name = fi.Name,
+                    Type = $"String[{s.Length}]",
+                    Value = s
+                };
+
+                items.Add(item);
+            }
+            else
+            {
+                Item item = new()
+                {
+                    Name = fi.Name,
+                    Type = structElementValue.GetType().ToString().Replace("System.", ""),
+                    Value = structElementValue.ToString()
+                };
+
+                items.Add(item);
+            }
+        }
+
+        Items = items.ToArray();
+    }
+
+    public string GetMarkdown()
     {
         StringBuilder sb = new();
         sb.AppendLine("Name | Type | Value");
         sb.AppendLine("---|---|---");
-
-        FieldInfo[] fields = HeaderStruct.GetType().GetFields();
-        foreach (FieldInfo fi in fields)
+        foreach (var item in Items)
         {
-            object structElementValue = HeaderStruct.GetType().GetField(fi.Name).GetValue(HeaderStruct);
-            if (structElementValue.GetType().IsArray)
-            {
-                List<string> vals = new();
-                int length = ((Array)structElementValue).Length;
-                foreach (object arrayValue in (Array)structElementValue)
-                    vals.Add(arrayValue.ToString());
-                if (vals.Count > 20)
-                {
-                    vals = vals.Take(20).ToList();
-                    vals.Add("...");
-                }
-                string typeName = structElementValue.GetType().ToString().Replace("[]", $"[{length}]").Replace("System.", "");
-                sb.AppendLine($"{fi.Name} | {typeName} | {string.Join(", ", vals)}");
-            }
-            else if (structElementValue.GetType() == typeof(string))
-            {
-                string s = (string)structElementValue;
-                sb.AppendLine($"{fi.Name} | string ({s.Length}) | \"{s}\"");
-            }
-            else
-            {
-                string typeName = structElementValue.GetType().ToString().Replace("System.", "");
-                sb.AppendLine($"{fi.Name} | {typeName} | {structElementValue}");
-            }
+            string value = item.Value
+                .Replace("\r", @"\r")
+                .Replace("\n", @"\n");
+
+            sb.AppendLine($"{item.Name} | {item.Type} | {value}");
         }
+
+        return sb.ToString();
+    }
+
+    public string GetHtml()
+    {
+        StringBuilder sb = new();
+        sb.AppendLine("<html><body>");
+        sb.AppendLine("<table>");
+        sb.AppendLine("<tr style='font-weight: bold;'>");
+        sb.AppendLine("<td>Name</td>");
+        sb.AppendLine("<td>Type</td>");
+        sb.AppendLine("<td>Value</td>");
+        sb.AppendLine("</tr>");
+        foreach (var item in Items)
+        {
+            sb.AppendLine("<tr>");
+            sb.AppendLine($"<td>{item.Name}</td>");
+            sb.AppendLine($"<td>{item.Type}</td>");
+            sb.AppendLine($"<td>{item.Value}</td>");
+            sb.AppendLine("</tr>");
+        }
+        sb.AppendLine("</table>");
+        sb.AppendLine("</body></html>");
 
         return sb.ToString();
     }
