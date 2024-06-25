@@ -5,24 +5,34 @@
         <PlatformTarget>AnyCPU</PlatformTarget>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <LangVersion>12</LangVersion>
-        <Version>0.5.0</Version>
+        <ImplicitUsings>true</ImplicitUsings>
+        <Version>0.6.0</Version>
+        
         <Authors>Scott Harden</Authors>
         <Company>Harden Technologies, LLC</Company>
         <Description>AbfSharp is a .NET Standard library for reading electrophysiology data from Axon Binary Format (ABF) files</Description>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <PackageProjectUrl>https://github.com/swharden/ABFsharp</PackageProjectUrl>
         <PackageTags>electrophysiology, ABF, neuroscience, physiology</PackageTags>
-        <PackageReleaseNotes>See quickstart on project page</PackageReleaseNotes>
-        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <PackageIcon>icon.png</PackageIcon>
-        <PackageIconFullPath>icon.png</PackageIconFullPath>
+        
         <IncludeSymbols>true</IncludeSymbols>
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-        <ImplicitUsings>true</ImplicitUsings>
+        <IncludeSource>true</IncludeSource>
+
+        <!--- SourceLink configuration -->
+        <EmbedUntrackedSources>true</EmbedUntrackedSources>
+        <Deterministic>true</Deterministic>
+        <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+        
     </PropertyGroup>
 
     <ItemGroup>
         <None Include="$(PackageIconFullPath)" Pack="true" PackagePath="\" />
+        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
         <None Update="ABFFIO.dll">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
@@ -30,7 +40,6 @@
 
     <ItemGroup Condition="'$(TargetFramework)' == 'net462'">
         <PackageReference Include="System.ValueTuple" Version="4.5.0" />
-        <PackageReference Include="System.Runtime.InteropServices.RuntimeInformation" Version="4.3.0" />
     </ItemGroup>
 
 </Project>
