@@ -21,4 +21,10 @@
         <PackageReference Include="ScottPlot" Version="5.0.35" />
     </ItemGroup>
 
+    <ItemGroup>
+        <None Update="ABFFIO.dll">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
+
 </Project>
