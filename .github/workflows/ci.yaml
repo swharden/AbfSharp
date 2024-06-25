@@ -20,8 +20,11 @@ jobs:
         with:
           dotnet-version: 6.0.x
       - name: 🚚 Restore
-        run: dotnet restore src
+        working-directory: ./src
+        run: dotnet restore
       - name: 🛠️ Build
-        run: dotnet build src
+        working-directory: ./src
+        run: dotnet build
       - name: 🧪 Test
-        run: dotnet test src -- RunConfiguration.TargetPlatform=x86
+        working-directory: ./src
+        run: dotnet test --runtime win-x86
