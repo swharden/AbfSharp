@@ -24,9 +24,13 @@ public static class SampleData
     public static readonly string GRAPHICS_FOLDER = Path.Combine(REPO_ROOT, "dev/graphics/");
 
     [Test]
-    public static void Test_Path_ShowWorkingDirectory()
+    public static void Test_Path_ABFFIO_DLL_IsInWorkingDirectory()
     {
-        Console.WriteLine($"Test runner path: {Path.GetFullPath("./")}");
+        string wd = Path.GetFullPath("./");
+        Console.WriteLine($"Working directory: {wd}");
+
+        string dllPath = Path.Combine(wd, "ABFFIO.dll");
+        File.Exists(dllPath).Should().BeTrue();
     }
 
     [Test]
