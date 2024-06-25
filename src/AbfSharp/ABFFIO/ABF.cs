@@ -1,15 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Text;
 
 namespace AbfSharp.ABFFIO
 {
     /// <summary>
     /// This class provides a simple .NET interface to ABF file header and sweep data provided by ABFFIO.DLL
     /// </summary>
-    public class ABF : IABF
+    public class ABF
     {
         public readonly AbfFileHeader Header;
         public Tags Tags { get; private set; }
