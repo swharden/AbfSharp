@@ -34,6 +34,12 @@ public static class SampleData
     }
 
     [Test]
+    public static void Test_Environment_Is32Bit()
+    {
+        Environment.Is64BitProcess.Should().BeFalse();
+    }
+
+    [Test]
     public static void Test_Path_RepoRoot() => Directory.Exists(REPO_ROOT).Should().BeTrue();
 
     [Test]
