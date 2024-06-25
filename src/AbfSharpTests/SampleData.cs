@@ -24,6 +24,12 @@ public static class SampleData
     public static readonly string GRAPHICS_FOLDER = Path.Combine(REPO_ROOT, "dev/graphics/");
 
     [Test]
+    public static void Test_Path_ShowWorkingDirectory()
+    {
+        Console.WriteLine($"Test runner path: {Path.GetFullPath("./")}");
+    }
+
+    [Test]
     public static void Test_Path_RepoRoot() => Directory.Exists(REPO_ROOT).Should().BeTrue();
 
     [Test]
