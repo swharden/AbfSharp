@@ -1,10 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>netstandard2.0</TargetFramework>
+        <TargetFrameworks>net462;net6.0-windows</TargetFrameworks>
         <PlatformTarget>AnyCPU</PlatformTarget>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-        <LangVersion>latest</LangVersion>
+        <LangVersion>12</LangVersion>
         <Version>0.5.0</Version>
         <Authors>Scott Harden</Authors>
         <Company>Harden Technologies, LLC</Company>
@@ -27,8 +27,9 @@
         </None>
     </ItemGroup>
 
-    <ItemGroup>
-        <Folder Include="NativeReader\" />
+    <ItemGroup Condition="'$(TargetFramework)' == 'net462'">
+        <PackageReference Include="System.ValueTuple" Version="4.5.0" />
+        <PackageReference Include="System.Runtime.InteropServices.RuntimeInformation" Version="4.3.0" />
     </ItemGroup>
 
 </Project>
