@@ -77,11 +77,11 @@ nManualInfoStrategy | Int16 | 1
 fCellID1 | Single | 0
 fCellID2 | Single | 0
 fCellID3 | Single | 0
-sProtocolPath | string (256) | "X:\Protocols\Scott\SWHlab\paired\pair-MTIV.pro                                                                                                                                                                                                                  "
-sCreatorInfo | string (16) | "Clampex         "
-sModifierInfo | string (16) | "                "
+sProtocolPath | String[256] | X:\Protocols\Scott\SWHlab\paired\pair-MTIV.pro                                                                                                                                                                                                                  
+sCreatorInfo | String[16] | Clampex         
+sModifierInfo | String[16] |                 
 nCommentsEnable | Int16 | 1
-sFileComment | string (128) | "SWH[MTIV]                                                                                                                       "
+sFileComment | String[128] | SWH[MTIV]                                                                                                                       
 nTelegraphEnable | Int16[16] | 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 nTelegraphInstrument | Int16[16] | 24, 24, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 fTelegraphAdditGain | Single[16] | 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
@@ -142,7 +142,7 @@ fDACFileScale | Single[8] | 1, 1, 1, 1, 0, 0, 0, 0
 fDACFileOffset | Single[8] | 0, 0, 0, 0, 0, 0, 0, 0
 lDACFileEpisodeNum | Int32[8] | 0, 0, 0, 0, 0, 0, 0, 0
 nDACFileADCNum | Int16[8] | 0, 0, 0, 0, 0, 0, 0, 0
-sDACFilePath | string (1024) | "                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                "
+sDACFilePath | String[1024] |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
 nConditEnable | Int16[8] | 0, 0, 0, 0, 0, 0, 0, 0
 lConditNumPulses | Int32[8] | 1, 0, 0, 0, 0, 0, 0, 0
 fBaselineDuration | Single[8] | 1, 1, 1, 1, 0, 0, 0, 0
@@ -170,7 +170,7 @@ fInterSweepAdaptTimeS | Single | 0
 nULEnable | Int16[8] | 0, 0, 0, 0, 0, 0, 0, 0
 nULParamToVary | Int16[8] | 0, 0, 0, 0, 0, 0, 0, 0
 nULRepeat | Int16[8] | 0, 0, 0, 0, 0, 0, 0, 0
-sULParamValueList | string (0) | ""
+sULParamValueList | String[0] | 
 nStatsEnable | Int16 | 0
 nStatsActiveChannels | UInt16 | 1
 nStatsSearchRegionFlags | UInt16 | 1
@@ -202,8 +202,8 @@ fArithmeticK3 | Single | 0
 fArithmeticK4 | Single | 0
 fArithmeticK5 | Single | 0
 fArithmeticK6 | Single | 0
-sArithmeticOperator | string (0) | ""
-sArithmeticUnits | string (0) | ""
+sArithmeticOperator | String[0] | 
+sArithmeticUnits | String[0] | 
 nPNPosition | Int16 | 0
 nPNNumPulses | Int16 | 4
 nPNPolarity | Int16 | 1
@@ -238,14 +238,14 @@ nLTPType | Int16 | 0
 nLTPUsageOfDAC | Int16[8] | 0, 0, 0, 0, 0, 0, 0, 0
 nLTPPresynapticPulses | Int16[8] | 0, 0, 0, 0, 0, 0, 0, 0
 nScopeTriggerOut | Int16 | 0
-sEpochResistanceSignalName | string (40) | "                                        "
+sEpochResistanceSignalName | String[40] |                                         
 nEpochResistanceState | Int16[8] | 0, 0, 0, 0, 0, 0, 0, 0
 nAlternateDACOutputState | Int16 | 0
 nAlternateDigitalOutputState | Int16 | 0
 nAlternateDigitalValue | Int16[50] | 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...
 nAlternateDigitalTrainValue | Int16[50] | 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...
 fPostProcessLowpassFilter | Single[16] | 100000, 100000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-nPostProcessLowpassFilterType | string (0) | ""
+nPostProcessLowpassFilterType | String[0] | 
 fLegacyADCSequenceInterval | Single | 0
 fLegacyADCSecondSequenceInterval | Single | 0
 lLegacyClockChange | Int32 | 0
