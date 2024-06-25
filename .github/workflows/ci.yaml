@@ -15,13 +15,13 @@ jobs:
     steps:
       - name: 🛒 Checkout
         uses: actions/checkout@v4
-      - name: ✨ Setup .NET 8
+      - name: ✨ Setup .NET 6
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: 8.0.x
+          dotnet-version: 6.0.x
       - name: 🚚 Restore
         run: dotnet restore src
       - name: 🛠️ Build
-        run: dotnet build src --no-restore
+        run: dotnet build src
       - name: 🧪 Test
-        run: dotnet test src --no-build
+        run: dotnet test src
