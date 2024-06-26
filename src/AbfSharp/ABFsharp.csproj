@@ -7,7 +7,7 @@
         <LangVersion>12</LangVersion>
         <ImplicitUsings>true</ImplicitUsings>
         <Version>0.6.0</Version>
-        
+
         <Authors>Scott Harden</Authors>
         <Company>Harden Technologies, LLC</Company>
         <Description>AbfSharp is a .NET Standard library for reading electrophysiology data from Axon Binary Format (ABF) files</Description>
@@ -15,27 +15,27 @@
         <PackageProjectUrl>https://github.com/swharden/ABFsharp</PackageProjectUrl>
         <PackageTags>electrophysiology, ABF, neuroscience, physiology</PackageTags>
         <PackageIcon>icon.png</PackageIcon>
-        
+
         <IncludeSymbols>true</IncludeSymbols>
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
         <IncludeSource>true</IncludeSource>
 
-        <!--- SourceLink configuration -->
         <EmbedUntrackedSources>true</EmbedUntrackedSources>
         <Deterministic>true</Deterministic>
         <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
-        
+
     </PropertyGroup>
 
     <ItemGroup>
-        <None Include="$(PackageIconFullPath)" Pack="true" PackagePath="\" />
-        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0">
-          <PrivateAssets>all</PrivateAssets>
-          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
-        <None Update="ABFFIO.dll">
+        <None Include="icon.png" Pack="true" PackagePath="\" />
+        <None Update="ABFFIO.dll" Pack="True" PackagePath="\">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <PackageCopyToOutput>true</PackageCopyToOutput>
         </None>
+        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
     </ItemGroup>
 
     <ItemGroup Condition="'$(TargetFramework)' == 'net462'">
