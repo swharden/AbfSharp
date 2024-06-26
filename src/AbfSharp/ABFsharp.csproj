@@ -34,7 +34,7 @@
         <None Include="nuget-readme.md" Pack="true" PackagePath="\readme.md" />
         <Content Include="ABFFIO.dll">
             <Pack>true</Pack>
-            <PackagePath>lib\win-x86</PackagePath>
+            <PackagePath>runtimes/win-x86/native</PackagePath>
             <PackageCopyToOutput>true</PackageCopyToOutput>
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
