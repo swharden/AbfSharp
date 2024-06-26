@@ -1,4 +1,6 @@
-﻿namespace AbfSharpTests;
+﻿using ScottPlot;
+
+namespace AbfSharpTests;
 
 class AbfValues
 {
@@ -43,5 +45,28 @@ class AbfValues
         string saveAsBase = Path.Combine(saveFolder, Path.GetFileNameWithoutExtension(abf.FilePath));
         plot1.SavePng(saveAsBase + "_ADC.png", 600, 400);
         plot2.SavePng(saveAsBase + "_DAC.png", 600, 400);
+    }
+
+    [Test]
+    public void Test_GapFree_MultiChannel()
+    {
+        string abfFilePath = SampleData.GetAbfPath("14o08011_ic_pair.abf");
+        ABF abf = new(abfFilePath);
+
+        ScottPlot.Plot plot = new();
+        for (int i = 0; i < abf.SweepCount; i++)
+        {
+            Sweep ch1 = abf.GetSweep(i, 0);
+            var sig1 = plot.Add.Signal(ch1.Values, ch1.SamplePeriod);
+            sig1.Data.XOffset = ch1.StartTime;
+            sig1.Color = Colors.C0;
+
+            Sweep ch2 = abf.GetSweep(i, 1);
+            var sig2 = plot.Add.Signal(ch2.Values, ch2.SamplePeriod);
+            sig2.Data.XOffset = ch2.StartTime;
+            sig2.Color = Colors.C1;
+        }
+
+        plot.SaveTestImage(600, 400);
     }
 }
