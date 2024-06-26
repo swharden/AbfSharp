@@ -35,4 +35,10 @@ class AbfIO
                 adc.Should().HaveSameCount(dac);
         }
     }
+
+    [Test]
+    public void Test_Version_DLL()
+    {
+        AbfSharp.Version.DllVersion.Should().Be("2.2.0.1");
+    }
 }
