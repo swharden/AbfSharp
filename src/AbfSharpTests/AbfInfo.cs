@@ -40,6 +40,6 @@ public class AbfInfo
     public void Test_Guid_MatchesKnown(string abfFileName, string expectedGuid)
     {
         AbfSharp.ABF abf = new(SampleData.GetAbfPath(abfFileName));
-        abf.Header.FileGUID.ToString().ToUpper().Should().Be(expectedGuid);
+        abf.Header.AbfFileHeader.FileGUID.ToString().ToUpper().Should().Be(expectedGuid);
     }
 }

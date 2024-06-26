@@ -31,7 +31,7 @@ class AbfIO
             float[] dac = abf.GetStimulusWaveform(0);
             Console.WriteLine("STIM: " + string.Join(", ", dac.Take(10).Select(x => x.ToString())));
 
-            if (abf.OperationMode == OperationMode.EventDriven)
+            if (abf.Header.OperationMode == OperationMode.EventDriven)
                 adc.Should().HaveSameCount(dac);
         }
     }

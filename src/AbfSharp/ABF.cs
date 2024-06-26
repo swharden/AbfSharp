@@ -1,62 +1,44 @@
-﻿using AbfSharp.ABFFIO;
+﻿namespace AbfSharp;
 
-namespace AbfSharp;
+// TODO: cut all references to ABFFIO namespace
 
 /// <summary>
 /// This class provides a simple .NET interface to ABF file header and sweep data provided by ABFFIO.DLL
 /// </summary>
 public class ABF
 {
-    public readonly AbfFileHeader Header;
-    public Tag[] Tags { get; private set; }
+    public AbfHeader Header { get; }
+    public Tag[] Tags { get; }
     public string TagSummaries => string.Join(", ", Tags.Select(x => x.Summary));
-    public string FilePath { get; private set; }
-    public OperationMode OperationMode => (OperationMode)Header.nOperationMode;
-    public string[] DacNames => Header.sDACChannelName.Select(x => x.ToString()).ToArray();
-    public string[] DacUnits => Header.sDACChannelUnits.Select(x => x.ToString()).ToArray();
-    public string[] AdcNames => Header.sADCChannelName.Select(x => x.ToString()).ToArray();
-    public string[] AdcUnits => Header.sADCUnits.Select(x => x.ToString()).ToArray();
-    public float SampleRate => 1e6f / Header.fADCSequenceInterval / Header.nADCNumChannels;
+    public string FilePath { get; }
+    public float SampleRate { get; }
     public float SamplePeriod => 1.0f / SampleRate;
-    public float SamplePeriodMS => SamplePeriod * 1e3f;
-    public float FileVersion => Header.fFileVersionNumber;
-    public int SweepCount => Math.Max(1, Header.lActualEpisodes);
-    public int ChannelCount => Header.nADCNumChannels;
+    public int SweepCount { get; }
+    public int ChannelCount { get; }
 
-    /// <summary>
-    /// Sweep data loaded from the ABF is stored in memory for faster access later.
-    /// Primary index is sweep data interleaved by channel (S1C1, S1C2, S2C1, S2C2, S3C1, etc...)
-    /// </summary>
-    private readonly float[][] SweepData;
+    // data by sweep (interleaved by channel)
+    private float[][]? SweepData = null; // TODO: make double
 
-    /// <summary>
-    /// Load an ABF using the official library (ABFFIO.DLL)
-    /// </summary>
-    /// <param name="filePath">Path to the ABF</param>
-    /// <param name="preloadSweepData">If True, sweep data will be loaded into memory up-front for faster (filesystem-free) access later</param>
     public ABF(string filePath, bool preloadSweepData = true)
     {
-        FilePath = System.IO.Path.GetFullPath(filePath);
-        using Wrapper wrapper = new(filePath);
-        Header = wrapper.GetHeader();
-        Tags = ReadTags(wrapper.ReadTags(), Header);
-        SweepData = new float[SweepCount * ChannelCount][];
+        FilePath = Path.GetFullPath(filePath);
+
+        using ABFFIO.AbfFileInterface abfInterface = new(filePath);
+        Header = new AbfHeader(abfInterface);
+        SampleRate = Header.SampleRate;
+        SweepCount = Header.SweepCount;
+        ChannelCount = Header.ChannelCount;
+
+        Tags = new AbfTagManager(abfInterface, Header.AbfFileHeader).Tags;
+
         if (preloadSweepData)
-            LoadAllSweeps(wrapper);
+            LoadAllSweeps(abfInterface);
     }
 
-    private static Tag[] ReadTags(TagStruct[] tagStructs, AbfFileHeader header)
+    private void LoadAllSweeps(ABFFIO.AbfFileInterface wrapper)
     {
-        float sampleRate = 1e6f / header.fADCSequenceInterval / header.nADCNumChannels;
-        float samplePeriod = 1.0f / sampleRate;
-        float tagTimeMultiple = (header.fSynchTimeUnit == 0)
-        ? samplePeriod / header.nADCNumChannels
-            : header.fSynchTimeUnit / 1e6f;
-        return tagStructs.Select(x => new Tag(x, tagTimeMultiple)).ToArray();
-    }
+        SweepData ??= new float[SweepCount * ChannelCount][];
 
-    private void LoadAllSweeps(Wrapper wrapper)
-    {
         for (int sweepIndex = 0; sweepIndex < SweepCount; sweepIndex++)
         {
             for (int channelIndex = 0; channelIndex < ChannelCount; channelIndex++)
@@ -70,27 +52,31 @@ public class ABF
     }
 
     public override string ToString() =>
-        $"{System.IO.Path.GetFileName(FilePath)} " +
-        $"ABF (version {Header.fFileVersionNumber}) " +
-        $"{(OperationMode)Header.nOperationMode} mode " +
-        $"with {Header.nADCNumChannels} channels and {Header.lActualEpisodes} sweeps";
+        $"{Path.GetFileName(FilePath)} " +
+        $"ABF (version {Header.AbfFileHeader.fFileVersionNumber}) " +
+        $"{(OperationMode)Header.OperationMode} mode " +
+        $"with {ChannelCount} channels and {SweepCount} sweeps";
 
     public float[] GetSweep(int sweepIndex, int channelIndex = 0)
     {
+        SweepData ??= new float[SweepCount * ChannelCount][];
+
         int sweepDataIndex = sweepIndex * ChannelCount + channelIndex;
         if (SweepData[sweepDataIndex] is null)
         {
-            using Wrapper wrapper = new(FilePath);
+            using ABFFIO.AbfFileInterface wrapper = new(FilePath);
             float[] values = wrapper.ReadChannel(sweepIndex + 1, channelIndex);
             SweepData[sweepDataIndex] = values;
         }
+
         return SweepData[sweepDataIndex];
     }
 
+    // TODO: pre-load this into memory too
     public float[] GetStimulusWaveform(int sweepIndex, int channelIndex = 0)
     {
-        using Wrapper abffio = new(FilePath);
-        float[] values = abffio.GetStimulusWaveform(sweepIndex + 1, channelIndex);
+        using ABFFIO.AbfFileInterface abfInterface = new(FilePath);
+        float[] values = abfInterface.GetStimulusWaveform(sweepIndex + 1, channelIndex);
         return values;
     }
 }

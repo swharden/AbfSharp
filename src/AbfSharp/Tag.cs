@@ -1,5 +1,6 @@
 ﻿namespace AbfSharp;
 
+// TODO: make a struct
 public class Tag
 {
     public readonly long lTagTime;
@@ -39,13 +40,13 @@ public class Tag
         }
     }
 
-    public Tag(ABFFIO.TagStruct tagStruct, float tagTimeMult)
+    public Tag(ABFFIO.TagStruct tagStruct, float tagTimeMultiple)
     {
         lTagTime = tagStruct.lTagTime;
         sComment = tagStruct.sComment;
         nTagType = tagStruct.nTagType;
         nVoiceTagNumber = tagStruct.nVoiceTagNumber;
-        Time = lTagTime * tagTimeMult;
+        Time = lTagTime * tagTimeMultiple;
     }
 
     public Tag(long lTagTime, string sComment, short nTagType, short nVoiceTagNumber, float tagTimeMult)

@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using AbfSharp.ABFFIO;
+using System.Reflection;
 using System.Text;
 
 namespace AbfSharp.Reports;
@@ -20,16 +21,17 @@ public class AbfHeaderReport
 
         List<Item> items = [];
 
-        FieldInfo[] fields = abf.Header.GetType().GetFields();
+        AbfFileHeader header = abf.Header.AbfFileHeader;
+        FieldInfo[] fields = header.GetType().GetFields();
         foreach (FieldInfo fi in fields)
         {
-            object structElementValue = abf.Header.GetType().GetField(fi.Name).GetValue(abf.Header);
+            object structElementValue = header.GetType().GetField(fi.Name)!.GetValue(header)!;
             if (structElementValue.GetType().IsArray)
             {
-                List<string> values = new();
+                List<string> values = [];
                 int length = ((Array)structElementValue).Length;
                 foreach (object arrayValue in (Array)structElementValue)
-                    values.Add(arrayValue.ToString());
+                    values.Add(arrayValue.ToString()!);
                 if (values.Count > 20)
                 {
                     values = values.Take(20).ToList();
@@ -48,7 +50,7 @@ public class AbfHeaderReport
             }
             else if (structElementValue.GetType() == typeof(string))
             {
-                string s = structElementValue.ToString();
+                string s = structElementValue.ToString()!;
 
                 Item item = new()
                 {
@@ -65,14 +67,14 @@ public class AbfHeaderReport
                 {
                     Name = fi.Name,
                     Type = structElementValue.GetType().ToString().Replace("System.", ""),
-                    Value = structElementValue.ToString()
+                    Value = structElementValue.ToString()!
                 };
 
                 items.Add(item);
             }
         }
 
-        Items = items.ToArray();
+        Items = [.. items];
     }
 
     public string GetMarkdown()
