@@ -57,4 +57,9 @@ public class Tag
         this.nVoiceTagNumber = nVoiceTagNumber;
         Time = lTagTime * tagTimeMult;
     }
+
+    public override string ToString()
+    {
+        return Summary;
+    }
 }

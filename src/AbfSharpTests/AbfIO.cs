@@ -25,7 +25,7 @@ class AbfIO
             if (abf.Tags.Length > 0)
                 Console.WriteLine($"TAGS: {abf.TagSummaries}");
 
-            float[] adc = abf.GetSweep(0);
+            float[] adc = abf.GetSweepF(0);
             Console.WriteLine("SWEEP: " + string.Join(", ", adc.Take(10).Select(x => x.ToString())));
 
             float[] dac = abf.GetStimulusWaveform(0);

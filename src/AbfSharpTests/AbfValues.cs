@@ -12,7 +12,7 @@ class AbfValues
     {
         string abfPath = SampleData.GetAbfPath(filename);
         var abf = new AbfSharp.ABF(abfPath);
-        float[] sweepValues = abf.GetSweep(0);
+        float[] sweepValues = abf.GetSweepF(0);
 
         for (int i = 0; i < expectedFirstValues.Length; i++)
             sweepValues[i].Should().BeApproximately((float)expectedFirstValues[i], (float)1e-3);
@@ -33,7 +33,7 @@ class AbfValues
         ScottPlot.Plot plot2 = new();
         for (int i = 0; i < abf.SweepCount; i++)
         {
-            float[] adc = abf.GetSweep(i);
+            float[] adc = abf.GetSweepF(i);
             plot1.Add.Signal(adc);
 
             float[] dac = abf.GetStimulusWaveform(i);
