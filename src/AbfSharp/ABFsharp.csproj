@@ -36,6 +36,7 @@
             <Pack>true</Pack>
             <PackagePath>lib\win-x86</PackagePath>
             <PackageCopyToOutput>true</PackageCopyToOutput>
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
     </ItemGroup>
 
