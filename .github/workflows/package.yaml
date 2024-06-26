@@ -11,10 +11,10 @@ jobs:
       - name: 🛒 Checkout
         uses: actions/checkout@v3
 
-      - name: ✨ Setup .NET 6
+      - name: ✨ Setup .NET 8
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: "6.0.x"
+          dotnet-version: "8.0.x"
 
       - name: 🛠️ Setup NuGet
         uses: nuget/setup-nuget@v1
@@ -25,5 +25,5 @@ jobs:
         run: |
           dotnet restore src/AbfSharp/ABFsharp.csproj
           dotnet build src/AbfSharp/ABFsharp.csproj --configuration Release
-          dotnet pack src/AbfSharp/ABFsharp.csproj --configuration Release
-          nuget push "src\AbfSharp\bin\Release\*.nupkg" -SkipDuplicate -Source https://api.nuget.org/v3/index.json
+          dotnet pack src/AbfSharp/ABFsharp.csproj --configuration Release -o "artifacts"
+          nuget push "artifacts\*.nupkg" -SkipDuplicate -Source https://api.nuget.org/v3/index.json
