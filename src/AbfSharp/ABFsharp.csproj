@@ -30,9 +30,9 @@
 
     <!-- Included Files -->
     <ItemGroup>
-        <None Include="icon.png" Pack="true" PackagePath="\" />
+        <None Include="icon.png" Pack="true" />
         <None Include="nuget-readme.md" Pack="true" PackagePath="readme.md" />
-        <None Update="ABFFIO.dll" Pack="True" PackagePath="\">
+        <None Include="ABFFIO.dll" Pack="True">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
             <PackageCopyToOutput>true</PackageCopyToOutput>
         </None>
