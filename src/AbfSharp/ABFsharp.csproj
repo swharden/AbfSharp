@@ -6,7 +6,7 @@
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <LangVersion>12</LangVersion>
         <ImplicitUsings>true</ImplicitUsings>
-        <Version>0.6.2</Version>
+        <Version>0.6.3</Version>
         <Nullable>enable</Nullable>
 
         <Authors>Scott Harden</Authors>
