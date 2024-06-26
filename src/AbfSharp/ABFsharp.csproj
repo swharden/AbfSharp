@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <TargetFrameworks>net462;net8.0-windows</TargetFrameworks>
-        <PlatformTarget>AnyCPU</PlatformTarget>
+        <PlatformTarget>x86</PlatformTarget>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <LangVersion>12</LangVersion>
         <ImplicitUsings>true</ImplicitUsings>
