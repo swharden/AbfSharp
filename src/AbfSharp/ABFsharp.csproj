@@ -30,12 +30,13 @@
 
     <!-- Included Files -->
     <ItemGroup>
-        <None Include="icon.png" Pack="true" />
-        <None Include="nuget-readme.md" Pack="true" PackagePath="readme.md" />
-        <None Include="ABFFIO.dll" Pack="True">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        <None Include="icon.png" Pack="true" PackagePath="\" />
+        <None Include="nuget-readme.md" Pack="true" PackagePath="\readme.md" />
+        <Content Include="ABFFIO.dll">
+            <Pack>true</Pack>
+            <PackagePath>lib\win-x86</PackagePath>
             <PackageCopyToOutput>true</PackageCopyToOutput>
-        </None>
+        </Content>
     </ItemGroup>
 
     <!-- SourceLink -->
