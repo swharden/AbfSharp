@@ -16,6 +16,7 @@
         <PackageProjectUrl>https://github.com/swharden/ABFsharp</PackageProjectUrl>
         <PackageTags>electrophysiology, ABF, neuroscience, physiology</PackageTags>
         <PackageIcon>icon.png</PackageIcon>
+        <PackageReadmeFile>readme.md</PackageReadmeFile>
 
         <IncludeSymbols>true</IncludeSymbols>
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
@@ -27,18 +28,25 @@
 
     </PropertyGroup>
 
+    <!-- Included Files -->
     <ItemGroup>
         <None Include="icon.png" Pack="true" PackagePath="\" />
+        <None Include="nuget-readme.md" Pack="true" PackagePath="readme.md" />
         <None Update="ABFFIO.dll" Pack="True" PackagePath="\">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
             <PackageCopyToOutput>true</PackageCopyToOutput>
         </None>
+    </ItemGroup>
+
+    <!-- SourceLink -->
+    <ItemGroup>
         <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
     </ItemGroup>
 
+    <!-- .NET Framework specific packages -->
     <ItemGroup Condition="'$(TargetFramework)' == 'net462'">
         <PackageReference Include="System.ValueTuple" Version="4.5.0" />
     </ItemGroup>
