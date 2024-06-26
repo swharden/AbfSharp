@@ -19,9 +19,11 @@ public static class Version
         return v.Contains('+') ? v.Split('+')[0] : v;
     }
 
-    public static string DllVersion = GetDllVersion();
+    // TODO: check when first loaded
 
-    private static string GetDllVersion()
+    //public static string DllVersion = GetDllVersion();
+
+    public static string GetDllVersion()
     {
         if (IntPtr.Size != 4)
             throw new InvalidOperationException("AbfSharp can only be used in 32-bit (x86) projects");
