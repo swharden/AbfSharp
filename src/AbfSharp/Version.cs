@@ -19,22 +19,27 @@ public static class Version
         return v.Contains('+') ? v.Split('+')[0] : v;
     }
 
-    // TODO: check when first loaded
+    public static string DllVersion = GetDllVersion();
 
-    //public static string DllVersion = GetDllVersion();
-
-    public static string GetDllVersion()
+    private static string GetDllVersion()
     {
         if (IntPtr.Size != 4)
             throw new InvalidOperationException("AbfSharp can only be used in 32-bit (x86) projects");
 
-        string thisFolder = Path.GetFullPath(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!);
-        string dllFilePath = Path.Combine(thisFolder, "ABFFIO.DLL");
-        Console.WriteLine(dllFilePath);
+        string assemblyFolder = Path.GetFullPath(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!);
+        string[] expectedRelativePaths =
+        {
+            Path.Combine(assemblyFolder, "ABFFIO.DLL"),
+            Path.Combine(assemblyFolder, "runtimes/win-x86/native/ABFFIO.DLL"),
+        };
 
-        if (!File.Exists(dllFilePath))
-            throw new FileNotFoundException("ABFFIO.DLL should be in the folder next to the executable");
+        foreach (string relativePath in expectedRelativePaths)
+        {
+            string dllPath = Path.Combine(assemblyFolder, relativePath);
+            if (File.Exists(dllPath))
+                return FileVersionInfo.GetVersionInfo(dllPath).FileVersion ?? string.Empty;
+        }
 
-        return FileVersionInfo.GetVersionInfo(dllFilePath).FileVersion ?? string.Empty;
+        throw new FileNotFoundException("ABFFIO.DLL not found");
     }
 }
