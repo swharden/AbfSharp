@@ -1,11 +1,9 @@
 ﻿namespace AbfSharp;
 
-// TODO: cut all references to ABFFIO namespace
-
 /// <summary>
-/// This class provides a simple .NET interface to ABF file header and sweep data provided by ABFFIO.DLL
+/// A simple interface to ABF file header and sweep data provided by ABFFIO.DLL
 /// </summary>
-public class ABF : IDisposable
+public class ABF
 {
     public AbfHeader Header { get; }
     public Tag[] Tags { get; }
@@ -17,7 +15,11 @@ public class ABF : IDisposable
     public float SamplePeriod => 1.0f / SampleRate;
     public int SweepCount { get; }
     public int ChannelCount { get; }
+    public double AbfLength => Header.AbfLength;
+    public double SweepLength => Header.SweepLength;
+    public double[] SweepStartTimes => Enumerable.Range(0, SweepCount).Select(x => SweepLength * x).ToArray();
     public AbfReport Report { get; }
+    public Epoch[] Epochs { get; }
 
     // data by sweep (interleaved by channel)
     private float[][]? SweepData = null; // TODO: make double
@@ -33,6 +35,7 @@ public class ABF : IDisposable
         ChannelCount = Header.ChannelCount;
         Tags = new AbfTagManager(abfInterface, Header.AbfFileHeader).Tags;
         Report = new(this);
+        Epochs = Enumerable.Range(0, Header.EpochCount).Select(x => new Epoch(this, x)).ToArray();
         if (preloadSweepData)
             LoadAllSweeps(abfInterface);
     }
@@ -74,6 +77,17 @@ public class ABF : IDisposable
         return SweepData[sweepDataIndex];
     }
 
+    public double[] GetSweepD(int sweepIndex, int channelIndex = 0)
+    {
+        float[] values = GetSweepF(sweepIndex, channelIndex);
+        double[] values2 = new double[values.Length];
+        for (int i = 0; i < values2.Length; i++)
+        {
+            values2[i] = values[i];
+        }
+        return values2;
+    }
+
     public Sweep GetSweep(int sweepIndex, int channelIndex = 0)
     {
         return new Sweep(this, sweepIndex, channelIndex);
@@ -87,16 +101,11 @@ public class ABF : IDisposable
         }
     }
 
-    // TODO: pre-load this into memory too
+    // TODO: pre-load this into memory too?
     public float[] GetStimulusWaveform(int sweepIndex, int channelIndex = 0)
     {
         using ABFFIO.AbfFileInterface abfInterface = new(FilePath);
         float[] values = abfInterface.GetStimulusWaveform(sweepIndex + 1, channelIndex);
         return values;
-    }
-
-    public void Dispose()
-    {
-
     }
 }

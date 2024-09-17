@@ -14,6 +14,7 @@ public class AbfHeader(ABFFIO.AbfFileInterface abfInterface)
     public double AbfLength => SweepLength * SweepCount;
     public string ProtocolPath => AbfFileHeader.sProtocolPath;
     public string Protocol => Path.GetFileNameWithoutExtension(ProtocolPath);
+    public int EpochCount => AbfFileHeader.fEpochInitLevel.Length;
 
     // TODO: create DAC and ADC classes
     public string[] GetDacNames() => AbfFileHeader.sDACChannelName.Select(x => x.ToString()).ToArray();
