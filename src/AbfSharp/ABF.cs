@@ -101,7 +101,6 @@ public class ABF
         }
     }
 
-    // TODO: pre-load this into memory too?
     public float[] GetStimulusWaveform(int sweepIndex, int channelIndex = 0)
     {
         using ABFFIO.AbfFileInterface abfInterface = new(FilePath);
@@ -128,22 +127,22 @@ public class ABF
         return new Sweep(values, SampleRate, 0, channelIndex, 0);
     }
 
-    public Sweep GetAllData(int channelIndex = 0, int decimate = 50)
+    public Sweep GetAllDataDecimated(int channelIndex = 0, int decimation = 100)
     {
         int samplesPerSweep = Header.AbfFileHeader.lNumSamplesPerEpisode / Header.AbfFileHeader.nADCNumChannels;
         int sweepCount = Header.AbfFileHeader.lActualEpisodes;
-        double[] values = new double[samplesPerSweep * sweepCount / decimate];
+        double[] values = new double[samplesPerSweep * sweepCount / decimation];
 
         int offset = 0;
         for (int sweepIndex = 0; sweepIndex < SweepCount; sweepIndex++)
         {
             float[] sweepValues = GetSweepF(sweepIndex, channelIndex);
-            for (int i = 0; i < sweepValues.Length; i += decimate)
+            for (int i = 0; i < sweepValues.Length; i += decimation)
             {
                 values[offset++] = sweepValues[i];
             }
         }
 
-        return new Sweep(values, SampleRate / decimate, 0, channelIndex, 0);
+        return new Sweep(values, SampleRate / decimation, 0, channelIndex, 0);
     }
 }
