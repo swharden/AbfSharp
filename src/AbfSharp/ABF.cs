@@ -108,4 +108,42 @@ public class ABF
         float[] values = abfInterface.GetStimulusWaveform(sweepIndex + 1, channelIndex);
         return values;
     }
+
+    public Sweep GetAllData(int channelIndex = 0)
+    {
+        int samplesPerSweep = Header.AbfFileHeader.lNumSamplesPerEpisode / Header.AbfFileHeader.nADCNumChannels;
+        int sweepCount = Header.AbfFileHeader.lActualEpisodes;
+        double[] values = new double[samplesPerSweep * sweepCount];
+
+        int offset = 0;
+        for (int sweepIndex = 0; sweepIndex < SweepCount; sweepIndex++)
+        {
+            float[] sweepValues = GetSweepF(sweepIndex, channelIndex);
+            for (int i = 0; i < sweepValues.Length; i++)
+            {
+                values[offset++] = sweepValues[i];
+            }
+        }
+
+        return new Sweep(values, SampleRate, 0, channelIndex, 0);
+    }
+
+    public Sweep GetAllData(int channelIndex = 0, int decimate = 50)
+    {
+        int samplesPerSweep = Header.AbfFileHeader.lNumSamplesPerEpisode / Header.AbfFileHeader.nADCNumChannels;
+        int sweepCount = Header.AbfFileHeader.lActualEpisodes;
+        double[] values = new double[samplesPerSweep * sweepCount / decimate];
+
+        int offset = 0;
+        for (int sweepIndex = 0; sweepIndex < SweepCount; sweepIndex++)
+        {
+            float[] sweepValues = GetSweepF(sweepIndex, channelIndex);
+            for (int i = 0; i < sweepValues.Length; i += decimate)
+            {
+                values[offset++] = sweepValues[i];
+            }
+        }
+
+        return new Sweep(values, SampleRate / decimate, 0, channelIndex, 0);
+    }
 }
