@@ -11,7 +11,7 @@
 
         <Authors>Scott Harden</Authors>
         <Company>Harden Technologies, LLC</Company>
-        <Description>AbfSharp is a .NET Standard library for reading electrophysiology data from Axon Binary Format (ABF) files</Description>
+        <Description>A .NET library for reading electrophysiology data from Axon Binary Format (ABF) files</Description>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <PackageProjectUrl>https://github.com/swharden/ABFsharp</PackageProjectUrl>
         <PackageTags>electrophysiology, ABF, neuroscience, physiology</PackageTags>
