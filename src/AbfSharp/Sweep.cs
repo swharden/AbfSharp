@@ -2,26 +2,38 @@
 
 public class Sweep
 {
-    public int Index { get; }
-    public int Channel { get; }
-    public double[] Values { get; }
+    public double[] Values { get; private set; }
     public double SampleRate { get; }
-    public double SamplePeriod => 1 / SampleRate;
-    public double LengthSec => Values.Length / SampleRate;
-    public double StartTime { get; }
+    public double SamplePeriod { get; }
+    public int SweepIndex { get; }
+    public int ChannelIndex { get; }
+    public double FileStartTime { get; }
+    public double Duration => Values.Length / SampleRate;
 
-    public Sweep(ABF abf, int sweepIndex, int channelIndex)
+    public Sweep(double[] values, double sampleRate, int sweepIndex, int channelIndex, double fileStartTime)
     {
-        Index = sweepIndex;
-        Channel = channelIndex;
-        SampleRate = abf.SampleRate;
-        StartTime = abf.Header.SweepLength * sweepIndex;
+        Values = values;
+        SampleRate = sampleRate;
+        SamplePeriod = 1.0 / sampleRate;
+        SweepIndex = sweepIndex;
+        ChannelIndex = channelIndex;
+        FileStartTime = fileStartTime;
+    }
 
-        float[] values = abf.GetSweepF(sweepIndex, channelIndex);
-        Values = new double[values.Length];
-        for (int i = 0; i < values.Length; i++)
+    public Sweep(AbfSharp.ABF abf, int sweepIndex, int channelIndex = 0)
+    {
+        float[] valuesF = abf.GetSweepF(sweepIndex, channelIndex);
+        double[] values = new double[valuesF.Length];
+        for (int i = 0; i < valuesF.Length; i++)
         {
-            Values[i] = values[i];
+            values[i] = valuesF[i];
         }
+
+        Values = values;
+        SampleRate = abf.SampleRate;
+        SamplePeriod = abf.SamplePeriod;
+        SweepIndex = sweepIndex;
+        ChannelIndex = channelIndex;
+        FileStartTime = abf.SweepLength * sweepIndex;
     }
 }
