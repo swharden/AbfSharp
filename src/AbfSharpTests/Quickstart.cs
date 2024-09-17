@@ -7,8 +7,9 @@ public class Quickstart
     {
         string abfPath = SampleData.GetAbfPath("File_axon_5.abf");
         ABF abf = new(abfPath);
-        float[] sweep = abf.GetSweepF(0);
+        Sweep sweep = abf.GetSweep(0);
+
         for (int i = 0; i < 5; i++)
-            Console.Write($"{sweep[i]:0.000}, ");
+            Console.Write($"{sweep.Values[i]:0.000}, ");
     }
 }

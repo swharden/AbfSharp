@@ -23,9 +23,9 @@ Because AbfSharp calls a 32-bit Windows DLL, your application must be built agai
 ```cs
 // Read the first sweep of an ABF file
 AbfSharp.ABF abf = new("File_axon_5.abf");
-float[] sweep = abf.GetSweep(0);
+Sweep sweep = abf.GetSweep(0);
 
 // Show the first 5 values of the sweep
 for (int i = 0; i < 5; i++)
-    Console.WriteLine(sweep[i]);
+    Console.WriteLine(sweep.Values[i]);
 ```
