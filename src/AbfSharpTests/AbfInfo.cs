@@ -42,4 +42,33 @@ public class AbfInfo
         AbfSharp.ABF abf = new(SampleData.GetAbfPath(abfFileName));
         abf.Header.AbfFileHeader.FileGUID.ToString().ToUpper().Should().Be(expectedGuid);
     }
+
+    [TestCase("14o08011_ic_pair.abf", 10_000)]
+    [TestCase("17n16016-ic-steps.abf", 20_000)]
+    [TestCase("pclamp11_4ch.abf", 20_000)]
+    [TestCase("File_axon_6.abf", 20_000)]
+    public void Test_SampleRate_MatchesKnown(string abfFileName, int expectedSampleRate)
+    {
+        AbfSharp.ABF abf = new(SampleData.GetAbfPath(abfFileName));
+        abf.SampleRate.Should().Be(expectedSampleRate);
+    }
+
+    [Test]
+    public void Test_SweepLength()
+    {
+        foreach (string abfFilePath in SampleData.GetAllAbfPaths())
+        {
+            AbfSharp.ABF abf = new(abfFilePath);
+
+            // ignore ABFs with variable length sweeps
+            if (abfFilePath.Contains("2020_06_16_0000")) continue;
+
+            Sweep sw = abf.GetSweep(0);
+            int expectedLength = (int)Math.Round(abf.SweepLength * abf.SampleRate);
+            if (sw.Values.Length != expectedLength)
+            {
+                Assert.Fail($"actual length {sw.Values.Length} but expected {expectedLength} {abfFilePath}");
+            }
+        }
+    }
 }

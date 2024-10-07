@@ -5,7 +5,7 @@ public class AbfHeader(ABFFIO.AbfFileInterface abfInterface)
     public ABFFIO.AbfFileHeader AbfFileHeader { get; } = abfInterface.GetHeader();
 
     public OperationMode OperationMode => (OperationMode)AbfFileHeader.nOperationMode;
-    public float SampleRate => 1e6f / AbfFileHeader.fADCSequenceInterval / AbfFileHeader.nADCNumChannels;
+    public float SampleRate => 1e6f / AbfFileHeader.fADCSequenceInterval;
     public float GetFileVersion => AbfFileHeader.fFileVersionNumber;
     public int SweepCount => Math.Max(1, AbfFileHeader.lActualEpisodes);
     public int ChannelCount => AbfFileHeader.nADCNumChannels;
